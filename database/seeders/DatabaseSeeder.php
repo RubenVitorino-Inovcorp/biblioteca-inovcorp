@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Author;
+use App\Models\Book;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -15,11 +17,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $authors = Author::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        Book::factory(30)
+            ->hasAttached($authors->random(rand(0,3)))->create();
+
+
+        User::create([
+            'name' => 'Admin',
+            'email' => 'admin@biblioteca-inovcorp.test',
+            'password' => bcrypt('admin12345'),
         ]);
     }
 }
