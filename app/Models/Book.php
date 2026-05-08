@@ -10,6 +10,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Book extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'title',
+        'bibliography',
+        'isbn',
+        'price',
+        'publisher_id',
+    ];
+
     public function authors(): BelongsToMany {
         return $this->belongsToMany(Author::class);
     }
@@ -20,6 +29,7 @@ class Book extends Model
 
     protected function casts(): array {
         return [
+            'bibliography' => 'encrypted',
             'price' => 'decimal:2',
             'published_at' => 'date:Y-m-d',
             'is_available' => 'boolean',

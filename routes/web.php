@@ -22,7 +22,8 @@ Route::middleware([
     'verified',
 ])->group(function () {
 
-    Route::resource('/livros', BookController::class);
+    Route::resource('/livros', BookController::class)
+    ->parameter('livros', 'book');
     Route::resource('/autores', AuthorController::class);
     Route::resource('/editoras', PublisherController::class);
 

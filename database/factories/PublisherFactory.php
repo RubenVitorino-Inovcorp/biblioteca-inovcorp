@@ -21,7 +21,7 @@ class PublisherFactory extends Factory
 
         return [
             'name' => $name,
-            'logo_path' => 'https://placehold.co/600x400/orange/white?font=montserrat&text=' . urlencode($name)
+            'logo_path' => 'https://placehold.co/600x600/green/white?font=montserrat&text=' . urlencode($name)
         ];
     }
 }
