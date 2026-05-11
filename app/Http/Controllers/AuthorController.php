@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\AuthorsExport;
 use App\Models\Author;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\Writer\Exception;
 
 class AuthorController extends Controller
 {
@@ -20,16 +23,28 @@ class AuthorController extends Controller
             })
             ->withCount('books')
             ->when($request->sort, function($query, $sort){
-                if ($sort === 'total_livros_asc') $query->orderBy('total_livros', 'asc');
-                if ($sort === 'total_livros_desc') $query->orderBy('total_livros', 'desc');
+                match ($sort) {
+                    'nome_az'          => $query->orderBy('name', 'asc'),
+                    'nome_za'          => $query->orderBy('name', 'desc'),
+                    'livros_asc'       => $query->orderBy('books_count', 'asc'),
+                    'livros_desc'      => $query->orderBy('books_count', 'desc'),
+                    default            => $query->latest(),
+                };
             }, function($query){
                 $query->latest();
             })
             ->paginate(15, ['*'], 'pag')
             ->withQueryString();
 
+        $filters = $request->only(['search', 'sort']);
+
+        if (!in_array($filters['sort'] ?? null, ['nome_az', 'nome_za', 'livros_asc', 'livros_desc'], true)) {
+            $filters['sort'] = '';
+        }
+
         return Inertia::render('Authors/Index', [
-            'authors' => $authors
+            'authors' => $authors,
+            'filters' => $filters,
         ]);
     }
 
@@ -127,5 +142,13 @@ class AuthorController extends Controller
 
         $autore->delete();
         return redirect()->route('autores.index')->with('success', 'Autor removido com sucesso!');
+    }
+
+    public function export(Request $request){
+        try {
+            return Excel::download(new AuthorsExport($request), 'autores.xlsx');
+        } catch (Exception|\PhpOffice\PhpSpreadsheet\Exception $e) {
+            return response()->json(['error' => 'Ocorreu um erro ao exportar os autores.'], 500);
+        }
     }
 }

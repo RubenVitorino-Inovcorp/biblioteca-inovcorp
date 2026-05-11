@@ -10,6 +10,10 @@ const props = defineProps({
         type: String,
         default: '48',
     },
+    direction: {
+        type: String,
+        default: 'down',   // 'down' | 'up'
+    },
     contentClasses: {
         type: Array,
         default: () => ['py-1', 'bg-white'],
@@ -30,7 +34,8 @@ onUnmounted(() => document.removeEventListener('keydown', closeOnEscape));
 const widthClass = computed(() => {
     return {
         '48': 'w-48',
-    }[props.width.toString()];
+        '60': 'w-60',
+    }[props.width.toString()] || 'w-48';
 });
 
 const alignmentClasses = computed(() => {
@@ -43,6 +48,12 @@ const alignmentClasses = computed(() => {
     }
 
     return 'origin-top';
+});
+
+const directionClasses = computed(() => {
+    return props.direction === 'up'
+        ? 'bottom-full mb-2'
+        : 'mt-2';
 });
 </script>
 
@@ -65,12 +76,12 @@ const alignmentClasses = computed(() => {
         >
             <div
                 v-show="open"
-                class="absolute z-50 mt-2 rounded-md shadow-lg"
-                :class="[widthClass, alignmentClasses]"
+                class="absolute z-50 rounded-lg shadow-lg"
+                :class="[widthClass, alignmentClasses, directionClasses]"
                 style="display: none;"
                 @click="open = false"
             >
-                <div class="rounded-md ring-1 ring-black ring-opacity-5" :class="contentClasses">
+                <div class="rounded-lg ring-1 ring-black ring-opacity-5 border border-gray-100" :class="contentClasses">
                     <slot name="content" />
                 </div>
             </div>

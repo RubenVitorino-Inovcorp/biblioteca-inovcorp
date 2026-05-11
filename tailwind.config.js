@@ -15,10 +15,11 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                // Certifica-te de incluir o <link> da Manrope no teu app.blade.php
+                sans: ['Manrope', ...defaultTheme.fontFamily.sans],
             },
         },
     },
 
-    plugins: [typography, daisyui],
+    plugins: [typography, daisyui]
 };

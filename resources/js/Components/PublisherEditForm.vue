@@ -1,10 +1,12 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3';
+import {Link, useForm} from '@inertiajs/vue3';
 import { toast } from "vue-sonner";
 import PublisherDeleteForm from "@/Components/PublisherDeleteForm.vue";
+import {Pencil} from "@lucide/vue";
 
 const props = defineProps({
     publisher: { type: Object, required: true },
+    isModal: { type: Boolean, default: false }
 });
 
 const emit = defineEmits(['success']);
@@ -34,41 +36,49 @@ const submit = () => {
 </script>
 
 <template>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+    <div v-if="!isModal" class="show-card p-6 md:p-8 max-w-5xl mx-auto my-6">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
 
-        <div class="col-span-1">
-            <img :src="publisher.logo_path" :alt="publisher.name" class="rounded-xl shadow-lg w-full object-cover" />
-        </div>
+            <div class="md:col-span-3">
+                <img :src="publisher.logo_path" :alt="publisher.name" class="show-image shadow-lg" />
+            </div>
 
-        <div class="col-span-2 space-y-4">
-            <h1 class="text-3xl font-bold text-base-content">{{ publisher.name }}</h1>
+            <div class="md:col-span-9 space-y-6">
+                <div class="flex items-start justify-between">
+                    <h1 class="show-title">{{ publisher.name }}</h1>
+                </div>
+            </div>
         </div>
     </div>
 
-    <form @submit.prevent="submit" class="max-w-md mx-auto p-6 bg-base-100">
-        <div class="form-control">
-            <label class="label font-semibold">Nome</label>
-            <input v-model="form.name" type="text" class="input input-bordered" />
-            <span v-if="form.errors.name" class="text-error text-xs">{{ form.errors.name }}</span>
+    <form @submit.prevent="submit" :class="isModal ? 'w-full' : 'max-w-xl mx-auto p-8 bg-white rounded-2xl shadow-sm border border-gray-100'">
+        <div v-if="!isModal" class="mb-6 pb-4 border-b border-gray-100">
+            <h2 class="text-xl font-bold font-['Manrope'] text-[#191c1e]">Atualizar Dados da Editora</h2>
         </div>
 
         <div class="form-control">
-            <label class="label font-semibold">Lógotipo da editora</label>
+            <label class="label font-semibold text-[#3c4a42]">Nome</label>
+            <input v-model="form.name" type="text" class="input input-bordered w-full" />
+            <span v-if="form.errors.name" class="text-red-500 text-xs mt-1">{{ form.errors.name }}</span>
+        </div>
+
+        <div class="form-control mt-4">
+            <label class="label font-semibold text-[#3c4a42]">Lógotipo da editora</label>
             <input
                 type="file"
                 @input="handleFileChange"
-                class="file-input file-input-bordered file-input-primary w-full"
+                class="file-input file-input-bordered w-full"
                 accept="image/*"
             />
-            <span v-if="form.errors.logo_path" class="text-error text-xs">{{ form.errors.image_path }}</span>
+            <span v-if="form.errors.logo_path" class="text-red-500 text-xs mt-1">{{ form.errors.image_path }}</span>
         </div>
 
-        <div class="flex justify-end gap-2">
-            <button type="submit" class="btn btn-primary" :disabled="form.processing">
-                <span v-if="form.processing" class="loading loading-spinner loading-sm"></span>
-                Guardar alterações
-            </button>
+        <div class="flex justify-between items-center mt-8 pt-6 border-t border-gray-100">
             <PublisherDeleteForm :publisher="publisher" />
+            <button type="submit" class="btn-add" :disabled="form.processing">
+                <span v-if="form.processing" class="loading loading-spinner loading-sm"></span>
+                Guardar
+            </button>
         </div>
     </form>
 </template>

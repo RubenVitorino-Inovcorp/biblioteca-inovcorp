@@ -5,24 +5,44 @@
   import TableWrapper from "@/Components/TableWrapper.vue";
   import PublisherEditModal from "@/Components/PublisherEditModal.vue";
   import InputSearch from "@/Components/InputSearch.vue";
+  import FilterDropdown from "@/Components/FilterDropdown.vue";
+  import { CirclePlus, DownloadIcon } from "@lucide/vue";
+  import ExportButton from "@/Components/ExportButton.vue";
 
   const props = defineProps({
       publishers: Object,
       filters: Object,
   })
+
+  const publisherSortOptions = [
+      { value: 'nome_az', label: 'Nome (A-Z)' },
+      { value: 'nome_za', label: 'Nome (Z-A)' },
+      { value: 'livros_desc', label: 'Mais Livros' },
+      { value: 'livros_asc', label: 'Menos Livros' },
+  ];
 </script>
 
 <template>
     <AppLayout title="Biblioteca - Editoras">
         <template #header>
-            <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <div class="flex justify-between space-x-2 items-center">
+                <h2 class="page-title">
                     Catálogo de Editoras
                 </h2>
                 <InputSearch :filters="filters" route="editoras.index" placeholder="Pesquisar editora..." />
-                <Link :href="route('editoras.create')" class="btn btn-primary btn-sm">
-                    + Adicionar Editoras
-                </Link>
+                <div class="header-actions">
+                    <Link :href="route('editoras.create')" class="btn-add">
+                        <CirclePlus :size="16" /> Adicionar Editora
+                    </Link>
+                    <ExportButton route-name="editoras.export" :filters="filters">
+                        <DownloadIcon :size="16" /> Exportar Editoras
+                    </ExportButton>
+                    <FilterDropdown
+                        route-name="editoras.index"
+                        :filters="filters"
+                        :sort-options="publisherSortOptions"
+                    />
+                </div>
             </div>
         </template>
 
@@ -39,7 +59,6 @@
                 <th></th>
             </template>
             <template #body>
-                <!-- row 3 -->
                 <tr v-for="publisher in publishers.data" :key="publisher.id" class="hover:bg-base-300">
                     <th>
                         <label>
@@ -56,7 +75,7 @@
                                 </div>
                             </div>
                             <div>
-                                <Link class="hover:text-secondary" :href="route('editoras.show', publisher.id)">
+                                <Link class="hover:text-primary" :href="route('editoras.show', publisher.id)">
                                     <div class="font-bold">{{ publisher.name }}</div>
                                 </Link>
                             </div>
@@ -64,14 +83,14 @@
                     </td>
                     <td>
                         <div class="badge badge-ghost">
-                            {{ publisher.books_count }} {{ publisher.books_count === 1 ? 'livros' : 'livros' }}
+                            {{ publisher.books_count }} {{ publisher.books_count === 1 ? 'livro' : 'livros' }}
                         </div>
                     </td>
                     <th>
-                        <publisherEditModal :publisher="publisher" />
+                        <PublisherEditModal :publisher="publisher" />
                     </th>
                     <th>
-                        <publisherDeleteForm :publisher="publisher" />
+                        <PublisherDeleteForm :publisher="publisher" />
                     </th>
                 </tr>
             </template>
@@ -89,16 +108,16 @@
             </template>
         </TableWrapper>
 
-        <div v-if="publishers.links && publishers.links.length > 3" class="flex justify-center mt-8 mb-4">
-            <div class="join">
+        <div v-if="publishers.links && publishers.links.length > 3" class="pagination">
+            <div class="pagination-list">
                 <Link
                     v-for="(link, index) in publishers.links"
                     :key="index"
                     :href="link.url ?? ''"
-                    class="join-item btn btn-sm"
+                    class="pagination-item"
                     :class="{
-                    'btn-active btn-primary': link.active,
-                    'btn-disabled opacity-50': !link.url
+                    'pagination-item--active': link.active,
+                    'pagination-item--disabled': !link.url
                 }"
                     v-html="link.label"
                 />
@@ -106,7 +125,30 @@
         </div>
 
         <div v-if="publishers.data.length === 0" class="text-center py-10">
-            <p class="text-gray-500 italic">Ainda não há autores registados.</p>
+            <p class="empty-state-text">Ainda não há editoras registadas.</p>
         </div>
     </AppLayout>
 </template>
+
+<style scoped>
+.page-title {
+    font-family: 'Manrope', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #191c1e;
+    line-height: 1.4;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.empty-state-text {
+    font-family: 'Manrope', sans-serif;
+    font-size: 14px;
+    color: #6c7a71;
+    font-style: italic;
+}
+</style>

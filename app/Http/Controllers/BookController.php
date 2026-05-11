@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Exports\BooksExport;
 use App\Models\Author;
 use App\Models\Publisher;
 use Illuminate\Support\Arr;
@@ -11,6 +12,8 @@ use Inertia\Inertia;
 
 use App\Models\Book;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\Writer\Exception;
 
 class BookController extends Controller
 {
@@ -51,9 +54,15 @@ class BookController extends Controller
             ->paginate(15, ['*'], 'pag')
             ->withQueryString();
 
+        $filters = $request->only(['search', 'sort', 'publisher', 'author']);
+
+        if (!in_array($filters['sort'] ?? null, ['preco_asc', 'preco_desc', 'titulo_az'], true)) {
+            $filters['sort'] = '';
+        }
+
         return Inertia::render('Books/Index', [
             'books' => $books,
-            'filters' => $request->only(['search', 'sort', 'publisher', 'author']),
+            'filters' => $filters,
             'publishers' => Publisher::query()->orderBy('name')->get(),
             'authors' => Author::query()->orderBy('name')->get(),
         ]);
@@ -187,5 +196,17 @@ class BookController extends Controller
 
         $book->delete();
         return redirect()->route('livros.index')->with('success', 'Livro removido com sucesso!');
+    }
+
+    /**
+     *  Export the books displayed by the user
+     */
+
+    public function export(Request $request){
+        try {
+            return Excel::download(new BooksExport($request), 'livros.xlsx');
+        } catch (Exception|\PhpOffice\PhpSpreadsheet\Exception $e) {
+            return response()->json(['error' => 'Ocorreu um erro ao exportar os livros.'], 500);
+        }
     }
 }

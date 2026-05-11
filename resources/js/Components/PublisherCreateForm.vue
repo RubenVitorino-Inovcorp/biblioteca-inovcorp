@@ -32,28 +32,32 @@ const submit = () => {
 </script>
 
 <template>
-    <form @submit.prevent="submit" class="max-w-md mx-auto p-6 bg-base-100 space-y-2">
-        <div class="form-control">
-            <label class="label font-semibold">Nome</label>
-            <input v-model="form.name" type="text" class="input input-bordered" />
-            <span v-if="form.errors.name" class="text-error text-xs">{{ form.errors.name }}</span>
+    <form @submit.prevent="submit" class="max-w-xl mx-auto p-8 bg-white rounded-2xl shadow-sm border border-gray-100 mt-6">
+        <div class="mb-6 pb-4 border-b border-gray-100">
+            <h2 class="text-xl font-bold font-['Manrope'] text-[#191c1e]">Adicionar Nova Editora</h2>
         </div>
 
         <div class="form-control">
-            <label class="label font-semibold">Lógotipo da editora</label>
+            <label class="label font-semibold text-[#3c4a42]">Nome</label>
+            <input v-model="form.name" type="text" class="input input-bordered w-full" placeholder="Ex: Porto Editora" />
+            <span v-if="form.errors.name" class="text-red-500 text-xs mt-1">{{ form.errors.name }}</span>
+        </div>
+
+        <div class="form-control mt-4">
+            <label class="label font-semibold text-[#3c4a42]">Lógotipo da editora</label>
             <input
                 type="file"
                 @input="handleFileChange"
-                class="file-input file-input-bordered file-input-primary w-full"
+                class="file-input file-input-bordered w-full"
                 accept="image/*"
             />
-            <span v-if="form.errors.logo_path" class="text-error text-xs">{{ form.errors.logo_path }}</span>
+            <span v-if="form.errors.logo_path" class="text-red-500 text-xs mt-1">{{ form.errors.logo_path }}</span>
         </div>
 
-        <div class="flex justify-end gap-2">
-            <button type="submit" class="btn btn-primary" :disabled="form.processing">
+        <div class="flex justify-end mt-8 pt-6 border-t border-gray-100">
+            <button type="submit" class="btn-add" :disabled="form.processing">
                 <span v-if="form.processing" class="loading loading-spinner loading-sm"></span>
-                Adicionar editora
+                Adicionar Editora
             </button>
         </div>
     </form>

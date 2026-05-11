@@ -9,16 +9,46 @@ defineProps({
 
 <template>
     <div>
-        <button v-if="as == 'button'" type="submit" class="block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out">
+        <button v-if="as == 'button'" type="submit" class="dropdown-link-item">
             <slot />
         </button>
 
-        <a v-else-if="as =='a'" :href="href" class="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out">
+        <a v-else-if="as =='a'" :href="href" class="dropdown-link-item">
             <slot />
         </a>
 
-        <Link v-else :href="href" class="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out">
+        <Link v-else :href="href" class="dropdown-link-item">
             <slot />
         </Link>
     </div>
 </template>
+
+<style scoped>
+.dropdown-link-item {
+    display: block;
+    width: 100%;
+    padding: 8px 16px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: #3c4a42;
+    text-align: left;
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.dropdown-link-item:hover {
+    background: #f0fdf4;
+    color: #006c49;
+}
+
+.dropdown-link-item:focus {
+    outline: none;
+    background: #f0fdf4;
+    color: #006c49;
+}
+</style>

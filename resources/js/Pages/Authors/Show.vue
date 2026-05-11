@@ -13,35 +13,44 @@
   <Layout>
       <Head :title="author.name" />
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+      <div class="show-card p-6 md:p-8 max-w-5xl mx-auto mt-6">
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+              
+              <div class="md:col-span-3">
+                  <img :src="author.photo_path" :alt="author.name" class="show-image shadow-lg" />
+              </div>
 
-          <div class="col-span-1">
-              <img :src="author.photo_path" :alt="author.name" class="rounded-xl shadow-lg w-full object-cover" />
+              <div class="md:col-span-9 space-y-6">
+                  <div class="flex items-start justify-between">
+                      <Link :href="route('autores.edit', author.id)" class="show-title-link">
+                          <h1 class="show-title">{{ author.name }}</h1>
+                          <Pencil />
+                      </Link>
+                  </div>
+              </div>
           </div>
+          
+          <div v-if="books.length > 0" class="mt-8">
+              <div class="show-divider"></div>
 
-          <div class="col-span-2 space-y-4">
-              <Link :href="route('autores.edit', author.id)"><h1 class="text-3xl font-bold text-base-content flex">{{ author.name }}<Pencil /></h1></Link>
-          </div>
-      </div>
+              <h2 class="show-section-title">Livros de {{ author.name }}</h2>
 
-      <div v-if="books.length > 0">
-          <div class="divider"></div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
+                  <div v-for="book in books" :key="book.id" class="book-card">
+                      <Link :href="route('livros.show', book.id)">
+                          <img :src="book.image_path" :alt="book.title" class="book-card-image" />
+                      </Link>
+                      <div class="book-card-body">
+                          <Link :href="route('livros.show', book.id)" class="show-title-link">
+                              <h3 class="book-card-title">{{ book.title }}</h3>
+                          </Link>
+                          <p class="book-card-isbn">ISBN: {{ book.isbn }}</p>
 
-          <h1 class="text-3xl font-bold text-base-content">Livros de {{ author.name }}</h1>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div v-for="book in books" :key="book.id" class="card bg-base-100 shadow-xl border border-gray-200">
-                  <Link :href="route('livros.show', book.id)">
-                      <figure class="px-4 pt-4">
-                          <img :src="book.image_path" :alt="book.title" class="rounded-xl h-80 w-80 object-cover" />
-                      </figure>
-                  </Link>
-                  <div class="card-body">
-                      <h2 class="card-title text-lg">{{ book.title }}</h2>
-                      <p class="text-sm text-base-content opacity-70">ISBN: {{ book.isbn }}</p>
-
-                      <div class="badge badge-outline" v-if="book.publisher">
-                          {{ book.publisher.name }}
+                          <div class="mt-2" v-if="book.publisher">
+                              <div class="badge-publisher">
+                                  {{ book.publisher.name }}
+                              </div>
+                          </div>
                       </div>
                   </div>
               </div>

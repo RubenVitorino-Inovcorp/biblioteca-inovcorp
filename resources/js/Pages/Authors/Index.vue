@@ -1,52 +1,48 @@
 <script setup>
-import {Link, router} from '@inertiajs/vue3'
+import {Head, Link, router} from '@inertiajs/vue3'
   import AppLayout from "@/Layouts/AppLayout.vue";
   import AuthorEditModal from "@/Components/AuthorEditModal.vue";
   import AuthorDeleteForm from "@/Components/AuthorDeleteForm.vue";
   import TableWrapper from "@/Components/TableWrapper.vue";
-  import {ref, watch} from "vue";
-  import {debounce} from "lodash";
-import InputSearch from "@/Components/InputSearch.vue";
-
+  import InputSearch from "@/Components/InputSearch.vue";
+  import FilterDropdown from "@/Components/FilterDropdown.vue";
+import { CirclePlus, DownloadIcon } from "@lucide/vue";
+import ExportButton from "@/Components/ExportButton.vue";
 
   const props = defineProps({
       authors: Object,
       filters: Object,
   })
 
-  const search = ref(props.filters?.search || '')
-
-  const updateSearch = debounce((value) => {
-      router.get(
-          route('livros.index'),
-          {
-              search: value,
-          },
-          {
-              preserveState: true,
-              replace: true,
-              preserveScroll: true
-          }
-      );
-  }, 300);
-
-  watch(search, (newValue) => {
-      updateSearch(newValue);
-  });
-
+  const authorSortOptions = [
+      { value: 'nome_az', label: 'Nome (A-Z)' },
+      { value: 'nome_za', label: 'Nome (Z-A)' },
+      { value: 'livros_desc', label: 'Mais Livros' },
+      { value: 'livros_asc', label: 'Menos Livros' },
+  ];
 </script>
 
 <template>
     <AppLayout title="Biblioteca - Autores">
         <template #header>
-            <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <div class="flex justify-between space-x-2 items-center">
+                <h2 class="page-title">
                     Catálogo de Autores
                 </h2>
                 <InputSearch :filters="filters" route="autores.index" placeholder="Pesquisar autores..." />
-                <Link :href="route('autores.create')" class="btn btn-primary btn-sm">
-                    + Adicionar Autores
-                </Link>
+                <div class="header-actions">
+                    <Link :href="route('autores.create')" class="btn-add">
+                        <CirclePlus :size="16" /> Adicionar Autor
+                    </Link>
+                    <ExportButton route-name="autores.export" :filters="filters">
+                        <DownloadIcon :size="16" /> Exportar Autores
+                    </ExportButton>
+                    <FilterDropdown
+                        route-name="autores.index"
+                        :filters="filters"
+                        :sort-options="authorSortOptions"
+                    />
+                </div>
             </div>
         </template>
 
@@ -63,7 +59,6 @@ import InputSearch from "@/Components/InputSearch.vue";
                 <th></th>
             </template>
             <template #body>
-                <!-- row 3 -->
                 <tr v-for="author in authors.data" :key="author.id" class="hover:bg-base-300">
                     <th>
                         <label>
@@ -80,7 +75,7 @@ import InputSearch from "@/Components/InputSearch.vue";
                                 </div>
                             </div>
                             <div>
-                                <Link class="hover:text-secondary" :href="route('autores.show', author.id)">
+                                <Link class="hover:text-primary" :href="route('autores.show', author.id)">
                                     <div class="font-bold">{{ author.name }}</div>
                                 </Link>
                             </div>
@@ -88,7 +83,7 @@ import InputSearch from "@/Components/InputSearch.vue";
                     </td>
                     <td>
                         <div class="badge badge-ghost">
-                            {{ author.books_count }} {{ author.books_count === 1 ? 'livros' : 'livros' }}
+                            {{ author.books_count }} {{ author.books_count === 1 ? 'livro' : 'livros' }}
                         </div>
                     </td>
                     <th>
@@ -113,16 +108,16 @@ import InputSearch from "@/Components/InputSearch.vue";
             </template>
         </TableWrapper>
 
-        <div v-if="authors.links && authors.links.length > 3" class="flex justify-center mt-8 mb-4">
-            <div class="join">
+        <div v-if="authors.links && authors.links.length > 3" class="pagination">
+            <div class="pagination-list">
                 <Link
                     v-for="(link, index) in authors.links"
                     :key="index"
                     :href="link.url ?? ''"
-                    class="join-item btn btn-sm"
+                    class="pagination-item"
                     :class="{
-                    'btn-active btn-primary': link.active,
-                    'btn-disabled opacity-50': !link.url
+                    'pagination-item--active': link.active,
+                    'pagination-item--disabled': !link.url
                 }"
                     v-html="link.label"
                 />
@@ -130,7 +125,30 @@ import InputSearch from "@/Components/InputSearch.vue";
         </div>
 
         <div v-if="authors.data.length === 0" class="text-center py-10">
-            <p class="text-gray-500 italic">Ainda não há autores registados.</p>
+            <p class="empty-state-text">Ainda não há autores registados.</p>
         </div>
     </AppLayout>
 </template>
+
+<style scoped>
+.page-title {
+    font-family: 'Manrope', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #191c1e;
+    line-height: 1.4;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.empty-state-text {
+    font-family: 'Manrope', sans-serif;
+    font-size: 14px;
+    color: #6c7a71;
+    font-style: italic;
+}
+</style>

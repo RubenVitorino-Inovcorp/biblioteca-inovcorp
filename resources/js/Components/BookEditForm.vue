@@ -1,12 +1,14 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3';
+import {Link, useForm} from '@inertiajs/vue3';
 import { toast } from "vue-sonner";
 import BookDeleteForm from "@/Components/BookDeleteForm.vue";
+import {Pencil} from "@lucide/vue";
 
 const props = defineProps({
     book: { type: Object, required: true },
     publishers: Array,
     authors: Array,
+    isModal: { type: Boolean, default: false }
 });
 
 const emit = defineEmits(['success']);
@@ -46,118 +48,138 @@ const submit = () => {
 </script>
 
 <template>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+    <div v-if="!isModal" class="show-card p-6 md:p-8 max-w-5xl mx-auto my-6">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
 
-        <div class="col-span-1">
-            <img :src="book.image_path" :alt="book.title" class="rounded-xl shadow-lg w-full object-cover" />
-        </div>
+            <div class="md:col-span-4">
+                <img :src="book.image_path" :alt="book.title" class="show-image shadow-lg" />
+            </div>
 
-        <div class="col-span-2 space-y-4">
-            <h1 class="text-3xl font-bold text-base-content">{{ book.title }}</h1>
+            <div class="md:col-span-8 space-y-6">
+                <div class="flex items-start justify-between">
+                    <Link :href="route('livros.edit', book.id)" class="show-title-link">
+                        <h1 class="show-title">{{ book.title }}</h1>
+                        <Pencil />
+                    </Link>
+                </div>
 
-            <div>
-                <label class="label font-bold">Autores</label>
-                <div class="flex flex-wrap gap-1">
-                    <div class="badge badge-primary" v-for="author in book.authors" :key="author.id">
-                        {{ author.name }}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="show-label">Autores</div>
+                        <div class="flex flex-wrap gap-2">
+                            <div class="badge-author" v-for="author in book.authors" :key="author.id">
+                                <Link :href="route('autores.show', author.id)">
+                                    {{ author.name }}
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="show-label">Editora</div>
+                        <div class="flex flex-wrap gap-2">
+                            <div class="badge-publisher" v-if="book.publisher">
+                                <Link :href="route('editoras.show', book.publisher?.id)">
+                                    {{ book.publisher?.name }}
+                                </Link>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div>
-                <label class="label font-bold">Editora</label>
-                <div class="flex flex-wrap gap-1">
-                    <div class="badge badge-secondary gap-x-6" v-if="book.publisher">
-                        {{ book.publisher.name }}
+                <div>
+                    <div class="show-label">Bibliografia</div>
+                    <p class="show-text">{{ book.bibliography }}</p>
+                </div>
+
+                <div class="show-divider"></div>
+
+                <div class="flex justify-between items-center">
+                    <div class="show-isbn">
+                        ISBN: {{ book.isbn }}
+                    </div>
+                    <div class="show-price">
+                        {{ book.price }}€
                     </div>
                 </div>
-            </div>
-
-            <div>
-                <label class="label font-bold pb-0">Bibliografia</label>
-                <p class="text-base-content opacity-80">{{ book.bibliography }}</p>
-            </div>
-
-            <div class="divider"></div>
-
-            <div class="flex justify-between items-center">
-                <div class="text-sm opacity-60">
-                    <p>ISBN: {{ book.isbn }}</p>
-                </div>
-                <div class="text-2xl font-bold text-primary">
-                    {{ book.price }}€
-                </div>
-
             </div>
         </div>
     </div>
 
-    <form @submit.prevent="submit" class="max-w-md mx-auto p-6 bg-base-100">
-        <div class="form-control">
-            <label class="label font-semibold">Título</label>
-            <input v-model="form.title" type="text" class="input input-bordered" />
-            <span v-if="form.errors.title" class="text-error text-xs">{{ form.errors.title }}</span>
+    <form @submit.prevent="submit" :class="isModal ? 'w-full' : 'max-w-2xl mx-auto p-8 bg-white rounded-2xl shadow-sm border border-gray-100'">
+        <div v-if="!isModal" class="mb-6 pb-4 border-b border-gray-100">
+            <h2 class="text-xl font-bold font-['Manrope'] text-[#191c1e]">Atualizar Dados do Livro</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="form-control">
+                <label class="label font-semibold text-[#3c4a42]">Título</label>
+                <input v-model="form.title" type="text" class="input input-bordered w-full" />
+                <span v-if="form.errors.title" class="text-red-500 text-xs mt-1">{{ form.errors.title }}</span>
+            </div>
+
+            <div class="form-control">
+                <label class="label font-semibold text-[#3c4a42]">ISBN</label>
+                <input v-model="form.isbn" type="text" class="input input-bordered w-full" />
+                <span v-if="form.errors.isbn" class="text-red-500 text-xs mt-1">{{ form.errors.isbn }}</span>
+            </div>
         </div>
 
         <div class="form-control mt-2">
-            <label class="label font-semibold">Bibliografia</label>
-            <textarea v-model="form.bibliography" class="textarea textarea-bordered h-24"></textarea>
-            <span v-if="form.errors.bibliography" class="text-error text-xs">{{ form.errors.bibliography }}</span>
+            <label class="label font-semibold text-[#3c4a42]">Bibliografia</label>
+            <textarea v-model="form.bibliography" class="textarea textarea-bordered h-24 w-full"></textarea>
+            <span v-if="form.errors.bibliography" class="text-red-500 text-xs mt-1">{{ form.errors.bibliography }}</span>
         </div>
 
-        <div class="form-control mt-2">
-            <label class="label font-semibold">ISBN</label>
-            <input v-model="form.isbn" type="text" class="input input-bordered" />
-            <span v-if="form.errors.isbn" class="text-error text-xs">{{ form.errors.isbn }}</span>
-        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+            <div class="form-control">
+                <label class="label font-semibold text-[#3c4a42]">Preço (€)</label>
+                <input v-model="form.price" type="number" step="0.01" class="input input-bordered w-full" />
+                <span v-if="form.errors.price" class="text-red-500 text-xs mt-1">{{ form.errors.price }}</span>
+            </div>
 
-        <div class="form-control mt-2">
-            <label class="label font-semibold">Preço (€)</label>
-            <input v-model="form.price" type="number" step="0.01" class="input input-bordered" />
-            <span v-if="form.errors.price" class="text-error text-xs">{{ form.errors.price }}</span>
-        </div>
-
-        <div class="form-control mt-2">
-            <label class="label font-semibold">Editora</label>
-            <select v-model="form.publisher_id" class="select select-bordered">
-                <option disabled value="">Selecione uma editora...</option>
-                <option v-for="pub in publishers" :key="pub.id" :value="pub.id">
-                    {{ pub.name }}
-                </option>
-            </select>
-            <span v-if="form.errors.publisher_id" class="text-error text-xs">{{ form.errors.publisher_id }}</span>
+            <div class="form-control">
+                <label class="label font-semibold text-[#3c4a42]">Editora</label>
+                <select v-model="form.publisher_id" class="select select-bordered w-full">
+                    <option disabled value="">Selecione uma editora...</option>
+                    <option v-for="pub in publishers" :key="pub.id" :value="pub.id">
+                        {{ pub.name }}
+                    </option>
+                </select>
+                <span v-if="form.errors.publisher_id" class="text-red-500 text-xs mt-1">{{ form.errors.publisher_id }}</span>
+            </div>
         </div>
 
         <div class="form-control mt-2 mb-4">
-            <label class="label font-semibold">Autor(es)</label>
-            <select multiple v-model="form.author_ids" class="select select-bordered min-h-24">
+            <label class="label font-semibold text-[#3c4a42]">Autor(es)</label>
+            <select multiple v-model="form.author_ids" class="select select-bordered min-h-[120px] w-full">
                 <option v-for="aut in authors" :key="aut.id" :value="aut.id">
                     {{ aut.name }}
                 </option>
             </select>
-            <span v-if="form.errors.author_ids" class="text-error text-xs">{{ form.errors.author_ids }}</span>
+            <span v-if="form.errors.author_ids" class="text-red-500 text-xs mt-1">{{ form.errors.author_ids }}</span>
             <label class="label">
-                <span class="label-text-alt text-gray-500">Ctrl/Cmd + Clique para selecionar vários</span>
+                <span class="label-text-alt text-[#6c7a71]">Ctrl/Cmd + Clique para selecionar vários</span>
             </label>
         </div>
 
         <div class="form-control">
-            <label class="label font-semibold">Capa do Livro</label>
+            <label class="label font-semibold text-[#3c4a42]">Capa do Livro</label>
             <input
                 type="file"
                 @input="handleFileChange"
-                class="file-input file-input-bordered file-input-primary w-full"
+                class="file-input file-input-bordered w-full"
                 accept="image/*"
             />
-            <span v-if="form.errors.image_path" class="text-error text-xs">{{ form.errors.image_path }}</span>
+            <span v-if="form.errors.image_path" class="text-red-500 text-xs mt-1">{{ form.errors.image_path }}</span>
         </div>
 
-        <div class="flex justify-end gap-2">
-            <button type="submit" class="btn btn-primary" :disabled="form.processing">
-                <span v-if="form.processing" class="loading loading-spinner loading-sm"></span>
-                Guardar alterações
-            </button>
+        <div class="flex justify-between items-center mt-8 pt-6 border-t border-gray-100">
             <BookDeleteForm :book="book" />
+            <button type="submit" class="btn-add" :disabled="form.processing">
+                <span v-if="form.processing" class="loading loading-spinner loading-sm"></span>
+                Guardar
+            </button>
         </div>
     </form>
 </template>

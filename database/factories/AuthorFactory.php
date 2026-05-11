@@ -19,7 +19,6 @@ class AuthorFactory extends Factory
     {
         return [
             'name' => $this->faker->name(),
-            'photo_path' => 'https://api.dicebear.com/9.x/thumbs/svg?seed=' . $this->faker->uuid(),
-        ];
+            'photo_path' => 'https://api.dicebear.com/9.x/thumbs/svg?backgroundColor=b4f0dc&seed=' . $this->faker->uuid(),        ];
     }
 }

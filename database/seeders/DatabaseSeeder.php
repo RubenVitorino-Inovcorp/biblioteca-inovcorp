@@ -18,10 +18,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $authors = Author::factory(10)->create();
-        $publishers = Publisher::factory(5)->create();
+        $authors = Author::factory(50)->create();
+        $publishers = Publisher::factory(25)->create();
 
-        Book::factory(30)
+        Book::factory(120)
             ->recycle($publishers)
             ->create()
             ->each(function ($book) use ($authors) {

@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\PublishersExport;
 use App\Models\Publisher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\Writer\Exception;
 
 class PublisherController extends Controller
 {
@@ -20,15 +23,27 @@ class PublisherController extends Controller
         })
             ->withCount('books')
             ->when($request->sort, function($query, $sort) {
-                if ($sort === 'total_livros_asc') $query->orderBy('total_livros', 'asc');
-                if ($sort === 'total_livros_desc') $query->orderBy('total_livros', 'desc');
+                match ($sort) {
+                    'nome_az'          => $query->orderBy('name', 'asc'),
+                    'nome_za'          => $query->orderBy('name', 'desc'),
+                    'livros_asc'       => $query->orderBy('books_count', 'asc'),
+                    'livros_desc'      => $query->orderBy('books_count', 'desc'),
+                    default            => $query->latest(),
+                };
             }, function ($query) {
             $query->latest();})
             ->paginate(15, ['*'], 'pag')
             ->withQueryString();
 
+        $filters = $request->only(['search', 'sort']);
+
+        if (!in_array($filters['sort'] ?? null, ['nome_az', 'nome_za', 'livros_asc', 'livros_desc'], true)) {
+            $filters['sort'] = '';
+        }
+
         return Inertia::render('Publishers/Index', [
             'publishers' => $publishers,
+            'filters' => $filters,
         ]);
     }
 
@@ -126,5 +141,13 @@ class PublisherController extends Controller
 
         $editora->delete();
         return redirect()->route('editoras.index')->with('success', 'Autor removido com sucesso!');
+    }
+
+    public function export(Request $request){
+        try {
+            return Excel::download(new PublishersExport($request), 'editoras.xlsx');
+        } catch (Exception|\PhpOffice\PhpSpreadsheet\Exception $e) {
+            return response()->json(['error' => 'Ocorreu um erro ao exportar as editoras.'], 500);
+        }
     }
 }

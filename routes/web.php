@@ -22,6 +22,10 @@ Route::middleware([
     'verified',
 ])->group(function () {
 
+    Route::get('livros/exportar', [BookController::class, 'export'])->name('livros.export');
+    Route::get('autores/exportar', [AuthorController::class, 'export'])->name('autores.export');
+    Route::get('editoras/exportar', [PublisherController::class, 'export'])->name('editoras.export');
+
     Route::resource('/livros', BookController::class)
     ->parameter('livros', 'book');
     Route::resource('/autores', AuthorController::class);

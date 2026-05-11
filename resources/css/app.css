@@ -1,6 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 @plugin "daisyui" {
     themes: light --default, dark --prefersdark, cupcake;
 }
@@ -9,9 +12,383 @@
     display: none;
 }
 
+@theme {
+  --color-primary: #006c49;
+  --color-secondary: #0F172A;
+}
+
+:root, [data-theme] {
+  --color-primary: #006c49 !important;
+  --color-primary-content: #ffffff !important;
+  --color-secondary: #0F172A !important;
+  --color-secondary-content: #ffffff !important;
+}
+
 .glass {
     background: rgba(255, 255, 255, 0.70);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(220, 193, 177, 0.3);
+}
+
+/* ───────────────────────────────────────────
+   Global Base Styles (DESIGN.md)
+   ─────────────────────────────────────────── */
+body {
+    font-family: 'Manrope', sans-serif;
+    color: #191c1e;
+    background: #f7f9fb;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Fix for select elements inside custom dropdowns */
+select {
+    -webkit-appearance: auto;
+    -moz-appearance: auto;
+    appearance: auto;
+}
+
+/* Fix native form elements after removing @tailwindcss/forms */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+input[type="tel"],
+input[type="url"],
+textarea {
+    font-family: 'Manrope', sans-serif;
+}
+
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+
+/* Badges personalizados */
+
+.badge-author {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #00422b;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-radius: 9999px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.badge-author:hover {
+    background: #d1fae5;
+    border-color: #6ee7b7;
+}
+
+.badge-author a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.badge-publisher {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #0F172A;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 9999px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    cursor: pointer;
+}
+
+.badge-publisher:hover {
+    background: #e2e8f0;
+    border-color: #94a3b8;
+}
+
+.badge-publisher a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* ───────────────────────────────────────────
+   Botões de Ação da Tabela
+   ─────────────────────────────────────────── */
+.btn-table-edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 14px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #006c49;
+    background: transparent;
+    border: 1px solid #006c49;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-table-edit:hover {
+    background: #006c49;
+    color: #ffffff;
+}
+
+.btn-table-delete {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 14px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #ba1a1a;
+    background: transparent;
+    border: 1px solid #ba1a1a;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-table-delete:hover {
+    background: #ba1a1a;
+    color: #ffffff;
+}
+
+/* ───────────────────────────────────────────
+   Botão de Adicionar
+   ─────────────────────────────────────────── */
+.btn-add {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #ffffff;
+    background: #006c49;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.btn-add:hover {
+    background: #005236;
+    box-shadow: 0 2px 8px rgba(0, 108, 73, 0.25);
+}
+
+.btn-add:active {
+    transform: scale(0.98);
+}
+
+/* ───────────────────────────────────────────
+   Paginação
+   ─────────────────────────────────────────── */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin: 32px 0 16px;
+}
+
+.pagination-list {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.pagination-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 34px;
+    padding: 0 8px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #3c4a42;
+    background: #ffffff;
+    border: 1px solid #E2E8F0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-decoration: none;
+}
+
+.pagination-item:hover:not(.pagination-item--active):not(.pagination-item--disabled) {
+    border-color: #006c49;
+    color: #006c49;
+    background: #f0fdf4;
+}
+
+.pagination-item--active {
+    background: #006c49;
+    border-color: #006c49;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: default;
+}
+
+.pagination-item--disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* ───────────────────────────────────────────
+   Estilos da página de detalhes
+   ─────────────────────────────────────────── */
+.show-card {
+    background: #ffffff;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.show-image {
+    border-radius: 10px;
+    width: 100%;
+    object-fit: cover;
+    border: 1px solid #E2E8F0;
+}
+
+.show-title {
+    font-family: 'Manrope', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #191c1e;
+    line-height: 1.3;
+}
+
+.show-title-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.15s ease;
+}
+
+.show-title-link:hover {
+    color: #006c49;
+}
+
+.show-title-link svg {
+    width: 20px;
+    height: 20px;
+    opacity: 0.4;
+    transition: opacity 0.15s ease;
+}
+
+.show-title-link:hover svg {
+    opacity: 1;
+    color: #006c49;
+}
+
+.show-label {
+    font-family: 'Manrope', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #6c7a71;
+    margin-bottom: 6px;
+}
+
+.show-text {
+    font-family: 'Manrope', sans-serif;
+    font-size: 15px;
+    color: #3c4a42;
+    line-height: 1.6;
+}
+
+.show-price {
+    font-family: 'Manrope', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #006c49;
+}
+
+.show-isbn {
+    font-family: 'Manrope', sans-serif;
+    font-size: 13px;
+    color: #6c7a71;
+}
+
+.show-section-title {
+    font-family: 'Manrope', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #191c1e;
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+.show-divider {
+    height: 1px;
+    background: #E2E8F0;
+    margin: 24px 0;
+}
+
+/* Cards em Author/Publisher show */
+.book-card {
+    background: #ffffff;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.book-card:hover {
+    border-color: #00422b;
+    box-shadow: 0px 4px 20px rgba(15, 23, 42, 0.05);
+}
+
+.book-card-image {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+}
+
+.book-card-body {
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.book-card-title {
+    font-family: 'Manrope', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #191c1e;
+    line-height: 1.3;
+}
+
+.book-card-isbn {
+    font-family: 'Manrope', sans-serif;
+    font-size: 12px;
+    color: #6c7a71;
 }
