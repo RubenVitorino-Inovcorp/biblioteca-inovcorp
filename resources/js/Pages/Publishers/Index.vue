@@ -6,7 +6,7 @@
   import PublisherEditModal from "@/Components/PublisherEditModal.vue";
   import InputSearch from "@/Components/InputSearch.vue";
   import FilterDropdown from "@/Components/FilterDropdown.vue";
-  import { CirclePlus, DownloadIcon } from "@lucide/vue";
+  import { Building, CirclePlus, DownloadIcon } from "@lucide/vue";
   import ExportButton from "@/Components/ExportButton.vue";
 
   const props = defineProps({
@@ -26,8 +26,8 @@
     <AppLayout title="Biblioteca - Editoras">
         <template #header>
             <div class="flex justify-between space-x-2 items-center">
-                <h2 class="page-title">
-                    Catálogo de Editoras
+                <h2 class="page-title flex items-center gap-2">
+                 <Building :size="20"/> Catálogo de Editoras
                 </h2>
                 <InputSearch :filters="filters" route="editoras.index" placeholder="Pesquisar editora..." />
                 <div class="header-actions">

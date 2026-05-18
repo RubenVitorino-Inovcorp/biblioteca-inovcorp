@@ -8,7 +8,7 @@
   import InputSearch from "@/Components/InputSearch.vue";
   import FilterDropdown from "@/Components/FilterDropdown.vue";
   import ExportButton from "@/Components/ExportButton.vue";
-  import { CirclePlus, DownloadIcon } from "@lucide/vue";
+  import { Book, CirclePlus, DownloadIcon } from "@lucide/vue";
 
   const props = defineProps({
       books: Object,
@@ -21,6 +21,7 @@
       { value: 'preco_asc', label: 'Preço: Baixo para Alto' },
       { value: 'preco_desc', label: 'Preço: Alto para Baixo' },
       { value: 'titulo_az', label: 'Título (A-Z)' },
+      { value: 'titulo_za', label: 'Título (Z-A)'},
   ];
 </script>
 
@@ -28,8 +29,8 @@
     <AppLayout title="Biblioteca - Livros">
         <template #header>
             <div class="flex justify-between space-x-2 items-center">
-                <h2 class="page-title">
-                    Catálogo de Livros
+                <h2 class="page-title flex items-center gap-2">
+                    <Book :size="20"/> Catálogo de Livros
                 </h2>
                <InputSearch :filters="filters" route="livros.index" placeholder="Pesquisar livro..." />
 
@@ -54,11 +55,7 @@
 
         <TableWrapper>
                 <template #header>
-                    <th>
-                        <label>
-                            <input type="checkbox" class="checkbox" />
-                        </label>
-                    </th>
+                    <th></th>
                     <th>Livro</th>
                     <th>Preço (€)</th>
                     <th>Autor</th>
@@ -66,61 +63,57 @@
                     <th></th>
                     <th></th>
                 </template>
+
                 <template #body>
-                <!-- row 3 -->
-                <tr v-for="book in books.data" :key="book.id" class="hover:bg-base-300">
-                    <th>
-                        <label>
-                            <input type="checkbox" class="checkbox" />
-                        </label>
-                    </th>
-                    <td>
-                        <div class="flex items-center gap-3">
-                            <div class="avatar">
-                                <div class="mask mask-squircle h-12 w-12">
-                                    <img
-                                        :src="book.image_path"
-                                        :alt="book.title" />
+                    <tr v-for="book in books.data" :key="book.id" class="hover:bg-base-300">
+                        <th></th>
+                        <td>
+                            <div class="flex items-center gap-3">
+                                <div class="avatar">
+                                    <div class="mask mask-squircle h-12 w-12">
+                                        <img
+                                            :src="book.image_path"
+                                            :alt="book.title" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <Link class="hover:text-primary" :href="route('livros.show', book.id)">
+                                        <div class="font-bold">{{ book.title }}</div>
+                                        <div class="text-sm opacity-50">{{ book.isbn }}</div>
+                                    </Link>
                                 </div>
                             </div>
-                            <div>
-                                <Link class="hover:text-primary" :href="route('livros.show', book.id)">
-                                    <div class="font-bold">{{ book.title }}</div>
-                                    <div class="text-sm opacity-50">{{ book.isbn }}</div>
-                                </Link>
+                        </td>
+                        <td>
+                            {{ book.price }}€
+                        </td>
+                        <td>
+                            <div class="flex flex-wrap gap-1">
+                                <div class="badge-author" v-for="author in book.authors" :key="author.id">
+                                    <Link :href="route('autores.show', author.id)">
+                                        {{ author.name }}
+                                    </Link>
+                                </div>
                             </div>
-                        </div>
-                    </td>
-                    <td>
-                        {{ book.price }}€
-                    </td>
-                    <td>
-                        <div class="flex flex-wrap gap-1">
-                            <div class="badge-author" v-for="author in book.authors" :key="author.id">
-                                <Link :href="route('autores.show', author.id)">
-                                    {{ author.name }}
-                                </Link>
+                        </td>
+                        <td>
+                            <div class="flex flex-wrap gap-1">
+                                <div class="badge-publisher" v-if="book.publisher">
+                                    <Link :href="route('editoras.show', book.publisher?.id)">
+                                        {{ book.publisher?.name }}
+                                    </Link>
+                                </div>
                             </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="flex flex-wrap gap-1">
-                            <div class="badge-publisher" v-if="book.publisher">
-                                <Link :href="route('editoras.show', book.publisher?.id)">
-                                    {{ book.publisher?.name }}
-                                </Link>
-                            </div>
-                        </div>
-                    </td>
-                    <th>
-                        <BookEditModal :book="book" :publishers="publishers" :authors="authors" />
-                    </th>
-                    <th>
-                        <BookDeleteForm :book="book" />
-                    </th>
-                </tr>
+                        </td>
+                        <th>
+                            <BookEditModal :book="book" :publishers="publishers" :authors="authors" />
+                        </th>
+                        <th>
+                            <BookDeleteForm :book="book" />
+                        </th>
+                    </tr>
                 </template>
-                <!-- foot -->
+
                 <template #footer>
                     <th></th>
                     <th>Livro</th>
@@ -155,24 +148,24 @@
 </template>
 
 <style scoped>
-.page-title {
-    font-family: 'Manrope', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: #191c1e;
-    line-height: 1.4;
-}
+    .page-title {
+        font-family: 'Manrope', sans-serif;
+        font-size: 20px;
+        font-weight: 700;
+        color: #191c1e;
+        line-height: 1.4;
+    }
 
-.header-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
 
-.empty-state-text {
-    font-family: 'Manrope', sans-serif;
-    font-size: 14px;
-    color: #6c7a71;
-    font-style: italic;
-}
+    .empty-state-text {
+        font-family: 'Manrope', sans-serif;
+        font-size: 14px;
+        color: #6c7a71;
+        font-style: italic;
+    }
 </style>

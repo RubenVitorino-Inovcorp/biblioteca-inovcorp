@@ -24,6 +24,7 @@ const form = useForm({
     bibliography: props.book.bibliography ?? '',
     isbn: props.book.isbn ?? '',
     price: props.book.price ?? 0,
+    total_stock: props.book.total_stock ?? 0,
     publisher_id: props.book.publisher_id ?? '',
     author_ids: getAuthorIds(),
     image_path: null,
@@ -40,8 +41,8 @@ const submit = () => {
             emit('success')
             toast.success(`O livro "${props.book.title}" foi atualizado com sucesso!.`);
         },
-        onError: () => {
-            toast.error("Erro ao tentar atualizar livro.");
+        onError: (errors) => {
+            toast.error(errors.total_stock || "Erro ao atualizar o livro.");
         }
     });
 };
@@ -96,12 +97,14 @@ const submit = () => {
 
                 <div class="flex justify-between items-center">
                     <div class="show-isbn">
-                        ISBN: {{ book.isbn }}
+                        <p>Disponibilidade:  {{ book.available_stock }}/{{ book.total_stock }}</p>
+                        <p>ISBN: {{ book.isbn }}</p>
                     </div>
                     <div class="show-price">
                         {{ book.price }}€
                     </div>
                 </div>
+                
             </div>
         </div>
     </div>
@@ -139,6 +142,14 @@ const submit = () => {
             </div>
 
             <div class="form-control">
+                <label class="label font-semibold text-[#3c4a42]">Total Stock</label>
+                <input v-model="form.total_stock" type="number" class="input input-bordered w-full" />
+                <span v-if="form.errors.total_stock" class="text-red-500 text-xs mt-1">{{ form.errors.total_stock }}</span>
+            </div>
+        </div>
+
+        <div class="form-control mt-2 mb-4 space-y-4">
+                        <div class="form-control">
                 <label class="label font-semibold text-[#3c4a42]">Editora</label>
                 <select v-model="form.publisher_id" class="select select-bordered w-full">
                     <option disabled value="">Selecione uma editora...</option>
@@ -148,9 +159,6 @@ const submit = () => {
                 </select>
                 <span v-if="form.errors.publisher_id" class="text-red-500 text-xs mt-1">{{ form.errors.publisher_id }}</span>
             </div>
-        </div>
-
-        <div class="form-control mt-2 mb-4">
             <label class="label font-semibold text-[#3c4a42]">Autor(es)</label>
             <select multiple v-model="form.author_ids" class="select select-bordered min-h-[120px] w-full">
                 <option v-for="aut in authors" :key="aut.id" :value="aut.id">

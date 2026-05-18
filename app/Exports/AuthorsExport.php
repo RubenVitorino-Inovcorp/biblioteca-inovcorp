@@ -22,7 +22,7 @@ class AuthorsExport implements FromQuery, WithHeadings, WithMapping
     public function query()
     {
         return Author::query()->when($this->request->search, function ($query, $search) {
-            $query->where('name', 'like', '%' . $search . '%');
+            $query->where('name', 'like', "%{$search}%");
         })
             ->withCount('books')
             ->when($this->request->sort, function ($query, $sort) {

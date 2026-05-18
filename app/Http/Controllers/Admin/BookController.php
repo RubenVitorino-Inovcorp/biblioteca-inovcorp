@@ -1,22 +1,29 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
+
 use App\Exports\BooksExport;
+use App\Http\Controllers\Controller;
 use App\Models\Author;
+use App\Models\Book;
 use App\Models\Publisher;
+use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
-
-use App\Models\Book;
-use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Writer\Exception;
 
 class BookController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Book::class, 'book');
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -46,6 +53,7 @@ class BookController extends Controller
                     'preco_asc'  => $query->orderBy('price', 'asc'),
                     'preco_desc' => $query->orderBy('price', 'desc'),
                     'titulo_az'  => $query->orderBy('title', 'asc'),
+                    'titulo_za'  => $query->orderBy('title', 'desc'),
                     default      => $query->latest(),
                 };
             }, function ($query) {
@@ -56,7 +64,7 @@ class BookController extends Controller
 
         $filters = $request->only(['search', 'sort', 'publisher', 'author']);
 
-        if (!in_array($filters['sort'] ?? null, ['preco_asc', 'preco_desc', 'titulo_az'], true)) {
+        if (!in_array($filters['sort'] ?? null, ['preco_asc', 'preco_desc', 'titulo_az', 'titulo_za'], true)) {
             $filters['sort'] = '';
         }
 
@@ -89,6 +97,7 @@ class BookController extends Controller
             'bibliography' => 'nullable|string',
             'isbn' => 'nullable|string|unique:books,isbn',
             'price' => 'required|numeric|min:0',
+            'total_stock' => 'required|integer|min:0',
             'publisher_id' => 'required|exists:publishers,id',
             'author_ids' => 'required|array',
             'author_ids.*' => 'exists:authors,id',
@@ -105,6 +114,8 @@ class BookController extends Controller
             'bibliography' => $validated['bibliography'] ?? null,
             'isbn' => $validated['isbn'] ?? null,
             'price' => $validated['price'],
+            'total_stock' => $validated['total_stock'],
+            'available_stock' => $validated['total_stock'],
             'publisher_id' => $validated['publisher_id'],
             'image_path' => $path ? '/media/' . $path : null,
         ]);
@@ -121,6 +132,7 @@ class BookController extends Controller
     {
         return Inertia::render('Books/Show', [
             'book' => $book->load('authors', 'publisher'),
+            'loans' => $book->loans()->with('user')->latest()->get(),
         ]);
     }
 
@@ -145,13 +157,13 @@ class BookController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'bibliography' => 'nullable|string',
-            // Resolve o problema do ISBN: ignora o ID do livro atual na verificação de unicidade
             'isbn' => [
                 'nullable',
                 'string',
                 Rule::unique('books')->ignore($book->id),
             ],
             'price' => 'required|numeric|min:0',
+            'total_stock' => 'required|integer|min:0',
             'publisher_id' => 'required|exists:publishers,id',
             'author_ids' => 'required|array',
             'author_ids.*' => 'exists:authors,id',
@@ -160,7 +172,7 @@ class BookController extends Controller
 
         $finalPath = $book->image_path;
 
-        // 1. Apagar a imagem antiga e guardar a nova imagem
+        // Apagar a imagem antiga e guardar a nova imagem
         if ($request->hasFile('image_path')) {
             if ($book->image_path && !str_contains($book->image_path, 'http')) {
                 Storage::disk('public')->delete(str_replace('/media/', '', $book->image_path));
@@ -170,16 +182,27 @@ class BookController extends Controller
             $finalPath = '/media/' . $path;
         }
 
+        $diff = $request->total_stock - $book->total_stock;
+        $newAvailableStock = $book->available_stock + $diff;
+
+        if ($newAvailableStock < 0) {
+            throw ValidationException::withMessages([
+                'total_stock' => 'Não pode reduzir o stock total abaixo do número de livros atualmente requisitados.'
+            ]);
+        }
+
         $book->update([
             'title'        => $validated['title'],
-            'bibliography' => $request->bibliography,
-            'isbn'         => $request->isbn,
-            'price'        => $request->price,
-            'publisher_id' => $request->publisher_id,
+            'bibliography' => $validated['bibliography'],
+            'isbn'         => $validated['isbn'],
+            'price'        => $validated['price'],
+            'total_stock'  => $validated['total_stock'],
+            'available_stock' => $newAvailableStock,
+            'publisher_id' => $validated['publisher_id'],
             'image_path'   => $finalPath,
         ]);
 
-        $book->authors()->sync($request->author_ids);
+        $book->authors()->sync($validated['author_ids']);
 
         return redirect()->route('livros.show', $book->id)->with('success', 'Livro atualizado com sucesso!');
     }

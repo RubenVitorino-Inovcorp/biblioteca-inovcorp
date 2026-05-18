@@ -7,7 +7,7 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import { Toaster, toast } from 'vue-sonner'
 import 'vue-sonner/style.css'
-import { UsersIcon, Book, Building, LayoutDashboard } from "@lucide/vue";
+import { Book, Building, LibraryBig, LayoutDashboard, User2Icon, UserPen } from "@lucide/vue";
 
 defineProps({
     title: String,
@@ -64,9 +64,61 @@ const toggleSidebar = () => {
 
                     <!-- Navigation Links -->
                     <nav class="sidebar-nav">
+                        <!-- INÍCIO -->
+                        <div class="sidebar-nav-section">
+                            <span class="sidebar-nav-label" v-if="sidebarOpen">GERAL</span>
+                            <ul class="sidebar-nav-list">
+                                <li>
+                                    <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                        <LayoutDashboard :size="20"/>
+                                        <span v-if="sidebarOpen">Dashboard</span>
+                                    </NavLink>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- CATÁLOGO -->
                         <div class="sidebar-nav-section">
                             <span class="sidebar-nav-label" v-if="sidebarOpen">CATÁLOGO</span>
                             <ul class="sidebar-nav-list">
+                                <li>
+                                    <NavLink :href="route('catalog.livros.index')" :active="route().current('catalog.livros.*')">
+                                        <Book :size="20"/>
+                                        <span v-if="sidebarOpen">Livros</span>
+                                    </NavLink>
+                                </li>
+                                <li>
+                                    <NavLink :href="route('catalog.autores.index')" :active="route().current('catalog.autores.*')">
+                                        <UserPen :size="20" />
+                                        <span v-if="sidebarOpen">Autores</span>
+                                    </NavLink>
+                                </li>
+                                <li>
+                                    <NavLink :href="route('catalog.editoras.index')" :active="route().current('catalog.editoras.*')">
+                                        <Building :size="20"/>
+                                        <span v-if="sidebarOpen">Editoras</span>
+                                    </NavLink>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- PESSOAL -->
+                        <div class="sidebar-nav-section">
+                            <span class="sidebar-nav-label" v-if="sidebarOpen">PESSOAL</span>
+                            <ul class="sidebar-nav-list">
+                                <li>
+                                    <NavLink :href="route('catalog.requisicoes.index')" :active="route().current('catalog.requisicoes.*')">
+                                        <LibraryBig :size="20"/>
+                                        <span v-if="sidebarOpen">As minhas requisições</span>
+                                    </NavLink>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- GESTÃO (ADMIN) -->
+                        <div class="sidebar-nav-section" v-if="$page.props.auth.user.role.id === $page.props.roles.ADMIN">
+                           <span class="sidebar-nav-label" v-if="sidebarOpen">GESTÃO</span>
+                           <ul class="sidebar-nav-list">
                                 <li>
                                     <NavLink :href="route('livros.index')" :active="route().current('livros.*')">
                                         <Book :size="20"/>
@@ -75,7 +127,7 @@ const toggleSidebar = () => {
                                 </li>
                                 <li>
                                     <NavLink :href="route('autores.index')" :active="route().current('autores.*')">
-                                        <UsersIcon :size="20" />
+                                        <UserPen :size="20" />
                                         <span v-if="sidebarOpen">Autores</span>
                                     </NavLink>
                                 </li>
@@ -85,20 +137,20 @@ const toggleSidebar = () => {
                                         <span v-if="sidebarOpen">Editoras</span>
                                     </NavLink>
                                 </li>
-                            </ul>
+                                <li>
+                                    <NavLink :href="route('requisicoes.index')" :active="route().current('requisicoes.*')">
+                                        <LibraryBig :size="20"/>
+                                        <span v-if="sidebarOpen">Requisições</span>
+                                    </NavLink>
+                                </li>
+                                <li>
+                                    <NavLink :href="route('utilizadores.index')" :active="route().current('utilizadores.*')">
+                                        <User2Icon :size="20"/>
+                                        <span v-if="sidebarOpen">Utilizadores</span>
+                                    </NavLink>
+                                </li>
+                           </ul>
                         </div>
-
-<!--                        <div class="sidebar-nav-section" v-if="sidebarOpen">-->
-<!--                            <span class="sidebar-nav-label">SISTEMA</span>-->
-<!--                            <ul class="sidebar-nav-list">-->
-<!--                                <li>-->
-<!--                                    <NavLink :href="route('dashboard')" :active="route().current('dashboard')">-->
-<!--                                        <LayoutDashboard :size="20"/>-->
-<!--                                        <span>Dashboard</span>-->
-<!--                                    </NavLink>-->
-<!--                                </li>-->
-<!--                            </ul>-->
-<!--                        </div>-->
                     </nav>
 
                     <!-- User Section (Jetstream) -->
@@ -107,16 +159,25 @@ const toggleSidebar = () => {
                             <Dropdown align="left" width="48" direction="up">
                                 <template #trigger>
                                     <button class="sidebar-user-btn" type="button">
-                                        <div class="sidebar-user-avatar">
-                                            <img
-                                                v-if="$page.props.jetstream?.managesProfilePhotos"
-                                                class="sidebar-user-photo"
-                                                :src="$page.props.auth.user.profile_photo_url"
-                                                :alt="$page.props.auth.user.name"
+                                        <div class="avatar" :class="{ 'indicator': $page.props.auth.user.role.id === $page.props.roles.ADMIN }">
+                                            <span
+                                                v-if="$page.props.auth.user.role.id === $page.props.roles.ADMIN"
+                                                class="indicator-item indicator-start badge badge-xs badge-primary py-2 px-1 text-[9px]"
                                             >
-                                            <span v-else class="sidebar-user-initials">
-                                                {{ $page.props.auth.user.name?.charAt(0)?.toUpperCase() }}
+                                                Admin.
                                             </span>
+
+                                            <div class="sidebar-user-avatar">
+                                                <img
+                                                    v-if="$page.props.jetstream?.managesProfilePhotos && $page.props.auth.user.profile_photo_url"
+                                                    class="sidebar-user-photo"
+                                                    :src="$page.props.auth.user.profile_photo_url"
+                                                    :alt="$page.props.auth.user.name"
+                                                >
+                                                <span v-else class="sidebar-user-initials">
+                                                    {{ $page.props.auth.user.name?.charAt(0)?.toUpperCase() }}
+                                                </span>
+                                            </div>
                                         </div>
                                         <div class="sidebar-user-info">
                                             <span class="sidebar-user-name">{{ $page.props.auth.user.name }}</span>
@@ -161,7 +222,7 @@ const toggleSidebar = () => {
                                     <button class="sidebar-avatar-btn" type="button">
                                         <div class="sidebar-user-avatar">
                                             <img
-                                                v-if="$page.props.jetstream?.managesProfilePhotos"
+                                                v-if="$page.props.jetstream?.managesProfilePhotos && $page.props.auth.user.profile_photo_url"
                                                 class="sidebar-user-photo"
                                                 :src="$page.props.auth.user.profile_photo_url"
                                                 :alt="$page.props.auth.user.name"
@@ -221,7 +282,7 @@ const toggleSidebar = () => {
 .app-shell {
     display: flex;
     min-height: 100vh;
-    background: #f7f9fb;
+    background: #F4F1EA;
 }
 
 /* ───────────────────────────────────────────
@@ -336,7 +397,7 @@ const toggleSidebar = () => {
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.08em;
-    color: #6c7a71;
+    color: #006c49;
     padding: 0 14px 6px;
     text-transform: uppercase;
 }
@@ -351,8 +412,18 @@ const toggleSidebar = () => {
 }
 
 .sidebar-icon {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.sidebar--collapsed :deep(.nav-link) {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;   
+}
+
+.sidebar--collapsed :deep(.nav-link) svg {
     flex-shrink: 0;
 }
 
@@ -526,6 +597,8 @@ const toggleSidebar = () => {
 .content-body {
     flex: 1;
     padding: 24px;
+    display: flex;
+    flex-direction: column;
 }
 
 /* ───────────────────────────────────────────

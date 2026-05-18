@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { useForm } from "@inertiajs/vue3";
 import { toast } from "vue-sonner";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
+import { TriangleAlert } from "@lucide/vue";
 
 const props = defineProps({
     publisher: { type: Object, required: true },
@@ -32,7 +33,14 @@ const deletePublisherAction = () => {
     </button>
 
     <ConfirmationModal :show="showModal" @close="showModal = false">
-        <template #title>Eliminar editora</template>
+        <template #icon>
+            <div class="h-12 w-12 bg-red-100 rounded-full flex items-center justify-center sm:h-10 sm:w-10">
+                <TriangleAlert class="w-6 h-6 text-red-600" />
+            </div>
+        </template>
+        <template #title>
+            Eliminar editora
+        </template>
         <template #content>
             Tem a certeza que deseja remover <strong>{{ props.publisher.name }}</strong>?
         </template>

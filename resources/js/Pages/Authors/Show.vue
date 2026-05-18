@@ -13,7 +13,7 @@
   <Layout>
       <Head :title="author.name" />
 
-      <div class="show-card p-6 md:p-8 max-w-5xl mx-auto mt-6">
+      <div class="show-card p-6 md:p-8 max-w-5xl w-full mx-auto my-auto">
           <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
               
               <div class="md:col-span-3">

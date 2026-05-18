@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
 
 use App\Exports\PublishersExport;
 use App\Models\Publisher;
@@ -12,6 +14,11 @@ use PhpOffice\PhpSpreadsheet\Writer\Exception;
 
 class PublisherController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Publisher::class, 'publisher');
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -75,72 +82,72 @@ class PublisherController extends Controller
             'logo_path' => $path ? '/media/' . $path : null,
         ]);
 
-        return redirect()->route('editoras.index')->with('success', 'Autor adicionado com sucesso!');
+        return redirect()->route('editoras.index')->with('success', 'Editora adicionada com sucesso!');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Publisher $editora)
+    public function show(Publisher $publisher)
     {
         return Inertia::render('Publishers/Show', [
-            'publisher' => $editora,
-            'books' => $editora->books()->with('publisher')->get()
+            'publisher' => $publisher,
+            'books' => $publisher->books()->with('publisher')->get()
         ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Publisher $editora)
+    public function edit(Publisher $publisher)
     {
         return Inertia::render('Publishers/Edit', [
-            'publisher' => $editora,
+            'publisher' => $publisher,
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Publisher $editora)
+    public function update(Request $request, Publisher $publisher)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'logo_path' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:2048',
         ]);
 
-        $finalPath = $editora->logo_path;
+        $finalPath = $publisher->logo_path;
 
         // 1. Apagar a imagem antiga e guardar a nova imagem
         if ($request->hasFile('logo_path')) {
-            if ($editora->logo_path && !str_contains($editora->logo_path, 'http')) {
-                Storage::disk('public')->delete(str_replace('/media/', '', $editora->logo_path));
+            if ($publisher->logo_path && !str_starts_with($publisher->logo_path, 'http')) {
+                Storage::disk('public')->delete(str_replace('/media/', '', $publisher->logo_path));
             }
 
             $path = $request->file('logo_path')->store('editoras', 'public');
             $finalPath = '/media/' . $path;
         }
 
-        $editora->update([
+        $publisher->update([
             'name' => $validated['name'],
             'logo_path' => $finalPath,
         ]);
 
-        return redirect()->route('editoras.show', $editora->id)->with('success', 'Autor atualizado com sucesso!');
+        return redirect()->route('editoras.show', $publisher->id)->with('success', 'Editora atualizada com sucesso!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Publisher $editora)
+    public function destroy(Publisher $publisher)
     {
-        if ($editora->logo_path && !str_contains($editora->logo_path, 'http')) {
-            $path = str_replace('/media/', '', $editora->logo_path);
+        if ($publisher->logo_path && !str_starts_with($publisher->logo_path, 'http')) {
+            $path = str_replace('/media/', '', $publisher->logo_path);
             Storage::disk('public')->delete($path);
         }
 
-        $editora->delete();
-        return redirect()->route('editoras.index')->with('success', 'Autor removido com sucesso!');
+        $publisher->delete();
+        return redirect()->route('editoras.index')->with('success', 'Editora removida com sucesso!');
     }
 
     public function export(Request $request){

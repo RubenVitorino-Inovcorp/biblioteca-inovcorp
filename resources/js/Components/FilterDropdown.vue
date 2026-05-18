@@ -9,6 +9,7 @@ const props = defineProps({
     sortOptions: { type: Array, required: true },
     publishers: { type: Array, default: () => [] },
     authors: { type: Array, default: () => [] },
+    statuses: { type: Array, default: () => [] },
 });
 
 const open = ref(false);
@@ -17,6 +18,7 @@ const dropdownRef = ref(null);
 const sort = ref(props.filters.sort ?? '');
 const publisher = ref(props.filters.publisher || '');
 const author = ref(props.filters.author || '');
+const status = ref(props.filters.status || '');
 
 const toggle = () => {
     open.value = !open.value;
@@ -44,12 +46,13 @@ onUnmounted(() => {
     document.removeEventListener('keydown', closeOnEscape);
 });
 
-watch([sort, publisher, author], () => {
+watch([sort, publisher, author, status], () => {
     const params = { search: props.filters.search };
 
     if (sort.value) params.sort = sort.value;
     if (publisher.value) params.publisher = publisher.value;
     if (author.value) params.author = author.value;
+    if (status.value) params.status = status.value;
 
     router.get(route(props.routeName), params, {
         preserveState: true,
@@ -61,10 +64,11 @@ const clearFilters = () => {
     sort.value = '';
     publisher.value = '';
     author.value = '';
+    status.value = '';
 };
 
 const hasActiveFilters = () => {
-    return sort.value || publisher.value || author.value;
+    return sort.value || publisher.value || author.value || status.value;
 };
 </script>
 
@@ -109,6 +113,14 @@ const hasActiveFilters = () => {
                         <option v-for="option in sortOptions" :key="option.value" :value="option.value">
                             {{ option.label }}
                         </option>
+                    </select>
+                </div>
+
+                <div v-if="statuses.length > 0" class="filter-group">
+                    <label class="filter-group-label">Estado</label>
+                    <select v-model="status" class="filter-select">
+                        <option value="">Todos os Estados</option>
+                        <option v-for="s in statuses" :key="s.value" :value="s.value">{{ s.label }}</option>
                     </select>
                 </div>
 

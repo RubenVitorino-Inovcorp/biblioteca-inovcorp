@@ -14,6 +14,7 @@ const form = useForm({
     bibliography: '',
     isbn: '',
     price: 0,
+    total_stock: 0,
     publisher_id: '',
     author_ids: [],
     image_path: null,
@@ -68,6 +69,12 @@ const submit = () => {
                 <label class="label font-semibold text-[#3c4a42]">Preço (€)</label>
                 <input v-model="form.price" type="number" step="0.01" class="input input-bordered w-full" placeholder="0.00" />
                 <span v-if="form.errors.price" class="text-red-500 text-xs mt-1">{{ form.errors.price }}</span>
+            </div>
+
+            <div class="form-control">
+                <label class="label font-semibold text-[#3c4a42]">Stock total</label>
+                <input v-model="form.total_stock" type="number" step="1" class="input input-bordered w-full" placeholder="0" />
+                <span v-if="form.errors.total_stock" class="text-red-500 text-xs mt-1">{{ form.errors.total_stock }}</span>
             </div>
 
             <div class="form-control">

@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
 
 use App\Exports\AuthorsExport;
 use App\Models\Author;
@@ -12,6 +14,11 @@ use PhpOffice\PhpSpreadsheet\Writer\Exception;
 
 class AuthorController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Author::class, 'author');
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -82,65 +89,65 @@ class AuthorController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Author $autore)
+    public function show(Author $author)
     {
         return Inertia::render('Authors/Show', [
-            'author' => $autore,
-            'books' => $autore->books()->with('publisher')->get()
+            'author' => $author,
+            'books' => $author->books()->with('publisher')->get()
         ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Author $autore)
+    public function edit(Author $author)
     {
        return Inertia::render('Authors/Edit', [
-       'author' => $autore,
+       'author' => $author,
        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Author $autore)
+    public function update(Request $request, Author $author)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'photo_path' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:2048',
         ]);
 
-        $finalPath = $autore->photo_path;
+        $finalPath = $author->photo_path;
 
         // 1. Apagar a imagem antiga e guardar a nova imagem
         if ($request->hasFile('photo_path')) {
-            if ($autore->photo_path && !str_contains($autore->photo_path, 'http')) {
-                Storage::disk('public')->delete(str_replace('/media/', '', $autore->photo_path));
+            if ($author->photo_path && str_starts_with($author->photo_path, '/media/')) {
+                Storage::disk('public')->delete(str_replace('/media/', '', $author->photo_path));
             }
 
             $path = $request->file('photo_path')->store('autores', 'public');
             $finalPath = '/media/' . $path;
         }
 
-        $autore->update([
+        $author->update([
             'name' => $validated['name'],
             'photo_path' => $finalPath,
         ]);
 
-        return redirect()->route('autores.show', $autore->id)->with('success', 'Autor atualizado com sucesso!');
+        return redirect()->route('autores.show', $author->id)->with('success', 'Autor atualizado com sucesso!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Author $autore)
+    public function destroy(Author $author)
     {
-        if ($autore->photo_path && !str_contains($autore->photo_path, 'http')) {
-            $path = str_replace('/media/', '', $autore->photo_path);
+        if ($author->photo_path && str_starts_with($author->photo_path, '/media/')) {
+            $path = str_replace('/media/', '', $author->photo_path);
             Storage::disk('public')->delete($path);
         }
 
-        $autore->delete();
+        $author->delete();
         return redirect()->route('autores.index')->with('success', 'Autor removido com sucesso!');
     }
 

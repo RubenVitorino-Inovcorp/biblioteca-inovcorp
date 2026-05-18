@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\UserRole;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -37,7 +38,23 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
-            //
+            'roles' => [
+                'ADMIN' => UserRole::ADMIN,
+                'USER' => UserRole::USER,
+            ],
+            'auth' => [
+                'user' => $request->user() ? [
+                    'id' => $request->user()->id,
+                    'name' => $request->user()->name,
+                    'email' => $request->user()->email,
+                    'profile_photo_url' => $request->user()->profile_photo_url,
+                    'profile_photo_path' => $request->user()->profile_photo_path,
+                    'role' => [
+                        'id' => $request->user()->role?->value,
+                        'name' => $request->user()->role?->label(),
+                        ],
+                ] : null,
+            ],
         ];
     }
 }

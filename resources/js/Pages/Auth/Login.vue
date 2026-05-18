@@ -34,8 +34,7 @@ const submit = () => {
 
     <AuthenticationCard>
         <template #logo>
-            <img class="sidebar-logo" src="/logo.webp" alt="logo">
-            <h1 class="sidebar-brand-text text-center font-bold text-2xl">Biblioteca</h1>
+            <AuthenticationCardLogo />
         </template>
 
         <div v-if="status" class="mb-4 font-medium text-sm text-green-600">

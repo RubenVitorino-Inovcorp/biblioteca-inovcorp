@@ -24,3 +24,5 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+test_mail.php
+test_smtp.php

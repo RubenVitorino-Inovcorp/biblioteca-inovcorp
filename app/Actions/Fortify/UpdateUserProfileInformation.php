@@ -20,11 +20,20 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
         Validator::make($input, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'photo' => ['nullable', 'mimes:jpg,jpeg,png', 'max:1024'],
+            'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,gif', 'max:2048'],
         ])->validateWithBag('updateProfileInformation');
 
         if (isset($input['photo'])) {
-            $user->updateProfilePhoto($input['photo']);
+            // Delete old photo if it exists
+            if ($user->profile_photo_path) {
+                $oldPath = str_replace('/media/', '', $user->profile_photo_path);
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+            }
+            
+            $path = $input['photo']->store('fotos-perfil', 'public');
+            $user->forceFill([
+                'profile_photo_path' => '/media/' . $path,
+            ])->save();
         }
 
         if ($input['email'] !== $user->email &&

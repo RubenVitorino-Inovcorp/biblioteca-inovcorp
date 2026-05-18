@@ -19,6 +19,8 @@ return new class extends Migration
             $table->text('bibliography')->nullable();
             $table->string('image_path')->nullable();
             $table->decimal('price', 8, 2)->default(0.00);
+            $table->integer('total_stock')->unsigned()->default(1);
+            $table->integer('available_stock')->unsigned()->default(1);
             $table->foreignId('publisher_id')->nullable()
                                                     ->constrained()
                                                     ->onDelete('set null');

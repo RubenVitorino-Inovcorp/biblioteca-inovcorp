@@ -5,6 +5,7 @@ import ActionMessage from '@/Components/ActionMessage.vue';
 import ActionSection from '@/Components/ActionSection.vue';
 import Checkbox from '@/Components/Checkbox.vue';
 import ConfirmationModal from '@/Components/ConfirmationModal.vue';
+import { TriangleAlert } from '@lucide/vue';
 import DangerButton from '@/Components/DangerButton.vue';
 import DialogModal from '@/Components/DialogModal.vue';
 import FormSection from '@/Components/FormSection.vue';
@@ -228,6 +229,11 @@ const deleteApiToken = () => {
 
         <!-- Delete Token Confirmation Modal -->
         <ConfirmationModal :show="apiTokenBeingDeleted != null" @close="apiTokenBeingDeleted = null">
+            <template #icon>
+                <div class="h-12 w-12 bg-red-100 rounded-full flex items-center justify-center sm:h-10 sm:w-10">
+                    <TriangleAlert class="w-6 h-6 text-red-600" />
+                </div>
+            </template>
             <template #title>
                 Delete API Token
             </template>

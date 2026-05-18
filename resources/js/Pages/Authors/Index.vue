@@ -6,7 +6,7 @@ import {Head, Link, router} from '@inertiajs/vue3'
   import TableWrapper from "@/Components/TableWrapper.vue";
   import InputSearch from "@/Components/InputSearch.vue";
   import FilterDropdown from "@/Components/FilterDropdown.vue";
-import { CirclePlus, DownloadIcon } from "@lucide/vue";
+import { CirclePlus, DownloadIcon, UserPen } from "@lucide/vue";
 import ExportButton from "@/Components/ExportButton.vue";
 
   const props = defineProps({
@@ -26,8 +26,8 @@ import ExportButton from "@/Components/ExportButton.vue";
     <AppLayout title="Biblioteca - Autores">
         <template #header>
             <div class="flex justify-between space-x-2 items-center">
-                <h2 class="page-title">
-                    Catálogo de Autores
+                <h2 class="page-title flex items-center gap-2">
+                    <UserPen :size="20"/> Autores
                 </h2>
                 <InputSearch :filters="filters" route="autores.index" placeholder="Pesquisar autores..." />
                 <div class="header-actions">
