@@ -49,18 +49,6 @@ const toggleSidebar = () => {
             <!-- Sidebar -->
             <aside class="sidebar" :class="{ 'sidebar--collapsed': !sidebarOpen }">
                 <div class="sidebar-inner">
-                    <div class="sidebar-header">
-                        <Link :href="route('dashboard')" class="sidebar-brand" v-if="sidebarOpen">
-                            <img class="sidebar-logo" src="/logo.webp" alt="logo">
-                            <span class="sidebar-brand-text">Biblioteca</span>
-                        </Link>
-                        <button @click="toggleSidebar" class="sidebar-toggle" type="button">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="sidebar-toggle-icon">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                            </svg>
-                        </button>
-                    </div>
-
                     <!-- Navigation Links -->
                     <nav class="sidebar-nav">
                         <!-- INÍCIO -->
@@ -269,8 +257,25 @@ const toggleSidebar = () => {
             <div class="main-content" :class="{ 'main-content--expanded': !sidebarOpen }">
                 <!-- Page Header -->
                 <header v-if="$slots.header" class="content-header">
-                    <div class="content-header-inner">
-                        <slot name="header" />
+                    <div class="content-header-inner flex items-center w-full">
+                        <div class="flex items-center flex-1 w-full">
+                            <button @click="toggleSidebar" class="sidebar-toggle mr-4" type="button">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="sidebar-toggle-icon">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                                </svg>
+                            </button>
+                            
+                            <Link :href="route('dashboard')" class="sidebar-brand flex items-center gap-2">
+                                <img class="sidebar-logo w-8 h-8" src="/logo.webp" alt="logo">
+                                <span class="sidebar-brand-text">Biblioteca</span>
+                            </Link>
+
+                            <div class="h-6 w-px bg-gray-300 mx-4"></div>
+
+                            <div class="flex-1 min-w-0">
+                                <slot name="header" />
+                            </div>
+                        </div>
                     </div>
                 </header>
 
@@ -589,7 +594,9 @@ const toggleSidebar = () => {
     position: sticky;
     top: 16px;
     z-index: 30;
-    margin: 16px 24px 0;
+    margin: 16px auto 0;
+    max-width: 1400px;
+    width: 90%;
     background: rgba(255, 255, 255, 0.80);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);

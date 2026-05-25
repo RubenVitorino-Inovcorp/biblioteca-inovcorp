@@ -23,7 +23,7 @@ const authorSortOptions = [
         <template #header>
             <div class="flex justify-between space-x-2 items-center">
                 <h2 class="page-title flex items-center gap-2">
-                    <UserPen :size="20"/> Autores
+                    <UserPen :size="20"/> Catálogo de Autores
                 </h2>
                 <InputSearch :filters="filters" route="catalog.autores.index" placeholder="Pesquisar autores..." />
                 <div class="header-actions">
@@ -86,8 +86,8 @@ const authorSortOptions = [
 <style scoped>
 .page-title {
     font-family: 'Manrope', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
+    font-size: 17px;
+    font-weight: 600;
     color: #191c1e;
     line-height: 1.4;
 }

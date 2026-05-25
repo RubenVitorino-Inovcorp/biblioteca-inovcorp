@@ -27,7 +27,7 @@
         <template #header>
             <div class="flex justify-between space-x-2 items-center">
                 <h2 class="page-title flex items-center gap-2">
-                 <Building :size="20"/> Catálogo de Editoras
+                 <Building :size="20"/> Editoras
                 </h2>
                 <InputSearch :filters="filters" route="editoras.index" placeholder="Pesquisar editora..." />
                 <div class="header-actions">
@@ -133,8 +133,8 @@
 <style scoped>
 .page-title {
     font-family: 'Manrope', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
+        font-size: 17px;
+        font-weight: 600;
     color: #191c1e;
     line-height: 1.4;
 }

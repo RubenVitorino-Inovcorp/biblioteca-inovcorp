@@ -53,9 +53,10 @@ watch(search, (newValue) => {
     display: flex;
     align-items: center;
     gap: 8px;
-    flex: 1;
+    flex: 1 1 auto;
     width: 100%;
-    max-width: 800px;
+    max-width: 550px;
+    margin: 0 clamp(16px, 3vw, 48px);
     padding: 0 14px;
     background: #F1F5F9;
     border: 1px solid #E2E8F0;

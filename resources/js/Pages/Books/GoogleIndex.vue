@@ -2,7 +2,8 @@
 import { Head, Link, router } from '@inertiajs/vue3'
 import AppLayout from "@/Layouts/AppLayout.vue";
 import InputSearch from "@/Components/InputSearch.vue";
-import { Book, Plus } from "@lucide/vue";
+import ExportButton from "@/Components/ExportButton.vue";
+import { Book, Plus, DownloadIcon } from "@lucide/vue";
 import { toast } from 'vue-sonner'
 
 const props = defineProps({
@@ -29,32 +30,39 @@ const quickAdd = (book) => {
 </script>
 
 <template>
-    <AppLayout title="Catálogo de Livros (Google API)">
+    <AppLayout title="Livros Google API">
         <template #header>
             <div class="flex justify-between space-x-2 items-center">
                 <h2 class="page-title flex items-center gap-2">
                     <svg role="img" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Google</title><path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg> 
-                    Catálogo de Livros (Google API)
+                    Livros Google API
                 </h2>
                 <InputSearch :filters="filters" route="livros.google-index" placeholder="Pesquisar livros..." />
+                <div class="header-actions">
+                    <ExportButton route-name="livros.google-export" :filters="filters">
+                        <DownloadIcon :size="16" /> Exportar Google
+                    </ExportButton>
+                </div>
             </div>
         </template>
 
         <div v-if="books.data.length > 0" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:mx-64 gap-x-6 gap-y-10 mt-6">
             <div v-for="book in books.data" :key="book.id" class="flex flex-col group p-4 rounded-xl">
                 
-                <div class="relative aspect-[4/5] overflow-hidden rounded-xl w-full block">
+                <Link :href="route('livros.google-show', book.google_id)" class="relative aspect-[4/5] overflow-hidden rounded-xl w-full block">
                     <img 
                         :src="book.image_path" 
                         :alt="book.title" 
                         class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" 
                     />
-                </div>
+                </Link>
             
                 <div class="mt-3 flex flex-col flex-grow">
-                    <h2 class="text-sm font-medium text-base-content line-clamp-2 min-h-[2.5rem]">
-                        {{ book.title }}
-                    </h2>
+                    <Link :href="route('livros.google-show', book.google_id)">
+                        <h2 class="text-sm font-medium text-base-content line-clamp-2 min-h-[2.5rem] hover:text-primary">
+                            {{ book.title }}
+                        </h2>
+                    </Link>
 
                     <p class="mt-1 text-xs text-gray-500 truncate">
                         de {{ book.autores }}
@@ -95,8 +103,8 @@ const quickAdd = (book) => {
 <style scoped>
     .page-title {
         font-family: 'Manrope', sans-serif;
-        font-size: 20px;
-        font-weight: 700;
+        font-size: 17px;
+        font-weight: 600;
         color: #191c1e;
         line-height: 1.4;
     }

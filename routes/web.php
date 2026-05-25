@@ -33,7 +33,9 @@ Route::middleware([
     // Role: Admin
     Route::middleware([IsAdmin::class])->group(function () {
         Route::get('admin/livros/exportar', [AdminBookController::class, 'export'])->name('livros.export');
-        Route::get('admin/livros/procurar-google', GoogleBookController::class)->name('livros.google-index');
+        Route::get('admin/livros/procurar-google', [GoogleBookController::class, 'index'])->name('livros.google-index');
+        Route::get('admin/livros/procurar-google/exportar', [GoogleBookController::class, 'export'])->name('livros.google-export');
+        Route::get('admin/livros/procurar-google/{id}', [GoogleBookController::class, 'show'])->name('livros.google-show');
         Route::get('admin/autores/exportar', [AdminAuthorController::class, 'export'])->name('autores.export');
         Route::get('admin/editoras/exportar', [AdminPublisherController::class, 'export'])->name('editoras.export');
 

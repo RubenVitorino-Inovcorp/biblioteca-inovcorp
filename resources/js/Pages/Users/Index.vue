@@ -130,8 +130,8 @@
 <style scoped>
     .page-title {
         font-family: 'Manrope', sans-serif;
-        font-size: 20px;
-        font-weight: 700;
+        font-size: 17px;
+        font-weight: 600;
         color: #191c1e;
         line-height: 1.4;
     }
