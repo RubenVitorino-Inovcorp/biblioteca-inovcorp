@@ -12,14 +12,14 @@ const props = defineProps({
 
 const quickAdd = (book) => {
     router.post(route('livros.store'), {
-        title: book.titulo,
+        title: book.title,
         isbn: book.isbn,
         bibliography: book.description,
         price: 0,            
         total_stock: 1,      
         publisher_id: book.publisher_name || 'Desconhecida', 
-        author_ids: [book.autores],                          
-        image_path: book.capa
+        author_ids: Array.isArray(book.autores) ? book.autores : (book.autores ? book.autores.split(',').map(a => a.trim()).filter(Boolean) : []),                          
+        image_path: book.image_path
     }, {
         onSuccess: () => toast.success('Livro importado e guardado localmente!'),
         onError: () => toast.error('Erro ao importar o livro.')

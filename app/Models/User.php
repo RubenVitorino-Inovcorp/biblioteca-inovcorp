@@ -78,7 +78,7 @@ class User extends Authenticatable
                     return $attributes['profile_photo_path'];
                 }
 
-                // Já tem o prefixo /media/
+                // Já tem o prefixo /storage/
                 if (str_starts_with($attributes['profile_photo_path'], '/storage/')) {
                     return $attributes['profile_photo_path'];
                 }

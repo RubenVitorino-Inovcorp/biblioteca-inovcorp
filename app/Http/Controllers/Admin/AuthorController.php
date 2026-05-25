@@ -142,11 +142,6 @@ class AuthorController extends Controller
      */
     public function destroy(Author $author)
     {
-        if ($author->photo_path && str_starts_with($author->photo_path, '/storage/')) {
-            $path = str_replace('/storage/', '', $author->photo_path);
-            Storage::disk('public')->delete($path);
-        }
-
         $author->delete();
         return redirect()->route('autores.index')->with('success', 'Autor removido com sucesso!');
     }

@@ -65,12 +65,17 @@ const submit = () => {
 
 watch(() => props.selectedBook, (newBook) => {
     if (newBook) {
-        form.title = newBook.titulo || '';
+        form.title = newBook.title || newBook.titulo || '';
         form.isbn = newBook.isbn || '';
-        form.bibliography = newBook.sinopse || newBook.description || '';
-        form.image_path = newBook.capa || null;
-        if(newBook.capa) {
-             imagePreview.value = newBook.capa;
+        form.bibliography = newBook.description || newBook.sinopse || '';
+        
+        if (!(form.image_path instanceof File)) {
+            form.image_path = newBook.image_path || newBook.capa || null;
+            if (form.image_path) {
+                imagePreview.value = form.image_path;
+            } else {
+                imagePreview.value = null;
+            }
         }
 
         if (newBook.publisher_id) {
@@ -82,15 +87,11 @@ watch(() => props.selectedBook, (newBook) => {
              form.publisher = null;
         }
 
-        if (newBook.autores) {
-             form.authors = newBook.autores.split(', ').map(authorName => {
-                 authorName = authorName.trim();
-                 const existing = props.authors.find(a => a.name.toLowerCase() === authorName.toLowerCase());
-                 return existing ? existing : { id: authorName, name: authorName };
-             });
-        } else {
-             form.authors = [];
-        }
+        let authorsArr = Array.isArray(newBook.autores) ? newBook.autores : (newBook.autores ? newBook.autores.split(',').map(a => a.trim()).filter(Boolean) : []);
+        form.authors = authorsArr.map(authorName => {
+             const existing = props.authors.find(a => a.name.toLowerCase() === authorName.toLowerCase());
+             return existing ? existing : { id: authorName, name: authorName };
+        });
 
         toast.success(`Dados de "${newBook.titulo}" carregados no formulário.`);
     }

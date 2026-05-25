@@ -40,8 +40,6 @@ class GoogleBookController extends Controller
 
             $googleTotal = $data['totalItems'] ?? 0;
             $totalItems = min($googleTotal, $perPage * $maxPages);
-            $googlePublisher = null;
-            $localPublisherId = null;
 
             $externalBooks = collect($data['items'] ?? [])->map(function ($item) {
 
@@ -53,17 +51,14 @@ class GoogleBookController extends Controller
 
                 return [
                     'google_id' => $item['id'] ?? null,
-                    'titulo' => $item['volumeInfo']['title'] ?? 'Sem título',
                     'title' => $item['volumeInfo']['title'] ?? 'Sem título',
                     'autores' => implode(', ', $item['volumeInfo']['authors'] ?? ['Autor Desconhecido']),
                     'publisher_id' => $localPublisherId,
                     'publisher_name' => $googlePublisher,
-                    'capa' => $item['volumeInfo']['imageLinks']['thumbnail'] ?? null,
                     'image_path' => $item['volumeInfo']['imageLinks']['thumbnail'] ?? null,
                     'isbn' => collect($item['volumeInfo']['industryIdentifiers'] ?? [])
-                        ->firstWhere('type', 'ISBN_13')['identifier'] ?? null,
+                        ->firstWhere('type', 'ISBN_13')?->{'identifier'} ?? null,
                     'description' => $item['volumeInfo']['description'] ?? '',
-                    'price' => 0,
                 ];
             })->all();
 

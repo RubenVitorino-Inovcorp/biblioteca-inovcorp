@@ -10,7 +10,9 @@ use App\Models\Publisher;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
@@ -105,8 +107,6 @@ class BookController extends Controller
 
                 $googleTotal = $data['totalItems'] ?? 0;
                 $totalItems = min($googleTotal, $perPage * $maxPages);
-                $googlePublisher = null;
-                $localPublisherId = null;
 
                 $externalBooks = collect($data['items'] ?? [])->map(function ($item) {
 
@@ -124,7 +124,7 @@ class BookController extends Controller
                         'publisher_name' => $googlePublisher,
                         'capa' => $item['volumeInfo']['imageLinks']['thumbnail'] ?? null,
                         'isbn' => collect($item['volumeInfo']['industryIdentifiers'] ?? [])
-                            ->firstWhere('type', 'ISBN_13')['identifier'] ?? null,
+                            ->firstWhere('type', 'ISBN_13')?->{'identifier'} ?? null,
                         'description' => $item['volumeInfo']['description'] ?? '',
                     ];
                 })->all();
@@ -172,7 +172,11 @@ class BookController extends Controller
             $rules['image_path'] = 'nullable|string';
         }
 
-        $validated = $request->validate($rules);
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            Log::error('Validation failed: '.json_encode($validator->errors()->all()));
+        }
+        $validated = $validator->validate();
 
         $path = null;
         if ($request->hasFile('image_path')) {
@@ -182,17 +186,19 @@ class BookController extends Controller
         }
 
         $publisherId = $validated['publisher_id'];
-        if (!is_numeric($publisherId) || !\App\Models\Publisher::find($publisherId)) {
-            $publisher = \App\Models\Publisher::firstOrCreate(['name' => $publisherId]);
+        if (! is_numeric($publisherId) || ! Publisher::find($publisherId)) {
+            $publisher = Publisher::firstOrCreate(
+                ['name' => trim($publisherId)]
+            );
             $publisherId = $publisher->id;
         }
 
         $authorIds = [];
         foreach ($validated['author_ids'] as $authorInput) {
-            if (is_numeric($authorInput) && \App\Models\Author::find($authorInput)) {
+            if (is_numeric($authorInput) && Author::find($authorInput)) {
                 $authorIds[] = $authorInput;
             } else {
-                $author = \App\Models\Author::firstOrCreate(['name' => $authorInput]);
+                $author = Author::firstOrCreate(['name' => $authorInput]);
                 $authorIds[] = $author->id;
             }
         }
@@ -280,17 +286,17 @@ class BookController extends Controller
         }
 
         $publisherId = $validated['publisher_id'];
-        if (!is_numeric($publisherId) || !\App\Models\Publisher::find($publisherId)) {
-            $publisher = \App\Models\Publisher::firstOrCreate(['name' => $publisherId]);
+        if (! is_numeric($publisherId) || ! Publisher::find($publisherId)) {
+            $publisher = Publisher::firstOrCreate(['name' => $publisherId]);
             $publisherId = $publisher->id;
         }
 
         $authorIds = [];
         foreach ($validated['author_ids'] as $authorInput) {
-            if (is_numeric($authorInput) && \App\Models\Author::find($authorInput)) {
+            if (is_numeric($authorInput) && Author::find($authorInput)) {
                 $authorIds[] = $authorInput;
             } else {
-                $author = \App\Models\Author::firstOrCreate(['name' => $authorInput]);
+                $author = Author::firstOrCreate(['name' => $authorInput]);
                 $authorIds[] = $author->id;
             }
         }
@@ -333,9 +339,8 @@ class BookController extends Controller
     {
         try {
             return Excel::download(new BooksExport($request), 'livros.xlsx');
-        } catch (Exception|\PhpOffice\PhpSpreadsheet\Exception $e) {
+        } catch (Exception $e) {
             return response()->json(['error' => 'Ocorreu um erro ao exportar os livros.'], 500);
         }
     }
 }
-

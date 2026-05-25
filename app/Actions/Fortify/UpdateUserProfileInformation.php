@@ -25,8 +25,8 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
 
         if (isset($input['photo'])) {
             // Delete old photo if it exists
-            if ($user->profile_photo_path) {
-                $oldPath = str_replace('/storage/', '', $user->profile_photo_path);
+            if ($user->profile_photo_path && str_starts_with($user->profile_photo_path, '/storage/')) {
+                $oldPath = substr($user->profile_photo_path, 9);
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
             }
             

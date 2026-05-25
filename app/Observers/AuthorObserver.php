@@ -14,8 +14,8 @@ class AuthorObserver
      */
     public function deleting(Author $author): void
     {
-        if ($author->photo_path && !str_starts_with($author->photo_path, 'http')) {
-            $path = str_replace('/storage/', '', $author->photo_path);
+        if ($author->photo_path && !str_starts_with($author->photo_path, 'http') && str_starts_with($author->photo_path, '/storage/')) {
+            $path = substr($author->photo_path, 9);
             Storage::disk('public')->delete($path);
         }
     }
