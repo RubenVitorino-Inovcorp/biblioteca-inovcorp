@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -13,6 +15,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class User extends Authenticatable
 {
@@ -61,29 +64,29 @@ class User extends Authenticatable
     /**
      * Get the URL to the user's profile photo.
      * Handles three storage formats:
-     *
-     * @return \Illuminate\Database\Eloquent\Casts\Attribute
      */
-    protected function profilePhotoUrl(): \Illuminate\Database\Eloquent\Casts\Attribute
+    protected function profilePhotoUrl(): Attribute
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::get(function (): ?string {
-            if (!$this->profile_photo_path) {
-                return null;
-            }
+        return Attribute::make(
+            get: function (mixed $value, array $attributes): ?string {
+                if (empty($attributes['profile_photo_path'])) {
+                    return asset('/storage/fotos-perfil/default.webp');
+                }
 
-            // URLs externas (dicebear, gravatar, etc.)
-            if (str_starts_with($this->profile_photo_path, 'http')) {
-                return $this->profile_photo_path;
-            }
+                // URLs externas (dicebear, gravatar, etc.)
+                if (str_starts_with($attributes['profile_photo_path'], 'http')) {
+                    return $attributes['profile_photo_path'];
+                }
 
-            // Já tem o prefixo /media/
-            if (str_starts_with($this->profile_photo_path, '/media/')) {
-                return $this->profile_photo_path;
-            }
+                // Já tem o prefixo /media/
+                if (str_starts_with($attributes['profile_photo_path'], '/storage/')) {
+                    return $attributes['profile_photo_path'];
+                }
 
-            // Caminho antigo do Jetstream sem prefixo (ex: profile-photos/xxx.png)
-            return '/media/' . $this->profile_photo_path;
-        });
+                // Caminho antigo do Jetstream sem prefixo (ex: profile-photos/xxx.png)
+                return '/storage/' . $attributes['profile_photo_path'];
+            }
+        );
     }
 
     /**
@@ -100,11 +103,14 @@ class User extends Authenticatable
         ];
     }
 
-    public function loans(): HasMany {
+    public function loans(): HasMany
+    {
         return $this->hasMany(Loan::class);
     }
 
-    public function canMakeLoans(): bool {
+    public function canMakeLoans(): bool
+    {
         return $this->loans()->whereIn('status', [LoanStatus::ACTIVE, LoanStatus::OVERDUE, LoanStatus::PENDING, LoanStatus::RETURN_PENDING])->count() < 3;
     }
 }
+

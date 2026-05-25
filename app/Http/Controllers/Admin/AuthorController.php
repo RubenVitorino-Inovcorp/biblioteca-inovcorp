@@ -80,7 +80,7 @@ class AuthorController extends Controller
 
         Author::create([
             'name' => $validated['name'],
-            'photo_path' => $path ? '/media/' . $path : null,
+            'photo_path' => $path ? '/storage/' . $path : null,
         ]);
 
         return redirect()->route('autores.index')->with('success', 'Autor adicionado com sucesso!');
@@ -121,12 +121,12 @@ class AuthorController extends Controller
 
         // 1. Apagar a imagem antiga e guardar a nova imagem
         if ($request->hasFile('photo_path')) {
-            if ($author->photo_path && str_starts_with($author->photo_path, '/media/')) {
-                Storage::disk('public')->delete(str_replace('/media/', '', $author->photo_path));
+            if ($author->photo_path && str_starts_with($author->photo_path, '/storage/')) {
+                Storage::disk('public')->delete(str_replace('/storage/', '', $author->photo_path));
             }
 
             $path = $request->file('photo_path')->store('autores', 'public');
-            $finalPath = '/media/' . $path;
+            $finalPath = '/storage/' . $path;
         }
 
         $author->update([
@@ -142,8 +142,8 @@ class AuthorController extends Controller
      */
     public function destroy(Author $author)
     {
-        if ($author->photo_path && str_starts_with($author->photo_path, '/media/')) {
-            $path = str_replace('/media/', '', $author->photo_path);
+        if ($author->photo_path && str_starts_with($author->photo_path, '/storage/')) {
+            $path = str_replace('/storage/', '', $author->photo_path);
             Storage::disk('public')->delete($path);
         }
 
@@ -159,3 +159,4 @@ class AuthorController extends Controller
         }
     }
 }
+

@@ -8,12 +8,13 @@ use App\Models\Author;
 use App\Models\Book;
 use App\Models\Publisher;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Redirect;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
+use Inertia\Response;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Writer\Exception;
 
@@ -32,7 +33,7 @@ class BookController extends Controller
         $books = Book::query()
             ->with(['publisher', 'authors'])
             ->when($request->search, function ($query, $search) {
-                $query->where(function($q) use ($search) {
+                $query->where(function ($q) use ($search) {
                     $q->where('title', 'like', "%{$search}%")
                         ->orWhere('isbn', 'like', "%{$search}%");
                 });
@@ -50,11 +51,11 @@ class BookController extends Controller
             // Ordenação
             ->when($request->sort, function ($query, $sort) {
                 match ($sort) {
-                    'preco_asc'  => $query->orderBy('price', 'asc'),
+                    'preco_asc' => $query->orderBy('price', 'asc'),
                     'preco_desc' => $query->orderBy('price', 'desc'),
-                    'titulo_az'  => $query->orderBy('title', 'asc'),
-                    'titulo_za'  => $query->orderBy('title', 'desc'),
-                    default      => $query->latest(),
+                    'titulo_az' => $query->orderBy('title', 'asc'),
+                    'titulo_za' => $query->orderBy('title', 'desc'),
+                    default => $query->latest(),
                 };
             }, function ($query) {
                 $query->latest();
@@ -64,7 +65,7 @@ class BookController extends Controller
 
         $filters = $request->only(['search', 'sort', 'publisher', 'author']);
 
-        if (!in_array($filters['sort'] ?? null, ['preco_asc', 'preco_desc', 'titulo_az', 'titulo_za'], true)) {
+        if (! in_array($filters['sort'] ?? null, ['preco_asc', 'preco_desc', 'titulo_az', 'titulo_za'], true)) {
             $filters['sort'] = '';
         }
 
@@ -79,11 +80,73 @@ class BookController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request): Response
     {
+        $search = $request->query('search', '');
+        $paginatedExternalBooks = null;
+
+        if (trim($search) !== '') {
+
+            $perPage = 3;
+            $maxPages = 10;
+            $page = (int) $request->query('page', 1);
+
+            $startIndex = ($page - 1) * $perPage;
+
+            $response = Http::get('https://www.googleapis.com/books/v1/volumes', [
+                'q' => $search,
+                'maxResults' => $perPage,
+                'startIndex' => $startIndex,
+                'key' => config('services.google.books_key'),
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+
+                $googleTotal = $data['totalItems'] ?? 0;
+                $totalItems = min($googleTotal, $perPage * $maxPages);
+                $googlePublisher = null;
+                $localPublisherId = null;
+
+                $externalBooks = collect($data['items'] ?? [])->map(function ($item) {
+
+                    $googlePublisher = $item['volumeInfo']['publisher'] ?? null;
+
+                    $localPublisherId = $googlePublisher
+                        ? Publisher::where('name', 'like', trim($googlePublisher))->first()?->id
+                        : null;
+
+                    return [
+                        'google_id' => $item['id'] ?? null,
+                        'titulo' => $item['volumeInfo']['title'] ?? 'Sem título',
+                        'autores' => implode(', ', $item['volumeInfo']['authors'] ?? ['Autor Desconhecido']),
+                        'publisher_id' => $localPublisherId,
+                        'publisher_name' => $googlePublisher,
+                        'capa' => $item['volumeInfo']['imageLinks']['thumbnail'] ?? null,
+                        'isbn' => collect($item['volumeInfo']['industryIdentifiers'] ?? [])
+                            ->firstWhere('type', 'ISBN_13')['identifier'] ?? null,
+                        'description' => $item['volumeInfo']['description'] ?? '',
+                    ];
+                })->all();
+
+                $paginatedExternalBooks = new LengthAwarePaginator(
+                    $externalBooks,
+                    $totalItems,
+                    $perPage,
+                    $page,
+                    [
+                        'path' => $request->url(),
+                        'query' => $request->query(),
+                    ]
+                );
+            }
+        }
+
         return Inertia::render('Books/Create', [
-            'publishers' => Publisher::query()->orderBy('name')->get(),
-            'authors' => Author::query()->orderBy('name')->get(),
+            'publishers' => Publisher::select(['id', 'name'])->get(),
+            'authors' => Author::select(['id', 'name'])->get(),
+            'externalBooks' => $paginatedExternalBooks,
+            'filters' => ['search' => $search],
         ]);
     }
 
@@ -92,21 +155,46 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $rules = [
             'title' => 'required|string|max:255',
             'bibliography' => 'nullable|string',
             'isbn' => 'nullable|string|unique:books,isbn',
             'price' => 'required|numeric|min:0',
             'total_stock' => 'required|integer|min:0',
-            'publisher_id' => 'required|exists:publishers,id',
+            'publisher_id' => 'required',
             'author_ids' => 'required|array',
-            'author_ids.*' => 'exists:authors,id',
-            'image_path' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:2048',
-        ]);
+            'author_ids.*' => 'required',
+        ];
+
+        if ($request->hasFile('image_path')) {
+            $rules['image_path'] = 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:2048';
+        } else {
+            $rules['image_path'] = 'nullable|string';
+        }
+
+        $validated = $request->validate($rules);
 
         $path = null;
         if ($request->hasFile('image_path')) {
-            $path = $request->file('image_path')->store('imagens', 'public');
+            $path = '/storage/'.$request->file('image_path')->store('imagens', 'public');
+        } elseif (is_string($request->image_path) && str_starts_with($request->image_path, 'http')) {
+            $path = $request->image_path;
+        }
+
+        $publisherId = $validated['publisher_id'];
+        if (!is_numeric($publisherId) || !\App\Models\Publisher::find($publisherId)) {
+            $publisher = \App\Models\Publisher::firstOrCreate(['name' => $publisherId]);
+            $publisherId = $publisher->id;
+        }
+
+        $authorIds = [];
+        foreach ($validated['author_ids'] as $authorInput) {
+            if (is_numeric($authorInput) && \App\Models\Author::find($authorInput)) {
+                $authorIds[] = $authorInput;
+            } else {
+                $author = \App\Models\Author::firstOrCreate(['name' => $authorInput]);
+                $authorIds[] = $author->id;
+            }
         }
 
         $book = Book::create([
@@ -116,11 +204,11 @@ class BookController extends Controller
             'price' => $validated['price'],
             'total_stock' => $validated['total_stock'],
             'available_stock' => $validated['total_stock'],
-            'publisher_id' => $validated['publisher_id'],
-            'image_path' => $path ? '/media/' . $path : null,
+            'publisher_id' => $publisherId,
+            'image_path' => $path,
         ]);
 
-        $book->authors()->sync($validated['author_ids']);
+        $book->authors()->sync($authorIds);
 
         return redirect()->route('livros.index')->with('success', 'Livro adicionado com sucesso!');
     }
@@ -164,9 +252,9 @@ class BookController extends Controller
             ],
             'price' => 'required|numeric|min:0',
             'total_stock' => 'required|integer|min:0',
-            'publisher_id' => 'required|exists:publishers,id',
+            'publisher_id' => 'required',
             'author_ids' => 'required|array',
-            'author_ids.*' => 'exists:authors,id',
+            'author_ids.*' => 'required',
             'image_path' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:2048',
         ]);
 
@@ -174,12 +262,12 @@ class BookController extends Controller
 
         // Apagar a imagem antiga e guardar a nova imagem
         if ($request->hasFile('image_path')) {
-            if ($book->image_path && !str_contains($book->image_path, 'http')) {
-                Storage::disk('public')->delete(str_replace('/media/', '', $book->image_path));
+            if ($book->image_path && ! str_contains($book->image_path, 'http')) {
+                Storage::disk('public')->delete(str_replace('/storage/', '', $book->image_path));
             }
 
             $path = $request->file('image_path')->store('imagens', 'public');
-            $finalPath = '/media/' . $path;
+            $finalPath = '/storage/'.$path;
         }
 
         $diff = $request->total_stock - $book->total_stock;
@@ -187,22 +275,38 @@ class BookController extends Controller
 
         if ($newAvailableStock < 0) {
             throw ValidationException::withMessages([
-                'total_stock' => 'Não pode reduzir o stock total abaixo do número de livros atualmente requisitados.'
+                'total_stock' => 'Não pode reduzir o stock total abaixo do número de livros atualmente requisitados.',
             ]);
         }
 
+        $publisherId = $validated['publisher_id'];
+        if (!is_numeric($publisherId) || !\App\Models\Publisher::find($publisherId)) {
+            $publisher = \App\Models\Publisher::firstOrCreate(['name' => $publisherId]);
+            $publisherId = $publisher->id;
+        }
+
+        $authorIds = [];
+        foreach ($validated['author_ids'] as $authorInput) {
+            if (is_numeric($authorInput) && \App\Models\Author::find($authorInput)) {
+                $authorIds[] = $authorInput;
+            } else {
+                $author = \App\Models\Author::firstOrCreate(['name' => $authorInput]);
+                $authorIds[] = $author->id;
+            }
+        }
+
         $book->update([
-            'title'        => $validated['title'],
+            'title' => $validated['title'],
             'bibliography' => $validated['bibliography'],
-            'isbn'         => $validated['isbn'],
-            'price'        => $validated['price'],
-            'total_stock'  => $validated['total_stock'],
+            'isbn' => $validated['isbn'],
+            'price' => $validated['price'],
+            'total_stock' => $validated['total_stock'],
             'available_stock' => $newAvailableStock,
-            'publisher_id' => $validated['publisher_id'],
-            'image_path'   => $finalPath,
+            'publisher_id' => $publisherId,
+            'image_path' => $finalPath,
         ]);
 
-        $book->authors()->sync($validated['author_ids']);
+        $book->authors()->sync($authorIds);
 
         return redirect()->route('livros.show', $book->id)->with('success', 'Livro atualizado com sucesso!');
     }
@@ -212,20 +316,21 @@ class BookController extends Controller
      */
     public function destroy(Book $book)
     {
-        if ($book->image_path && !str_contains($book->image_path, 'http')) {
-            $path = str_replace('/media/', '', $book->image_path);
+        if ($book->image_path && ! str_contains($book->image_path, 'http')) {
+            $path = str_replace('/storage/', '', $book->image_path);
             Storage::disk('public')->delete($path);
         }
 
         $book->delete();
+
         return redirect()->route('livros.index')->with('success', 'Livro removido com sucesso!');
     }
 
     /**
      *  Export the books displayed by the user
      */
-
-    public function export(Request $request){
+    public function export(Request $request)
+    {
         try {
             return Excel::download(new BooksExport($request), 'livros.xlsx');
         } catch (Exception|\PhpOffice\PhpSpreadsheet\Exception $e) {
@@ -233,3 +338,4 @@ class BookController extends Controller
         }
     }
 }
+

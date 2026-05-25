@@ -54,12 +54,19 @@ watch(search, (newValue) => {
     align-items: center;
     gap: 8px;
     flex: 1;
-    max-width: 400px;
+    width: 100%;
+    max-width: 800px;
     padding: 0 14px;
     background: #F1F5F9;
     border: 1px solid #E2E8F0;
     border-radius: 8px;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+@media (max-width: 768px) {
+    .search-wrapper {
+        max-width: 100%;
+    }
 }
 
 .search-wrapper:focus-within {

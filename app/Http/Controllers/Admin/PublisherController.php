@@ -79,7 +79,7 @@ class PublisherController extends Controller
 
         Publisher::create([
             'name' => $validated['name'],
-            'logo_path' => $path ? '/media/' . $path : null,
+            'logo_path' => $path ? '/storage/' . $path : null,
         ]);
 
         return redirect()->route('editoras.index')->with('success', 'Editora adicionada com sucesso!');
@@ -121,11 +121,11 @@ class PublisherController extends Controller
         // 1. Apagar a imagem antiga e guardar a nova imagem
         if ($request->hasFile('logo_path')) {
             if ($publisher->logo_path && !str_starts_with($publisher->logo_path, 'http')) {
-                Storage::disk('public')->delete(str_replace('/media/', '', $publisher->logo_path));
+                Storage::disk('public')->delete(str_replace('/storage/', '', $publisher->logo_path));
             }
 
             $path = $request->file('logo_path')->store('editoras', 'public');
-            $finalPath = '/media/' . $path;
+            $finalPath = '/storage/' . $path;
         }
 
         $publisher->update([
@@ -142,7 +142,7 @@ class PublisherController extends Controller
     public function destroy(Publisher $publisher)
     {
         if ($publisher->logo_path && !str_starts_with($publisher->logo_path, 'http')) {
-            $path = str_replace('/media/', '', $publisher->logo_path);
+            $path = str_replace('/storage/', '', $publisher->logo_path);
             Storage::disk('public')->delete($path);
         }
 
@@ -158,3 +158,4 @@ class PublisherController extends Controller
         }
     }
 }
+

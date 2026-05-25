@@ -26,13 +26,13 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
         if (isset($input['photo'])) {
             // Delete old photo if it exists
             if ($user->profile_photo_path) {
-                $oldPath = str_replace('/media/', '', $user->profile_photo_path);
+                $oldPath = str_replace('/storage/', '', $user->profile_photo_path);
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
             }
             
             $path = $input['photo']->store('fotos-perfil', 'public');
             $user->forceFill([
-                'profile_photo_path' => '/media/' . $path,
+                'profile_photo_path' => '/storage/' . $path,
             ])->save();
         }
 
@@ -63,3 +63,4 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
         $user->sendEmailVerificationNotification();
     }
 }
+

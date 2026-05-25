@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Enums\LoanStatus;
@@ -7,6 +9,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 class Loan extends Model
 {
@@ -28,15 +31,18 @@ class Loan extends Model
         'elapsed_days'
     ];
 
-    public function user(): BelongsTo {
+    public function user(): BelongsTo
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function book(): BelongsTo {
+    public function book(): BelongsTo
+    {
         return $this->belongsTo(Book::class);
     }
 
-    protected function casts(): array {
+    protected function casts(): array
+    {
         return [
             'start_date' => 'date:d/m/Y H:i',
             'estimated_return_date' => 'date:d/m/Y',
@@ -44,46 +50,53 @@ class Loan extends Model
             'status' => LoanStatus::class,
         ];
     }
-    protected function statusLabel(): Attribute {
+
+    protected function statusLabel(): Attribute
+    {
         return Attribute::make(
-            get: fn () => $this->status?->label(),
+            get: fn (mixed $value, array $attributes) => $this->status?->label(),
         );
     }
 
-    protected function statusColor(): Attribute {
+    protected function statusColor(): Attribute
+    {
         return Attribute::make(
-            get: fn () => $this->status?->color(),
+            get: fn (mixed $value, array $attributes) => $this->status?->color(),
         );
     }
 
-    protected function elapsedDays(): Attribute {
+    protected function elapsedDays(): Attribute
+    {
         return Attribute::make(
-            get: function(): int {
-                if(!$this->start_date) {
+            get: function (mixed $value, array $attributes): int {
+                if (empty($attributes['start_date'])) {
                     return 0;
                 }
 
-                $endDate = $this->end_date ?? now();
-                return (int) $this->start_date->diffInDays($endDate);
+                $startDate = Carbon::parse($attributes['start_date']);
+                $endDate = !empty($attributes['end_date']) ? Carbon::parse($attributes['end_date']) : now();
+
+                return (int) $startDate->diffInDays($endDate);
             },
         );
     }
 
-
-    protected static function boot(): void {
+    protected static function boot(): void
+    {
         parent::boot();
-        static::creating(function ($loan) {
+
+        static::creating(function (Loan $loan): void {
             $maxAttempts = 5;
             for ($i = 0; $i < $maxAttempts; $i++) {
+                /** @var Loan|null $lastloan */
                 $lastloan = self::lockForUpdate()->latest('id')->first();
-                $number = $lastloan ? (int) str_replace('REQ-', '', $lastloan->loan_number) + 1 : 1;
-                $loan->loan_number = 'REQ-' . str_pad($number, 6, '0', STR_PAD_LEFT);
-            
+                $number = $lastloan ? (int) str_replace('REQ-', '', (string) $lastloan->loan_number) + 1 : 1;
+                $loan->loan_number = 'REQ-' . str_pad((string) $number, 6, '0', STR_PAD_LEFT);
+
                 if (!self::where('loan_number', $loan->loan_number)->exists()) {
                     break;
                 }
             }
         });
-
     }
 }

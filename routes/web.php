@@ -9,6 +9,7 @@ use App\Http\Controllers\User\AuthorController as UserAuthorController;
 use App\Http\Controllers\User\BookController as UserBookController;
 use App\Http\Controllers\User\PublisherController as UserPublisherController;
 use App\Http\Controllers\User\LoanController as UserLoanController;
+use App\Http\Controllers\Admin\GoogleBookController;
 use App\Http\Middleware\IsAdmin;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +33,7 @@ Route::middleware([
     // Role: Admin
     Route::middleware([IsAdmin::class])->group(function () {
         Route::get('admin/livros/exportar', [AdminBookController::class, 'export'])->name('livros.export');
+        Route::get('admin/livros/procurar-google', GoogleBookController::class)->name('livros.google-index');
         Route::get('admin/autores/exportar', [AdminAuthorController::class, 'export'])->name('autores.export');
         Route::get('admin/editoras/exportar', [AdminPublisherController::class, 'export'])->name('editoras.export');
 

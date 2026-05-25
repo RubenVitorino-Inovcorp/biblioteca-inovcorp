@@ -1,2 +1,6 @@
 *
 !.gitignore
+!imagens/default.webp
+!autores/default.webp
+!editoras/default.webp
+!fotos-perfil/default.webp
