@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import Banner from '@/Components/Banner.vue';
+import AppFooter from '@/Components/AppFooter.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
@@ -9,8 +10,16 @@ import { Toaster, toast } from 'vue-sonner'
 import 'vue-sonner/style.css'
 import { Book, Building, LibraryBig, LayoutDashboard, User2Icon, UserPen } from "@lucide/vue";
 
-defineProps({
+const props = defineProps({
     title: String,
+    hideSidebar: {
+        type: Boolean,
+        default: false,
+    },
+    noPadding: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const showingNavigationDropdown = ref(false);
@@ -46,8 +55,8 @@ const toggleSidebar = () => {
         <Toaster richColors position="bottom-right" theme="light" :closeButton="true" closeButtonPosition="top-right" />
 
         <div class="app-shell">
-            <!-- Sidebar -->
-            <aside class="sidebar" :class="{ 'sidebar--collapsed': !sidebarOpen }">
+            <!-- Sidebar (hidden on pages with hideSidebar) -->
+            <aside v-if="!hideSidebar" class="sidebar" :class="{ 'sidebar--collapsed': !sidebarOpen }">
                 <div class="sidebar-inner">
                     <!-- Navigation Links -->
                     <nav class="sidebar-nav">
@@ -56,9 +65,9 @@ const toggleSidebar = () => {
                             <span class="sidebar-nav-label" v-if="sidebarOpen">GERAL</span>
                             <ul class="sidebar-nav-list">
                                 <li>
-                                    <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                    <NavLink :href="route('home')" :active="route().current('home')">
                                         <LayoutDashboard :size="20"/>
-                                        <span v-if="sidebarOpen">Dashboard</span>
+                                        <span v-if="sidebarOpen">Início</span>
                                     </NavLink>
                                 </li>
                             </ul>
@@ -251,21 +260,32 @@ const toggleSidebar = () => {
             </aside>
 
             <!-- Mobile sidebar overlay -->
-            <div class="sidebar-overlay" :class="{ 'sidebar-overlay--visible': showingNavigationDropdown }" @click="showingNavigationDropdown = false" />
+            <div
+                v-if="!hideSidebar"
+                class="sidebar-overlay"
+                :class="{ 'sidebar-overlay--visible': showingNavigationDropdown }"
+                @click="showingNavigationDropdown = false"
+            />
 
             <!-- Main Content -->
-            <div class="main-content" :class="{ 'main-content--expanded': !sidebarOpen }">
+            <div
+                class="main-content"
+                :class="{
+                    'main-content--expanded': !sidebarOpen && !hideSidebar,
+                    'main-content--full': hideSidebar,
+                }"
+            >
                 <!-- Page Header -->
                 <header v-if="$slots.header" class="content-header">
                     <div class="content-header-inner flex items-center w-full">
                         <div class="flex items-center flex-1 w-full">
-                            <button @click="toggleSidebar" class="sidebar-toggle mr-4" type="button">
+                            <button v-if="!hideSidebar" @click="toggleSidebar" class="sidebar-toggle mr-4" type="button">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="sidebar-toggle-icon">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                                 </svg>
                             </button>
                             
-                            <Link :href="route('dashboard')" class="sidebar-brand flex items-center gap-2">
+                            <Link :href="route('home')" class="sidebar-brand flex items-center gap-2">
                                 <img class="sidebar-logo w-8 h-8" src="/logo.webp" alt="logo">
                                 <span class="sidebar-brand-text">Biblioteca</span>
                             </Link>
@@ -275,14 +295,70 @@ const toggleSidebar = () => {
                             <div class="flex-1 min-w-0">
                                 <slot name="header" />
                             </div>
+
+                            <!-- User Dropdown (shown in header when sidebar is hidden) -->
+                            <div v-if="hideSidebar && $page.props.auth?.user" class="header-user-area">
+                                <Dropdown align="right" width="48">
+                                    <template #trigger>
+                                        <button class="header-user-btn" type="button" :aria-label="`Conta de ${$page.props.auth.user.name}`">
+                                            <div class="header-user-avatar" :class="{ 'indicator': $page.props.auth.user.role?.id === $page.props.roles?.ADMIN }">
+                                                <span
+                                                    v-if="$page.props.auth.user.role?.id === $page.props.roles?.ADMIN"
+                                                    class="indicator-item indicator-start badge badge-xs badge-primary py-2 px-1 text-[9px]"
+                                                >
+                                                    Admin.
+                                                </span>
+                                                <div class="avatar-circle">
+                                                    <img
+                                                        v-if="$page.props.jetstream?.managesProfilePhotos && $page.props.auth.user.profile_photo_url"
+                                                        class="avatar-photo"
+                                                        :src="$page.props.auth.user.profile_photo_url"
+                                                        :alt="$page.props.auth.user.name"
+                                                    >
+                                                    <span v-else class="avatar-initials">
+                                                        {{ $page.props.auth.user.name?.charAt(0)?.toUpperCase() }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </button>
+                                    </template>
+
+                                    <template #content>
+                                        <div class="sidebar-dropdown-header">
+                                            Gerir Conta
+                                        </div>
+                                        <DropdownLink :href="route('profile.show')">
+                                            Perfil
+                                        </DropdownLink>
+                                        <DropdownLink v-if="$page.props.jetstream?.hasApiFeatures" :href="route('api-tokens.index')">
+                                            API Tokens
+                                        </DropdownLink>
+                                        <div class="sidebar-dropdown-divider" />
+                                        <form @submit.prevent="logout">
+                                            <DropdownLink as="button">
+                                                Terminar Sessão
+                                            </DropdownLink>
+                                        </form>
+                                    </template>
+                                </Dropdown>
+                            </div>
+
+                            <!-- Guest Auth Buttons (shown in header when sidebar is hidden and no user) -->
+                            <div v-else-if="hideSidebar && !$page.props.auth?.user" class="header-auth-area">
+                                <Link :href="route('login')" class="header-auth-link">Iniciar Sessão</Link>
+                                <Link :href="route('register')" class="header-auth-btn">Registar</Link>
+                            </div>
                         </div>
                     </div>
                 </header>
 
                 <!-- Page Content -->
-                <main class="content-body">
+                <main class="content-body" :class="{ 'content-body--no-padding': noPadding }">
                     <slot />
                 </main>
+
+                <!-- Footer -->
+                <AppFooter />
             </div>
         </div>
     </div>
@@ -590,6 +666,10 @@ const toggleSidebar = () => {
     margin-left: 68px;
 }
 
+.main-content--full {
+    margin-left: 0;
+}
+
 .content-header {
     position: sticky;
     top: 16px;
@@ -614,6 +694,103 @@ const toggleSidebar = () => {
     padding: 24px;
     display: flex;
     flex-direction: column;
+}
+
+.content-body--no-padding {
+    padding: 0;
+}
+
+/* ───────────────────────────────────────────
+   Header User (for hideSidebar mode)
+   ─────────────────────────────────────────── */
+.header-user-area {
+    flex-shrink: 0;
+    margin-left: 16px;
+}
+
+.header-user-btn {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    cursor: pointer;
+    padding: 2px;
+    transition: all 0.15s ease;
+}
+
+.header-user-btn:hover {
+    border-color: #E2E8F0;
+}
+
+.avatar-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #006c49, #10b981);
+    color: #fff;
+    font-family: 'Manrope', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.avatar-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-initials {
+    font-family: 'Manrope', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* ───────────────────────────────────────────
+   Guest Auth Buttons (header)
+   ─────────────────────────────────────────── */
+.header-auth-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+    margin-left: 16px;
+}
+
+.header-auth-link {
+    font-family: 'Manrope', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #191c1e;
+    text-decoration: none;
+    transition: opacity 0.15s ease;
+    white-space: nowrap;
+}
+
+.header-auth-link:hover {
+    opacity: 0.7;
+}
+
+.header-auth-btn {
+    font-family: 'Manrope', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffffff;
+    background: #003527;
+    padding: 8px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.15s ease;
+    white-space: nowrap;
+}
+
+.header-auth-btn:hover {
+    background: rgba(0, 53, 39, 0.9);
 }
 
 /* ───────────────────────────────────────────

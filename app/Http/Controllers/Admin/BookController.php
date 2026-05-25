@@ -211,7 +211,7 @@ class BookController extends Controller
             'total_stock' => $validated['total_stock'],
             'available_stock' => $validated['total_stock'],
             'publisher_id' => $publisherId,
-            'image_path' => $path,
+            'image_path' => $path ?? '/storage/imagens/default.webp',
         ]);
 
         $book->authors()->sync($authorIds);

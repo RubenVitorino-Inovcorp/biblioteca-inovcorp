@@ -80,7 +80,7 @@ class AuthorController extends Controller
 
         Author::create([
             'name' => $validated['name'],
-            'photo_path' => $path ? '/storage/' . $path : null,
+            'photo_path' => $path ? '/storage/' . $path : '/storage/autores/default.webp',
         ]);
 
         return redirect()->route('autores.index')->with('success', 'Autor adicionado com sucesso!');

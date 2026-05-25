@@ -16,13 +16,13 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+    return Inertia::render('Dashboard');
+})->name('home');
+
+// Redireciona /dashboard para / (compatibilidade)
+Route::get('/dashboard', function () {
+    return redirect('/');
+})->name('dashboard');
 
 Route::middleware([
     'auth:sanctum',
@@ -55,8 +55,4 @@ Route::middleware([
     Route::resource('/editoras', UserPublisherController::class)->only(['index', 'show'])->parameter('editoras', 'publisher')->names('catalog.editoras');
     Route::resource('/requisicoes', UserLoanController::class)->only(['index', 'show', 'store'])->parameter('requisicoes', 'loan')->names('catalog.requisicoes');
     Route::post('/requisicoes/{loan}/devolver', [UserLoanController::class, 'returnBook'])->name('catalog.requisicoes.devolver');
-
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
 });

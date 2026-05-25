@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -13,15 +14,16 @@
 }
 
 @theme {
-  --color-primary: #006c49;
-  --color-secondary: #0F172A;
+    --color-primary: #006c49;
+    --color-secondary: #0F172A;
 }
 
-:root, [data-theme] {
-  --color-primary: #006c49 !important;
-  --color-primary-content: #ffffff !important;
-  --color-secondary: #0F172A !important;
-  --color-secondary-content: #ffffff !important;
+:root,
+[data-theme] {
+    --color-primary: #006c49 !important;
+    --color-primary-content: #ffffff !important;
+    --color-secondary: #0F172A !important;
+    --color-secondary-content: #ffffff !important;
 }
 
 .glass {

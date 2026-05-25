@@ -79,7 +79,7 @@ class PublisherController extends Controller
 
         Publisher::create([
             'name' => $validated['name'],
-            'logo_path' => $path ? '/storage/' . $path : null,
+            'logo_path' => $path ? '/storage/' . $path : '/storage/editoras/default.webp',
         ]);
 
         return redirect()->route('editoras.index')->with('success', 'Editora adicionada com sucesso!');

@@ -38,10 +38,10 @@ defineProps({
             <div v-if="canLogin" class="flex flex-col sm:flex-row justify-center gap-4">
                 <Link
                     v-if="$page.props.auth.user"
-                    :href="route('dashboard')"
+                    :href="route('home')"
                     class="btn-primary"
                 >
-                    Aceder ao Dashboard
+                    Aceder à Biblioteca
                 </Link>
 
                 <template v-else>

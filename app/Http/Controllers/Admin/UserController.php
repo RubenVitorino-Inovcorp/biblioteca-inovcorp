@@ -53,6 +53,7 @@ class UserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
+            'profile_photo_path' => '/storage/fotos-perfil/default.webp',
         ]);
 
         return redirect()->route('utilizadores.index')->with('success', 'Utilizador adicionado com sucesso!');
