@@ -29,9 +29,9 @@ const closeModal = () => {
     </button>
 
     <dialog ref="modalRef" class="modal">
-        <div class="modal-box max-w-md bg-white rounded-2xl shadow-2xl p-6 md:p-8">
+        <div class="modal-box max-w-md bg-base-100 rounded-2xl shadow-2xl p-6 md:p-8">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold text-[#191c1e] font-['Manrope']">Editar Editora</h3>
+                <h3 class="text-2xl font-bold text-base-content font-['Manrope']">Editar Editora</h3>
                 <form method="dialog">
                     <button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4">✕</button>
                 </form>

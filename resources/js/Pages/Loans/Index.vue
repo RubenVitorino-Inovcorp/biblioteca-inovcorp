@@ -160,7 +160,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
                         <div class="avatar">
                             <div class="w-12 h-12 rounded-full border border-gray-100 overflow-hidden shadow-sm">
                                 <img v-if="loan.user_photo_snapshot" :src="loan.user_photo_snapshot" :alt="loan.user.name" class="w-full h-full object-cover">
-                                <div v-else class="w-full h-full flex items-center justify-center bg-gray-200 text-[#3c4a42] text-2xl font-bold font-['Manrope']">
+                                <div v-else class="w-full h-full flex items-center justify-center bg-gray-200 text-base-content/70 text-2xl font-bold font-['Manrope']">
                                     {{ loan.user.name?.charAt(0)?.toUpperCase() }}
                                 </div>
                             </div>
@@ -239,7 +239,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
         font-family: 'Manrope', sans-serif;
         font-size: 17px;
         font-weight: 600;
-        color: #191c1e;
+        color: var(--color-silk-content);
         line-height: 1.4;
     }
 
@@ -252,7 +252,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
     .empty-state-text {
         font-family: 'Manrope', sans-serif;
         font-size: 14px;
-        color: #6c7a71;
+        color: var(--color-silk-muted);
         font-style: italic;
     }
 
@@ -270,7 +270,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
         font-family: 'Manrope', sans-serif;
         font-size: 16px;
         font-weight: 700;
-        color: #191c1e;
+        color: var(--color-silk-content);
         margin-bottom: 16px;
     }
 
@@ -302,7 +302,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
         display: flex;
         align-items: center;
         gap: 16px;
-        border: 1px solid #E2E8F0;
+        border: 1px solid var(--color-silk-300);
         box-shadow: 0px 4px 20px rgba(15, 23, 42, 0.03);
     }
 
@@ -324,7 +324,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
     .stat-title {
         font-family: 'Manrope', sans-serif;
         font-size: 13px;
-        color: #6c7a71;
+        color: var(--color-silk-muted);
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
@@ -334,7 +334,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
         font-family: 'Manrope', sans-serif;
         font-size: 24px;
         font-weight: 800;
-        color: #191c1e;
+        color: var(--color-silk-content);
         line-height: 1.2;
     }
 </style>

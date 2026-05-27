@@ -105,7 +105,7 @@ const quickAdd = (book) => {
         font-family: 'Manrope', sans-serif;
         font-size: 17px;
         font-weight: 600;
-        color: #191c1e;
+        color: var(--color-silk-content);
         line-height: 1.4;
     }
 
@@ -118,7 +118,7 @@ const quickAdd = (book) => {
     .empty-state-text {
         font-family: 'Manrope', sans-serif;
         font-size: 14px;
-        color: #6c7a71;
+        color: var(--color-silk-muted);
         font-style: italic;
     }
 </style>

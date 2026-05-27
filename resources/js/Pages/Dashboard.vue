@@ -173,7 +173,7 @@ const handleSearch = () => {
     font-family: 'Manrope', sans-serif;
     font-size: 14px;
     font-weight: 500;
-    color: #404944;
+    color: var(--color-silk-subtle);
     text-decoration: none;
     padding: 6px 14px;
     border-radius: 6px;
@@ -181,8 +181,8 @@ const handleSearch = () => {
 }
 
 .homepage-nav-link:hover {
-    color: #003527;
-    background: rgba(0, 53, 39, 0.06);
+    color: var(--color-primary);
+    background: var(--color-primary-light);
 }
 
 /* ───────────────────────────────────────────
@@ -231,7 +231,7 @@ const handleSearch = () => {
         to bottom,
         rgba(228, 226, 222, 0.92) 0%,
         rgba(228, 226, 222, 0.85) 40%,
-        rgba(244, 241, 234, 1) 100%
+        oklch(97% 0.0035 67.78) 100%
     );
     z-index: 1;
 }
@@ -262,7 +262,7 @@ const handleSearch = () => {
     font-weight: 500;
     line-height: 1.15;
     letter-spacing: -0.01em;
-    color: #003527;
+    color: var(--color-primary);
     margin-bottom: 20px;
 }
 
@@ -290,7 +290,7 @@ const handleSearch = () => {
     font-size: 16px;
     font-weight: 400;
     line-height: 1.65;
-    color: #404944;
+    color: var(--color-silk-subtle);
     max-width: 560px;
     margin-bottom: 40px;
 }
@@ -312,11 +312,11 @@ const handleSearch = () => {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    background: #ffffff;
+    background: var(--color-base-100);
     padding: 8px;
     border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(6, 78, 59, 0.08);
-    border: 1px solid rgba(191, 201, 195, 0.2);
+    box-shadow: 0 4px 20px rgba(0, 108, 73, 0.08);
+    border: 1px solid rgba(0, 108, 73, 0.1);
 }
 
 @media (min-width: 640px) {
@@ -331,20 +331,20 @@ const handleSearch = () => {
     display: flex;
     align-items: center;
     padding: 0 16px;
-    background: #f5f3f6;
+    background: var(--color-silk-200);
     border-radius: 6px;
     transition: border-color 0.2s ease;
     border-bottom: 2px solid transparent;
 }
 
 .hero-search-field:focus-within {
-    border-bottom-color: #e3c280;
+    border-bottom-color: var(--color-primary);
 }
 
 .hero-search-icon {
     width: 20px;
     height: 20px;
-    color: #5e5e5c;
+    color: var(--color-silk-muted);
     margin-right: 12px;
     flex-shrink: 0;
 }
@@ -357,7 +357,7 @@ const handleSearch = () => {
     font-family: 'Manrope', sans-serif;
     font-size: 16px;
     font-weight: 400;
-    color: #1b1b1e;
+    color: var(--color-silk-content);
     padding: 14px 0;
 }
 
@@ -370,7 +370,7 @@ const handleSearch = () => {
 }
 
 .hero-search-btn {
-    background: #003527;
+    background: var(--color-primary);
     color: #ffffff;
     font-family: 'Manrope', sans-serif;
     font-size: 13px;
@@ -386,7 +386,7 @@ const handleSearch = () => {
 }
 
 .hero-search-btn:hover {
-    background: rgba(0, 53, 39, 0.9);
+    background: var(--color-primary-dark);
 }
 
 /* Hero Stats */
@@ -408,7 +408,7 @@ const handleSearch = () => {
     font-weight: 600;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: #404944;
+    color: var(--color-silk-subtle);
     opacity: 0.75;
 }
 
@@ -416,7 +416,7 @@ const handleSearch = () => {
     width: 4px;
     height: 4px;
     border-radius: 50%;
-    background: #bfc9c3;
+    background: var(--color-silk-muted);
 }
 
 /* ───────────────────────────────────────────
@@ -440,7 +440,7 @@ const handleSearch = () => {
     gap: 16px;
     margin-bottom: 48px;
     padding-bottom: 24px;
-    border-bottom: 1px solid rgba(191, 201, 195, 0.2);
+    border-bottom: 1px solid rgba(0, 108, 73, 0.1);
 }
 
 @media (min-width: 768px) {
@@ -457,7 +457,7 @@ const handleSearch = () => {
     font-family: 'EB Garamond', serif;
     font-size: 28px;
     font-weight: 500;
-    color: #003527;
+    color: var(--color-primary);
     margin-bottom: 4px;
 }
 
@@ -471,7 +471,7 @@ const handleSearch = () => {
     font-family: 'Manrope', sans-serif;
     font-size: 16px;
     font-weight: 400;
-    color: #404944;
+    color: var(--color-silk-subtle);
 }
 
 .collections-view-all {
@@ -483,10 +483,10 @@ const handleSearch = () => {
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #003527;
+    color: var(--color-primary);
     text-decoration: none;
     padding-bottom: 4px;
-    border-bottom: 1px solid #e3c280;
+    border-bottom: 1px solid var(--color-primary);
     transition: color 0.2s ease, opacity 0.2s ease;
     white-space: nowrap;
     flex-shrink: 0;
@@ -524,8 +524,8 @@ const handleSearch = () => {
 
 /* Collection Card */
 .collection-card {
-    background: #ffffff;
-    border: 1px solid rgba(191, 201, 195, 0.2);
+    background: var(--color-base-100);
+    border: 1px solid rgba(0, 108, 73, 0.1);
     border-radius: 10px;
     padding: 32px;
     text-decoration: none;
@@ -538,7 +538,7 @@ const handleSearch = () => {
 }
 
 .collection-card:hover {
-    box-shadow: 0 4px 20px rgba(6, 78, 59, 0.08);
+    box-shadow: 0 4px 20px rgba(0, 108, 73, 0.08);
     transform: translateY(-2px);
 }
 
@@ -609,13 +609,13 @@ const handleSearch = () => {
 }
 
 .collection-icon--primary {
-    background: rgba(0, 108, 73, 0.08);
-    color: #003527;
+    background: var(--color-primary-light);
+    color: var(--color-primary);
 }
 
 .collection-icon--secondary {
     background: rgba(94, 94, 92, 0.08);
-    color: #5e5e5c;
+    color: var(--color-silk-muted);
     width: 40px;
     height: 40px;
 }
@@ -633,18 +633,18 @@ const handleSearch = () => {
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #404944;
-    background: #f5f3f6;
+    color: var(--color-silk-subtle);
+    background: var(--color-silk-200);
     padding: 4px 12px;
     border-radius: 20px;
-    border: 1px solid rgba(191, 201, 195, 0.3);
+    border: 1px solid rgba(0, 108, 73, 0.15);
 }
 
 .collection-card-title {
     font-family: 'EB Garamond', serif;
     font-size: 28px;
     font-weight: 500;
-    color: #003527;
+    color: var(--color-primary);
     margin-bottom: 12px;
     transition: opacity 0.2s ease;
 }
@@ -663,7 +663,7 @@ const handleSearch = () => {
     font-size: 15px;
     font-weight: 400;
     line-height: 1.65;
-    color: #404944;
+    color: var(--color-silk-subtle);
     max-width: 480px;
 }
 </style>

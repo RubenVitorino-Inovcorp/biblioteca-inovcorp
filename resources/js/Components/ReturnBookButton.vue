@@ -56,7 +56,7 @@ const returnBook = () => {
             <p class="text-gray-600 mb-4">Confirma a devolução deste livro?</p>
 
             <div class="bg-base-200/50 border border-base-300 rounded-xl p-5 flex items-center gap-4 text-sm">
-                <div class="shrink-0 rounded-md overflow-hidden shadow-sm bg-white">
+                <div class="shrink-0 rounded-md overflow-hidden shadow-sm bg-base-100">
                     <img v-if="loan.book?.image_path" :src="loan.book.image_path" :alt="loan.book?.title" class="w-12 h-16 object-cover" />
                     <div v-else class="w-12 h-16 bg-gray-100 flex items-center justify-center">
                         <LibraryBig class="text-gray-400" :size="20" />
@@ -98,8 +98,8 @@ const returnBook = () => {
     font-size: 13px;
     font-weight: 700;
     border-radius: 8px;
-    border: 1px solid #006c49;
-    color: #006c49;
+    border: 1px solid var(--color-primary);
+    color: var(--color-primary);
     background: transparent;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -107,7 +107,7 @@ const returnBook = () => {
 }
 
 .return-button:hover {
-    background: #006c49;
+    background: var(--color-primary);
     color: #ffffff;
     box-shadow: 0 2px 8px rgba(0, 108, 73, 0.3);
 }
@@ -128,14 +128,14 @@ const returnBook = () => {
     height: 48px;
     border-radius: 12px;
     background: linear-gradient(135deg, #ecfdf5, #d1fae5);
-    color: #006c49;
+    color: var(--color-primary);
 }
 
 .return-modal-cancel {
     padding: 8px 16px;
     font-size: 14px;
     font-weight: 700;
-    color: #6c7a71;
+    color: var(--color-silk-muted);
     font-family: 'Manrope', sans-serif;
     margin-right: 12px;
     transition: color 0.15s ease;
@@ -145,7 +145,7 @@ const returnBook = () => {
 }
 
 .return-modal-cancel:hover {
-    color: #191c1e;
+    color: var(--color-silk-content);
 }
 
 .return-modal-confirm {
@@ -156,7 +156,7 @@ const returnBook = () => {
     font-size: 14px;
     font-weight: 700;
     color: #ffffff;
-    background: #006c49;
+    background: var(--color-primary);
     border-radius: 8px;
     font-family: 'Manrope', sans-serif;
     transition: background 0.15s ease;
@@ -165,7 +165,7 @@ const returnBook = () => {
 }
 
 .return-modal-confirm:hover:not(:disabled) {
-    background: #005236;
+    background: var(--color-primary-dark);
 }
 
 .return-modal-confirm:disabled {

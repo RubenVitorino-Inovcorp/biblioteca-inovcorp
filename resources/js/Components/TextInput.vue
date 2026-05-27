@@ -33,17 +33,17 @@ defineExpose({ focus: () => input.value.focus() });
     padding: 8px 12px;
     font-family: 'Manrope', sans-serif;
     font-size: 14px;
-    color: #191c1e;
-    background: #F1F5F9;
-    border: 1px solid #E2E8F0;
+    color: var(--color-silk-content);
+    background: var(--color-silk-200);
+    border: 1px solid var(--color-silk-300);
     border-radius: 6px;
     outline: none;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .text-input:focus {
-    border-color: #006c49;
+    border-color: var(--color-primary);
     box-shadow: 0 0 0 2px rgba(0, 108, 73, 0.1);
-    background: #ffffff;
+    background: var(--color-base-100);
 }
 </style>

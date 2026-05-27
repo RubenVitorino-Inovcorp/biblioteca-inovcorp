@@ -21,17 +21,17 @@ defineProps({
 
 <template>
     <Head title="Bem-vindo" />
-    <div class="min-h-screen bg-[#F4F1EA] flex flex-col justify-center items-center">
+    <div class="min-h-screen bg-base-200 flex flex-col justify-center items-center">
         <div class="max-w-2xl w-full px-6 text-center">
             <div class="mb-8 flex justify-center">
                 <img src="/logo.webp" alt="Biblioteca Logo" class="h-32 w-auto drop-shadow-sm" />
             </div>
             
-            <h1 class="text-4xl font-bold text-[#191c1e] font-['Manrope'] mb-4">
+            <h1 class="text-4xl font-bold text-base-content font-['Manrope'] mb-4">
                 Biblioteca Inovcorp
             </h1>
             
-            <p class="text-[#6c7a71] font-['Manrope'] text-lg mb-10 leading-relaxed">
+            <p class="text-base-content/60 font-['Manrope'] text-lg mb-10 leading-relaxed">
                 O seu portal de acesso ao conhecimento. Explore o nosso catálogo de livros, descubra novos autores e faça a gestão das suas requisições de forma simples e rápida.
             </p>
 
@@ -63,7 +63,7 @@ defineProps({
             </div>
         </div>
         
-        <footer class="absolute bottom-6 text-center text-sm text-[#6c7a71] font-['Manrope']">
+        <footer class="absolute bottom-6 text-center text-sm text-base-content/60 font-['Manrope']">
             Biblioteca Inovcorp &copy; {{ new Date().getFullYear() }}
         </footer>
     </div>
@@ -75,7 +75,7 @@ defineProps({
     align-items: center;
     justify-content: center;
     padding: 12px 28px;
-    background-color: #006c49;
+    background-color: var(--color-primary);
     color: white;
     font-family: 'Manrope', sans-serif;
     font-weight: 600;
@@ -88,7 +88,7 @@ defineProps({
 }
 
 .btn-primary:hover {
-    background-color: #00563a;
+    background-color: var(--color-primary-dark);
     transform: translateY(-1px);
     box-shadow: 0px 6px 15px rgba(0, 108, 73, 0.3);
 }
@@ -99,14 +99,14 @@ defineProps({
     justify-content: center;
     padding: 12px 28px;
     background-color: transparent;
-    color: #006c49;
+    color: var(--color-primary);
     font-family: 'Manrope', sans-serif;
     font-weight: 600;
     font-size: 16px;
     border-radius: 8px;
     text-decoration: none;
     transition: all 0.2s ease;
-    border: 2px solid #006c49;
+    border: 2px solid var(--color-primary);
 }
 
 .btn-secondary:hover {

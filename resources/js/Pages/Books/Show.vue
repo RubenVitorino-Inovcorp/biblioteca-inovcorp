@@ -113,7 +113,7 @@
                         <div class="avatar">
                             <div class="w-12 h-12 rounded-full border border-gray-100 overflow-hidden shadow-sm">
                                 <img v-if="loan.user_photo_snapshot" :src="loan.user_photo_snapshot" :alt="loan.user.name" class="w-full h-full object-cover">
-                                <div v-else class="w-full h-full flex items-center justify-center bg-gray-200 text-[#3c4a42] text-2xl font-bold font-['Manrope']">
+                                <div v-else class="w-full h-full flex items-center justify-center bg-gray-200 text-base-content/70 text-2xl font-bold font-['Manrope']">
                                     {{ loan.user.name?.charAt(0)?.toUpperCase() }}
                                 </div>
                             </div>

@@ -52,7 +52,7 @@ const createLoanAction = () => {
             <div class="bg-base-200/50 border border-base-300 rounded-xl p-5 flex flex-col  gap-4 text-sm">
                 <!-- Detalhes do Livro -->
                 <div class="flex items-center gap-4">
-                    <div class="shrink-0 rounded-md overflow-hidden shadow-sm bg-white">
+                    <div class="shrink-0 rounded-md overflow-hidden shadow-sm bg-base-100">
                         <img v-if="props.book.image_path" :src="props.book.image_path" :alt="props.book.title" class="w-12 h-16 object-cover" />
                         <div v-else class="w-12 h-16 bg-gray-100 flex items-center justify-center">
                             <LibraryBig class="text-gray-400" :size="20" />
@@ -92,7 +92,7 @@ const createLoanAction = () => {
         </template>
 
         <template #footer>
-            <button type="button" class="px-4 py-2 text-sm font-bold text-[#6c7a71] hover:text-[#191c1e] transition-colors font-['Manrope'] mr-3" @click="showModal = false">
+            <button type="button" class="px-4 py-2 text-sm font-bold text-base-content/60 hover:text-base-content transition-colors font-['Manrope'] mr-3" @click="showModal = false">
                 Cancelar
             </button>
             <button

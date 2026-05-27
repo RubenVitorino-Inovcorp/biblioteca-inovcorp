@@ -32,19 +32,19 @@ const submit = () => {
 </script>
 
 <template>
-    <form @submit.prevent="submit" class="max-w-xl mx-auto p-8 bg-white rounded-2xl shadow-sm border border-gray-100 mt-6">
+    <form @submit.prevent="submit" class="max-w-xl mx-auto p-8 bg-base-100 rounded-2xl shadow-sm border border-gray-100 mt-6">
         <div class="mb-6 pb-4 border-b border-gray-100">
-            <h2 class="text-xl font-bold font-['Manrope'] text-[#191c1e]">Adicionar Novo Autor</h2>
+            <h2 class="text-xl font-bold font-['Manrope'] text-base-content">Adicionar Novo Autor</h2>
         </div>
 
         <div class="form-control">
-            <label class="label font-semibold text-[#3c4a42]">Nome</label>
+            <label class="label font-semibold text-base-content/70">Nome</label>
             <input v-model="form.name" type="text" class="input input-bordered w-full" placeholder="Ex: José Saramago" />
             <span v-if="form.errors.name" class="text-red-500 text-xs mt-1">{{ form.errors.name }}</span>
         </div>
 
         <div class="form-control mt-4">
-            <label class="label font-semibold text-[#3c4a42]">Foto do autor</label>
+            <label class="label font-semibold text-base-content/70">Foto do autor</label>
             <input
                 type="file"
                 @input="handleFileChange"

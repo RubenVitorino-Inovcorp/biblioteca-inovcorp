@@ -163,7 +163,7 @@
         font-family: 'Manrope', sans-serif;
         font-size: 17px;
         font-weight: 600;
-        color: #191c1e;
+        color: var(--color-silk-content);
         line-height: 1.4;
     }
 
@@ -176,7 +176,7 @@
     .empty-state-text {
         font-family: 'Manrope', sans-serif;
         font-size: 14px;
-        color: #6c7a71;
+        color: var(--color-silk-muted);
         font-style: italic;
     }
 
@@ -194,7 +194,7 @@
         font-family: 'Manrope', sans-serif;
         font-size: 16px;
         font-weight: 700;
-        color: #191c1e;
+        color: var(--color-silk-content);
         margin-bottom: 16px;
     }
 
@@ -208,7 +208,7 @@
         font-size: 12px;
         font-weight: 700;
         color: #ffffff;
-        background: #006c49;
+        background: var(--color-primary);
         border-radius: 9999px;
     }
 </style>

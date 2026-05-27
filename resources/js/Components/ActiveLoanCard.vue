@@ -80,21 +80,21 @@ const isReturnable = (status) => {
 
 <style scoped>
 .active-card {
-    background: #ffffff;
-    border: 1px solid #E2E8F0;
+    background: var(--color-base-100);
+    border: 1px solid var(--color-silk-300);
     border-radius: 12px;
     overflow: hidden;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .active-card:hover {
-    border-color: #cbd5e1;
-    box-shadow: 0px 4px 20px rgba(15, 23, 42, 0.06);
+    border-color: var(--color-silk-muted);
+    box-shadow: 0px 4px 20px rgba(0, 108, 73, 0.06);
 }
 
 .active-card--overdue {
     border-color: #fbbf24;
-    background: linear-gradient(135deg, #fffbeb 0%, #ffffff 40%);
+    background: linear-gradient(135deg, #fffbeb 0%, var(--color-base-100) 40%);
 }
 
 .active-card--overdue:hover {
@@ -114,7 +114,7 @@ const isReturnable = (status) => {
     min-height: 140px;
     flex-shrink: 0;
     overflow: hidden;
-    background: #f1f5f9;
+    background: var(--color-silk-200);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -127,7 +127,7 @@ const isReturnable = (status) => {
 }
 
 .active-card-cover-placeholder {
-    color: #94a3b8;
+    color: var(--color-silk-muted);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -154,21 +154,21 @@ const isReturnable = (status) => {
     font-family: 'Manrope', sans-serif;
     font-size: 12px;
     font-weight: 700;
-    color: #6c7a71;
+    color: var(--color-silk-muted);
     letter-spacing: 0.03em;
     text-decoration: none;
     transition: color 0.15s ease;
 }
 
 .active-card-number:hover {
-    color: #006c49;
+    color: var(--color-primary);
 }
 
 .active-card-title {
     font-family: 'Manrope', sans-serif;
     font-size: 15px;
     font-weight: 700;
-    color: #191c1e;
+    color: var(--color-silk-content);
     line-height: 1.3;
     text-decoration: none;
     transition: color 0.15s ease;
@@ -178,7 +178,7 @@ const isReturnable = (status) => {
 }
 
 .active-card-title:hover {
-    color: #006c49;
+    color: var(--color-primary);
 }
 
 /* ─── Meta ─── */
@@ -195,7 +195,7 @@ const isReturnable = (status) => {
     gap: 5px;
     font-family: 'Manrope', sans-serif;
     font-size: 12px;
-    color: #6c7a71;
+    color: var(--color-silk-muted);
 }
 
 .active-card-meta-overdue {
@@ -210,7 +210,7 @@ const isReturnable = (status) => {
     justify-content: center;
     gap: 8px;
     padding: 16px 20px;
-    border-left: 1px solid #E2E8F0;
+    border-left: 1px solid var(--color-silk-300);
     flex-shrink: 0;
 }
 
@@ -229,7 +229,7 @@ const isReturnable = (status) => {
     .active-card-actions {
         flex-direction: row;
         border-left: none;
-        border-top: 1px solid #E2E8F0;
+        border-top: 1px solid var(--color-silk-300);
         padding: 12px 16px;
     }
 }

@@ -74,7 +74,7 @@
             <p class="text-gray-600 mb-4">Tem a certeza que pretende rejeitar esta requisição?</p>
 
             <div class="bg-base-200/50 border border-base-300 rounded-xl p-5 flex items-center gap-4 text-sm">
-                <div class="shrink-0 rounded-md overflow-hidden shadow-sm bg-white">
+                <div class="shrink-0 rounded-md overflow-hidden shadow-sm bg-base-100">
                     <img v-if="loan.book?.image_path" :src="loan.book.image_path" :alt="loan.book?.title" class="w-12 h-16 object-cover" />
                     <div v-else class="w-12 h-16 bg-gray-100 flex items-center justify-center">
                         <LibraryBig class="text-gray-400" :size="20" />
@@ -92,7 +92,7 @@
             </p>
         </template>
         <template #footer>
-            <button type="button" class="px-4 py-2 text-sm font-bold text-[#6c7a71] hover:text-[#191c1e] transition-colors font-['Manrope'] mr-3" @click="showRejectModal = false">
+            <button type="button" class="px-4 py-2 text-sm font-bold text-base-content/60 hover:text-base-content transition-colors font-['Manrope'] mr-3" @click="showRejectModal = false">
                 Cancelar
             </button>
             <button
@@ -132,12 +132,12 @@
 
 .pending-button--approve {
     color: #ffffff;
-    background: #006c49;
-    border-color: #006c49;
+    background: var(--color-primary);
+    border-color: var(--color-primary);
 }
 
 .pending-button--approve:hover:not(:disabled) {
-    background: #005236;
+    background: var(--color-primary-dark);
     box-shadow: 0 2px 8px rgba(0, 108, 73, 0.3);
 }
 
