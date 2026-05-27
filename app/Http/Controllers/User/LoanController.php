@@ -104,7 +104,7 @@ class LoanController extends Controller
                 ]);
             }
 
-            $alreadyHasBook = \App\Models\Loan::where('user_id', $user->id)
+            $alreadyHasBook = Loan::where('user_id', $user->id)
                 ->where('book_id', $book->id)
                 ->whereIn('status', [\App\Enums\LoanStatus::ACTIVE, \App\Enums\LoanStatus::OVERDUE, \App\Enums\LoanStatus::PENDING])
                 ->exists();
@@ -115,7 +115,7 @@ class LoanController extends Controller
                 ]);
             }
 
-            $book = \App\Models\Book::where('id', $book->id)->lockForUpdate()->first();
+            $book = Book::where('id', $book->id)->lockForUpdate()->first();
             
             if (!$book->is_available) {
                 throw ValidationException::withMessages([
@@ -123,11 +123,11 @@ class LoanController extends Controller
                 ]);
             }
 
-            $newLoan = \App\Models\Loan::create([
+            $newLoan = Loan::create([
                 'user_id' => $user->id,
                 'book_id' => $book->id,
                 'user_photo_snapshot' => $user->profile_photo_url,
-                'status' => \App\Enums\LoanStatus::PENDING,
+                'status' => LoanStatus::PENDING,
             ]);
 
             $book->decrement('available_stock');

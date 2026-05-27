@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\GoogleBooksExport;
 use App\Http\Controllers\Controller;
 use App\Models\Publisher;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Http;
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Exports\GoogleBooksExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 class GoogleBookController extends Controller
@@ -58,7 +59,7 @@ class GoogleBookController extends Controller
                     'autores' => implode(', ', $item['volumeInfo']['authors'] ?? ['Autor Desconhecido']),
                     'publisher_id' => $localPublisherId,
                     'publisher_name' => $googlePublisher,
-                    'image_path' => $item['volumeInfo']['imageLinks']['thumbnail'] ?? null,
+                    'image_path' => $item['volumeInfo']['imageLinks']['thumbnail'] ?? '/storage/imagens/default.webp',
                     'isbn' => collect($item['volumeInfo']['industryIdentifiers'] ?? [])
                         ->firstWhere('type', 'ISBN_13')?->{'identifier'} ?? null,
                     'description' => $item['volumeInfo']['description'] ?? '',
@@ -83,7 +84,7 @@ class GoogleBookController extends Controller
         ]);
     }
 
-    public function show($id): \Illuminate\Http\RedirectResponse|Response
+    public function show($id): RedirectResponse|Response
     {
         $response = Http::get("https://www.googleapis.com/books/v1/volumes/{$id}", [
             'key' => config('services.google.books_key'),
@@ -91,13 +92,13 @@ class GoogleBookController extends Controller
 
         if ($response->successful()) {
             $item = $response->json();
-            
+
             $googlePublisher = $item['volumeInfo']['publisher'] ?? null;
             $localPublisherId = $googlePublisher
                 ? Publisher::where('name', 'like', trim($googlePublisher))->first()?->id
                 : null;
 
-            $authors = collect($item['volumeInfo']['authors'] ?? ['Autor Desconhecido'])->map(function($author) {
+            $authors = collect($item['volumeInfo']['authors'] ?? ['Autor Desconhecido'])->map(function ($author) {
                 return ['id' => null, 'name' => $author];
             })->all();
 
@@ -108,7 +109,7 @@ class GoogleBookController extends Controller
                 'authors' => $authors,
                 'publisher' => ['id' => $localPublisherId, 'name' => $googlePublisher],
                 'publisher_name' => $googlePublisher,
-                'image_path' => $item['volumeInfo']['imageLinks']['thumbnail'] ?? null,
+                'image_path' => $item['volumeInfo']['imageLinks']['thumbnail'] ?? '/storage/imagens/default.webp',
                 'isbn' => collect($item['volumeInfo']['industryIdentifiers'] ?? [])
                     ->firstWhere('type', 'ISBN_13')?->{'identifier'} ?? null,
                 'bibliography' => $item['volumeInfo']['description'] ?? '',
@@ -118,8 +119,8 @@ class GoogleBookController extends Controller
             ];
 
             return Inertia::render('Books/GoogleShow', [
-                'book' => (object)$book,
-                'loans' => []
+                'book' => (object) $book,
+                'loans' => [],
             ]);
         }
 

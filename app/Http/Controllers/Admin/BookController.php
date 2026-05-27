@@ -188,7 +188,8 @@ class BookController extends Controller
         $publisherId = $validated['publisher_id'];
         if (! is_numeric($publisherId) || ! Publisher::find($publisherId)) {
             $publisher = Publisher::firstOrCreate(
-                ['name' => trim($publisherId)]
+                ['name' => trim($publisherId)],
+                ['logo_path' => '/storage/editoras/default.webp']
             );
             $publisherId = $publisher->id;
         }
@@ -198,7 +199,8 @@ class BookController extends Controller
             if (is_numeric($authorInput) && Author::find($authorInput)) {
                 $authorIds[] = $authorInput;
             } else {
-                $author = Author::firstOrCreate(['name' => $authorInput]);
+                $author = Author::firstOrCreate(['name' => $authorInput],
+                    ['photo_path' => '/storage/autores/default.webp']);
                 $authorIds[] = $author->id;
             }
         }

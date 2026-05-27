@@ -1,17 +1,18 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthorController as AdminAuthorController;
-use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\BookController as AdminBookController;
-use App\Http\Controllers\Admin\PublisherController as AdminPublisherController;
+use App\Http\Controllers\Admin\GoogleBookController;
 use App\Http\Controllers\Admin\LoanController as AdminLoanController;
+use App\Http\Controllers\Admin\PublisherController as AdminPublisherController;
+use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\User\AuthorController as UserAuthorController;
 use App\Http\Controllers\User\BookController as UserBookController;
-use App\Http\Controllers\User\PublisherController as UserPublisherController;
 use App\Http\Controllers\User\LoanController as UserLoanController;
-use App\Http\Controllers\Admin\GoogleBookController;
+use App\Http\Controllers\User\PublisherController as UserPublisherController;
+use App\Http\Controllers\User\ReviewController as UserReviewController;
 use App\Http\Middleware\IsAdmin;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -19,7 +20,6 @@ Route::get('/', function () {
     return Inertia::render('Dashboard');
 })->name('home');
 
-// Redireciona /dashboard para / (compatibilidade)
 Route::get('/dashboard', function () {
     return redirect('/');
 })->name('dashboard');
@@ -44,6 +44,11 @@ Route::middleware([
         Route::resource('admin/editoras', AdminPublisherController::class)->parameter('editoras', 'publisher');
         Route::resource('admin/utilizadores', AdminUserController::class)->parameter('utilizadores', 'user');
         Route::resource('admin/requisicoes', AdminLoanController::class)->parameter('requisicoes', 'loan');
+        Route::resource('admin/opinioes', AdminReviewController::class)->except(['edit', 'update'])->parameter('opinioes', 'review');
+
+        Route::post('admin/opinioes/{review}/aprovar', [AdminReviewController::class, 'approve'])->name('opinioes.aprovar');
+        Route::post('admin/opinioes/{review}/rejeitar', [AdminReviewController::class, 'reject'])->name('opinioes.rejeitar');
+
         Route::post('admin/requisicoes/{loan}/aprovar', [AdminLoanController::class, 'approve'])->name('requisicoes.approve');
         Route::post('admin/requisicoes/{loan}/rejeitar', [AdminLoanController::class, 'reject'])->name('requisicoes.reject');
         Route::post('admin/requisicoes/{loan}/devolver', [AdminLoanController::class, 'returnBook'])->name('requisicoes.devolver');
@@ -54,5 +59,7 @@ Route::middleware([
     Route::resource('/autores', UserAuthorController::class)->only(['index', 'show'])->parameter('autores', 'author')->names('catalog.autores');
     Route::resource('/editoras', UserPublisherController::class)->only(['index', 'show'])->parameter('editoras', 'publisher')->names('catalog.editoras');
     Route::resource('/requisicoes', UserLoanController::class)->only(['index', 'show', 'store'])->parameter('requisicoes', 'loan')->names('catalog.requisicoes');
+    Route::resource('/opinioes', UserReviewController::class)->parameter('opinioes', 'review')->names('opinioes');
+
     Route::post('/requisicoes/{loan}/devolver', [UserLoanController::class, 'returnBook'])->name('catalog.requisicoes.devolver');
 });
