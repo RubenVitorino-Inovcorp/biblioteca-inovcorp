@@ -96,16 +96,16 @@ const formattedDate = (date) => {
 
 <style scoped>
 .pending-card {
-    background: #ffffff;
-    border: 1px solid #E2E8F0;
+    background: var(--color-base-100);
+    border: 1px solid var(--color-silk-300);
     border-radius: 12px;
     overflow: hidden;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .pending-card:hover {
-    border-color: #cbd5e1;
-    box-shadow: 0px 4px 20px rgba(15, 23, 42, 0.06);
+    border-color: var(--color-silk-muted);
+    box-shadow: 0px 4px 20px rgba(0, 108, 73, 0.06);
 }
 
 .pending-card-inner {
@@ -120,7 +120,7 @@ const formattedDate = (date) => {
     min-height: 140px;
     flex-shrink: 0;
     overflow: hidden;
-    background: #f1f5f9;
+    background: var(--color-silk-200);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -133,7 +133,7 @@ const formattedDate = (date) => {
 }
 
 .pending-card-cover-placeholder {
-    color: #94a3b8;
+    color: var(--color-silk-muted);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -160,21 +160,21 @@ const formattedDate = (date) => {
     font-family: 'Manrope', sans-serif;
     font-size: 12px;
     font-weight: 700;
-    color: #6c7a71;
+    color: var(--color-silk-muted);
     letter-spacing: 0.03em;
     text-decoration: none;
     transition: color 0.15s ease;
 }
 
 .pending-card-number:hover {
-    color: #006c49;
+    color: var(--color-primary);
 }
 
 .pending-card-title {
     font-family: 'Manrope', sans-serif;
     font-size: 15px;
     font-weight: 700;
-    color: #191c1e;
+    color: var(--color-silk-content);
     line-height: 1.3;
     text-decoration: none;
     transition: color 0.15s ease;
@@ -184,7 +184,7 @@ const formattedDate = (date) => {
 }
 
 .pending-card-title:hover {
-    color: #006c49;
+    color: var(--color-primary);
 }
 
 /* ─── User ─── */
@@ -203,7 +203,7 @@ const formattedDate = (date) => {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #006c49, #10b981);
+    background: linear-gradient(135deg, var(--color-primary), #00a86b);
     color: #fff;
 }
 
@@ -229,7 +229,7 @@ const formattedDate = (date) => {
     font-family: 'Manrope', sans-serif;
     font-size: 13px;
     font-weight: 600;
-    color: #191c1e;
+    color: var(--color-silk-content);
     text-decoration: none;
     transition: color 0.15s ease;
     overflow: hidden;
@@ -238,14 +238,14 @@ const formattedDate = (date) => {
 }
 
 .pending-card-user-name:hover {
-    color: #006c49;
+    color: var(--color-primary);
 }
 
 .pending-card-user-name-static {
     font-family: 'Manrope', sans-serif;
     font-size: 13px;
     font-weight: 600;
-    color: #191c1e;
+    color: var(--color-silk-content);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -254,7 +254,7 @@ const formattedDate = (date) => {
 .pending-card-user-email {
     font-family: 'Manrope', sans-serif;
     font-size: 11px;
-    color: #6c7a71;
+    color: var(--color-silk-muted);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -274,7 +274,7 @@ const formattedDate = (date) => {
     gap: 5px;
     font-family: 'Manrope', sans-serif;
     font-size: 12px;
-    color: #6c7a71;
+    color: var(--color-silk-muted);
 }
 
 .pending-card-meta-pending {
@@ -290,7 +290,7 @@ const formattedDate = (date) => {
     justify-content: center;
     gap: 8px;
     padding: 16px 20px;
-    border-left: 1px solid #E2E8F0;
+    border-left: 1px solid var(--color-silk-300);
     flex-shrink: 0;
 }
 
@@ -309,7 +309,7 @@ const formattedDate = (date) => {
     .pending-card-actions {
         flex-direction: row;
         border-left: none;
-        border-top: 1px solid #E2E8F0;
+        border-top: 1px solid var(--color-silk-300);
         padding: 12px 16px;
     }
 

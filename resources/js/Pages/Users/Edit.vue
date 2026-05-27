@@ -38,36 +38,36 @@ const submit = () => {
                 Atualizar Utilizador
             </h1>
         </template>
-        <form @submit.prevent="submit" class="max-w-2xl mx-auto p-8 bg-white rounded-2xl shadow-sm border border-gray-100 mt-6">
+        <form @submit.prevent="submit" class="max-w-2xl mx-auto p-8 bg-base-100 rounded-2xl shadow-sm border border-gray-100 mt-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="form-control">
-                    <label class="label font-semibold text-[#3c4a42]">Nome</label>
+                    <label class="label font-semibold text-base-content/70">Nome</label>
                     <input v-model="form.name" type="text" class="input input-bordered w-full" placeholder="Ex: João Silva" />
                     <span v-if="form.errors.name" class="text-red-500 text-xs mt-1">{{ form.errors.name }}</span>
                 </div>
 
                 <div class="form-control">
-                    <label class="label font-semibold text-[#3c4a42]">Email</label>
+                    <label class="label font-semibold text-base-content/70">Email</label>
                     <input v-model="form.email" type="text" class="input input-bordered w-full" placeholder="Ex: exemplo@email.com" />
                     <span v-if="form.errors.email" class="text-red-500 text-xs mt-1">{{ form.errors.email }}</span>
                 </div>
             </div>
 
             <div class="form-control mt-2">
-                <label class="label font-semibold text-[#3c4a42]">Palavra-Passe</label>
+                <label class="label font-semibold text-base-content/70">Palavra-Passe</label>
                 <input v-model="form.password" type="password" class="input input-bordered w-full" placeholder="Palavra-Passe" />
                 <span v-if="form.errors.password" class="text-red-500 text-xs mt-1">{{ form.errors.password }}</span>
             </div>
 
             <div class="form-control mt-2">
-                <label class="label font-semibold text-[#3c4a42]">Confirmar Palavra-Passe</label>
+                <label class="label font-semibold text-base-content/70">Confirmar Palavra-Passe</label>
                 <input v-model="form.password_confirmation" type="password" class="input input-bordered w-full" placeholder="Confirmar Palavra-Passe" />
                 <span v-if="form.errors.password_confirmation" class="text-red-500 text-xs mt-1">{{ form.errors.password_confirmation }}</span>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                 <div class="form-control">
-                    <label class="label font-semibold text-[#3c4a42]">Tipo de Utilizador</label>
+                    <label class="label font-semibold text-base-content/70">Tipo de Utilizador</label>
                     <select v-model="form.role" class="select select-bordered w-full">
                         <option disabled value="">Selecione um tipo de utilizador...</option>
                         <option value="admin">Admin</option>

@@ -51,7 +51,7 @@ import { Link } from '@inertiajs/vue3';
    Footer
    ─────────────────────────────────────────── */
 .app-footer {
-    background: #003527;
+    background: var(--color-primary);
     color: rgba(255, 255, 255, 0.85);
     border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -150,15 +150,15 @@ import { Link } from '@inertiajs/vue3';
     font-weight: 400;
     color: rgba(255, 255, 255, 0.7);
     text-decoration: underline;
-    text-decoration-color: rgba(227, 194, 128, 0.3);
+    text-decoration-color: rgba(255, 255, 255, 0.3);
     text-underline-offset: 4px;
     text-decoration-thickness: 1px;
     transition: color 0.2s ease, text-decoration-color 0.2s ease;
 }
 
 .footer-link:hover {
-    color: #e3c280;
-    text-decoration-color: #e3c280;
+    color: #ffffff;
+    text-decoration-color: #ffffff;
 }
 
 /* Copyright */

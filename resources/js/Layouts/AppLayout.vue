@@ -371,7 +371,7 @@ const toggleSidebar = () => {
 .app-shell {
     display: flex;
     min-height: 100vh;
-    background: #F4F1EA;
+    background: var(--color-base-200);
 }
 
 /* ───────────────────────────────────────────
@@ -395,8 +395,8 @@ const toggleSidebar = () => {
     display: flex;
     flex-direction: column;
     height: 100%;
-    background: #ffffff;
-    border-right: 1px solid #E2E8F0;
+    background: var(--color-base-200);
+    border-right: 1px solid var(--color-silk-300);
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -411,7 +411,7 @@ const toggleSidebar = () => {
     align-items: center;
     justify-content: space-between;
     padding: 20px 16px;
-    border-bottom: 1px solid #E2E8F0;
+    border-bottom: 1px solid var(--color-silk-300);
     min-height: 68px;
 }
 
@@ -420,7 +420,7 @@ const toggleSidebar = () => {
     align-items: center;
     gap: 10px;
     text-decoration: none;
-    color: #191c1e;
+    color: var(--color-silk-content);
     transition: opacity 0.15s ease;
 }
 
@@ -437,7 +437,7 @@ const toggleSidebar = () => {
     font-family: 'Manrope', sans-serif;
     font-size: 18px;
     font-weight: 700;
-    color: #191c1e;
+    color: var(--color-silk-content);
     letter-spacing: -0.01em;
 }
 
@@ -451,14 +451,14 @@ const toggleSidebar = () => {
     border: 1px solid transparent;
     border-radius: 6px;
     cursor: pointer;
-    color: #6c7a71;
+    color: var(--color-silk-muted);
     transition: all 0.15s ease;
     flex-shrink: 0;
 }
 
 .sidebar-toggle:hover {
-    background: #f2f4f6;
-    color: #191c1e;
+    background: var(--color-silk-200);
+    color: var(--color-silk-content);
 }
 
 .sidebar-toggle-icon {
@@ -486,7 +486,7 @@ const toggleSidebar = () => {
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.08em;
-    color: #006c49;
+    color: var(--color-primary);
     padding: 0 14px 6px;
     text-transform: uppercase;
 }
@@ -521,7 +521,7 @@ const toggleSidebar = () => {
    ─────────────────────────────────────────── */
 .sidebar-footer {
     padding: 12px;
-    border-top: 1px solid #E2E8F0;
+    border-top: 1px solid var(--color-silk-300);
 }
 
 .sidebar-user-btn {
@@ -539,8 +539,8 @@ const toggleSidebar = () => {
 }
 
 .sidebar-user-btn:hover {
-    background: #f2f4f6;
-    border-color: #E2E8F0;
+    background: var(--color-silk-200);
+    border-color: var(--color-silk-300);
 }
 
 .sidebar-user-avatar {
@@ -552,7 +552,7 @@ const toggleSidebar = () => {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #006c49, #10b981);
+    background: linear-gradient(135deg, var(--color-primary), #00a86b);
     color: #fff;
     font-family: 'Manrope', sans-serif;
     font-size: 14px;
@@ -582,7 +582,7 @@ const toggleSidebar = () => {
     font-family: 'Manrope', sans-serif;
     font-size: 13px;
     font-weight: 600;
-    color: #191c1e;
+    color: var(--color-silk-content);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -592,7 +592,7 @@ const toggleSidebar = () => {
     font-family: 'Manrope', sans-serif;
     font-size: 11px;
     font-weight: 400;
-    color: #6c7a71;
+    color: var(--color-silk-muted);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -601,7 +601,7 @@ const toggleSidebar = () => {
 .sidebar-user-chevron {
     width: 16px;
     height: 16px;
-    color: #6c7a71;
+    color: var(--color-silk-muted);
     flex-shrink: 0;
 }
 
@@ -634,12 +634,12 @@ const toggleSidebar = () => {
     font-weight: 700;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: #6c7a71;
+    color: var(--color-silk-muted);
 }
 
 .sidebar-dropdown-divider {
     height: 1px;
-    background: #E2E8F0;
+    background: var(--color-silk-300);
     margin: 4px 0;
 }
 
@@ -677,12 +677,12 @@ const toggleSidebar = () => {
     margin: 16px auto 0;
     max-width: 1400px;
     width: 90%;
-    background: rgba(255, 255, 255, 0.80);
+    background: var(--color-base-100);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid #E2E8F0;
+    border: 1px solid var(--color-silk-300);
     border-radius: 12px;
-    box-shadow: 0px 4px 20px rgba(15, 23, 42, 0.05);
+    box-shadow: 0px 4px 20px rgba(0, 108, 73, 0.05);
 }
 
 .content-header-inner {
@@ -720,7 +720,7 @@ const toggleSidebar = () => {
 }
 
 .header-user-btn:hover {
-    border-color: #E2E8F0;
+    border-color: var(--color-silk-300);
 }
 
 .avatar-circle {
@@ -732,7 +732,7 @@ const toggleSidebar = () => {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #006c49, #10b981);
+    background: linear-gradient(135deg, var(--color-primary), #00a86b);
     color: #fff;
     font-family: 'Manrope', sans-serif;
     font-size: 14px;
@@ -766,7 +766,7 @@ const toggleSidebar = () => {
     font-family: 'Manrope', sans-serif;
     font-size: 14px;
     font-weight: 600;
-    color: #191c1e;
+    color: var(--color-silk-content);
     text-decoration: none;
     transition: opacity 0.15s ease;
     white-space: nowrap;
@@ -781,7 +781,7 @@ const toggleSidebar = () => {
     font-size: 13px;
     font-weight: 700;
     color: #ffffff;
-    background: #003527;
+    background: var(--color-primary);
     padding: 8px 20px;
     border-radius: 6px;
     text-decoration: none;
@@ -790,7 +790,7 @@ const toggleSidebar = () => {
 }
 
 .header-auth-btn:hover {
-    background: rgba(0, 53, 39, 0.9);
+    background: var(--color-primary-dark);
 }
 
 /* ───────────────────────────────────────────

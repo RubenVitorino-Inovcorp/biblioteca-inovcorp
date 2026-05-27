@@ -101,40 +101,40 @@ watch(() => props.selectedBook, (newBook) => {
 </script>
 
 <template>
-    <form @submit.prevent="submit" class="max-w-2xl mx-auto space-y-10 p-8 bg-white rounded-2xl shadow-sm border border-gray-100 mt-6">
+    <form @submit.prevent="submit" class="max-w-2xl mx-auto space-y-10 p-8 bg-base-100 rounded-2xl shadow-sm border border-gray-100 mt-6">
         <div class="mb-6 pb-4 border-b border-gray-100">
-            <h2 class="text-xl font-bold font-['Manrope'] text-[#191c1e]">Adicionar Novo Livro</h2>
+            <h2 class="text-xl font-bold font-['Manrope'] text-base-content">Adicionar Novo Livro</h2>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="form-control">
-                <label class="label font-semibold text-[#3c4a42]">Título</label>
+                <label class="label font-semibold text-base-content/70">Título</label>
                 <input v-model="form.title" type="text" class="input border focus:border-primary focus:border-2 p-4 focus:outline-none w-full" placeholder="Ex: O Principezinho" />
                 <span v-if="form.errors.title" class="text-red-500 text-xs mt-1">{{ form.errors.title }}</span>
             </div>
 
             <div class="form-control">
-                <label class="label font-semibold text-[#3c4a42]">ISBN</label>
+                <label class="label font-semibold text-base-content/70">ISBN</label>
                 <input v-model="form.isbn" type="text" class="input border focus:border-primary focus:border-2 p-4 focus:outline-none w-full" placeholder="Ex: 978-989-X-XX-XXXXXX-X" />
                 <span v-if="form.errors.isbn" class="text-red-500 text-xs mt-1">{{ form.errors.isbn }}</span>
             </div>
         </div>
 
         <div class="form-control mt-2">
-            <label class="label font-semibold text-[#3c4a42]">Bibliografia</label>
+            <label class="label font-semibold text-base-content/70">Bibliografia</label>
             <textarea v-model="form.bibliography" class="textarea border border focus:border-primary focus:border-2 p-4 focus:outline-none h-24 w-full" placeholder="Sinopse ou descrição do livro..."></textarea>
             <span v-if="form.errors.bibliography" class="text-red-500 text-xs mt-1">{{ form.errors.bibliography }}</span>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
             <div class="form-control">
-                <label class="label font-semibold text-[#3c4a42]">Preço (€)</label>
+                <label class="label font-semibold text-base-content/70">Preço (€)</label>
                 <input v-model="form.price" type="number" step="0.01" class="input border focus:border-primary focus:border-2 p-4 focus:outline-none w-full" placeholder="0.00" />
                 <span v-if="form.errors.price" class="text-red-500 text-xs mt-1">{{ form.errors.price }}</span>
             </div>
 
             <div class="form-control">
-                <label class="label font-semibold text-[#3c4a42]">Stock total</label>
+                <label class="label font-semibold text-base-content/70">Stock total</label>
                 <input v-model="form.total_stock" type="number" step="1" class="input border focus:border-primary focus:border-2 p-4 focus:outline-none w-full" placeholder="0" />
                 <span v-if="form.errors.total_stock" class="text-red-500 text-xs mt-1">{{ form.errors.total_stock }}</span>
             </div>
@@ -169,7 +169,7 @@ watch(() => props.selectedBook, (newBook) => {
                     :style="'background-image: url(\'' + imagePreview + '\');'"
                 />
             </div>
-            <label class="label font-semibold text-[#3c4a42]">Capa do Livro</label>
+            <label class="label font-semibold text-base-content/70">Capa do Livro</label>
             <input
                 ref="imageInput"
                 type="file"

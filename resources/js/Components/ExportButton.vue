@@ -23,9 +23,9 @@ const props = defineProps({
      font-size: 13px;
      font-weight: 600;
      letter-spacing: 0.02em;
-     color: #3c4a42;
-     background: #ffffff;
-     border: 1px solid #E2E8F0;
+     color: var(--color-silk-subtle);
+     background: var(--color-base-100);
+     border: 1px solid var(--color-silk-300);
      border-radius: 6px;
      cursor: pointer;
      transition: all 0.2s ease;
@@ -33,6 +33,6 @@ const props = defineProps({
  }
 
  .btn-export:hover {
-         background: #f0fdf4;
+         background: var(--color-primary-light);
  }
 </style>

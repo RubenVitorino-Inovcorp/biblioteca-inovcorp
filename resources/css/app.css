@@ -1,29 +1,67 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+    --font-sans: "Manrope", sans-serif;
+}
 
 @plugin "daisyui" {
-    themes: light --default, dark --prefersdark, cupcake;
+    themes: silk --default;
+}
+
+@plugin "daisyui/theme" {
+    name: "silk";
+    default: true;
+    prefersdark: false;
+    color-scheme: "light";
+    --color-base-100: oklch(97% 0.0035 67.78);
+    --color-base-200: oklch(95% 0.0081 61.42);
+    --color-base-300: oklch(90% 0.0081 61.42);
+    --color-base-content: oklch(40% 0.0081 61.42);
+    --color-primary: #006c49;
+    --color-primary-content: oklch(95.2% 0.043 109.700);
+    --color-secondary: oklch(23.27% 0.0249 284.3);
+    --color-secondary-content: oklch(73.92% 0.2135 50.94);
+    --color-accent: oklch(23.27% 0.0249 284.3);
+    --color-accent-content: oklch(88.92% 0.2061 189.9);
+    --color-neutral: oklch(20% 0 0);
+    --color-neutral-content: oklch(80% 0.0081 61.42);
+    --color-info: oklch(80.39% 0.1148 241.68);
+    --color-info-content: oklch(30.39% 0.1148 241.68);
+    --color-success: oklch(83.92% 0.0901 136.87);
+    --color-success-content: oklch(23.92% 0.0901 136.87);
+    --color-warning: oklch(83.92% 0.1085 80);
+    --color-warning-content: oklch(43.92% 0.1085 80);
+    --color-error: oklch(75.1% 0.1814 22.37);
+    --color-error-content: oklch(35.1% 0.1814 22.37);
+    --radius-selector: 2rem;
+    --radius-field: 0.5rem;
+    --radius-box: 1rem;
+    --size-selector: 0.3125rem;
+    --size-field: 0.3125rem;
+    --border: 2px;
+    --depth: 1;
+    --noise: 0;
 }
 
 [x-cloak] {
     display: none;
 }
 
-@theme {
-    --color-primary: #006c49;
-    --color-secondary: #0F172A;
-}
-
-:root,
-[data-theme] {
-    --color-primary: #006c49 !important;
-    --color-primary-content: #ffffff !important;
-    --color-secondary: #0F172A !important;
-    --color-secondary-content: #ffffff !important;
+:root {
+    --color-primary-dark: #005236;
+    --color-primary-darker: #003d28;
+    --color-primary-light: rgba(0, 108, 73, 0.08);
+    --color-silk-base: var(--color-base-100);
+    --color-silk-200: var(--color-base-200);
+    --color-silk-300: var(--color-base-300);
+    --color-silk-content: var(--color-base-content);
+    --color-silk-muted: color-mix(in oklab, var(--color-base-content) 60%, transparent);
+    --color-silk-subtle: color-mix(in oklab, var(--color-base-content) 50%, transparent);
+    --color-silk-accent: var(--color-secondary);
 }
 
 .glass {
@@ -34,12 +72,12 @@
 }
 
 /* ───────────────────────────────────────────
-   Global Base Styles (DESIGN.md)
+   Global Base Styles — Silk Theme
    ─────────────────────────────────────────── */
 body {
     font-family: 'Manrope', sans-serif;
-    color: #191c1e;
-    background: #f7f9fb;
+    color: var(--color-silk-content);
+    background: var(--color-base-200);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -80,17 +118,17 @@ input[type="search"]::-webkit-search-decoration {
     font-family: 'Manrope', sans-serif;
     font-size: 12px;
     font-weight: 600;
-    color: #00422b;
-    background: #ecfdf5;
-    border: 1px solid #a7f3d0;
+    color: var(--color-primary-darker);
+    background: rgba(0, 108, 73, 0.06);
+    border: 1px solid rgba(0, 108, 73, 0.2);
     border-radius: 9999px;
     text-decoration: none;
     transition: all 0.15s ease;
 }
 
 .badge-author:hover {
-    background: #d1fae5;
-    border-color: #6ee7b7;
+    background: rgba(0, 108, 73, 0.12);
+    border-color: rgba(0, 108, 73, 0.35);
 }
 
 .badge-author a {
@@ -106,9 +144,9 @@ input[type="search"]::-webkit-search-decoration {
     font-family: 'Manrope', sans-serif;
     font-size: 12px;
     font-weight: 600;
-    color: #0F172A;
-    background: #f1f5f9;
-    border: 1px solid #cbd5e1;
+    color: var(--color-silk-content);
+    background: var(--color-silk-200);
+    border: 1px solid var(--color-silk-300);
     border-radius: 9999px;
     text-decoration: none;
     transition: all 0.15s ease;
@@ -116,13 +154,19 @@ input[type="search"]::-webkit-search-decoration {
 }
 
 .badge-publisher:hover {
-    background: #e2e8f0;
-    border-color: #94a3b8;
+    background: var(--color-silk-300);
+    border-color: var(--color-silk-muted);
 }
 
 .badge-publisher a {
     color: inherit;
     text-decoration: none;
+}
+
+.badge-secondary {
+    color: var(--color-silk-content) !important;
+    background: var(--color-silk-200) !important;
+    border-color: var(--color-silk-300) !important;
 }
 
 /* ───────────────────────────────────────────
@@ -136,16 +180,16 @@ input[type="search"]::-webkit-search-decoration {
     font-family: 'Manrope', sans-serif;
     font-size: 12px;
     font-weight: 600;
-    color: #006c49;
+    color: var(--color-primary);
     background: transparent;
-    border: 1px solid #006c49;
+    border: 1px solid var(--color-primary);
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.15s ease;
 }
 
 .btn-table-edit:hover {
-    background: #006c49;
+    background: var(--color-primary);
     color: #ffffff;
 }
 
@@ -184,7 +228,7 @@ input[type="search"]::-webkit-search-decoration {
     letter-spacing: 0.04em;
     text-transform: uppercase;
     color: #ffffff;
-    background: #006c49;
+    background: var(--color-primary);
     border: none;
     border-radius: 6px;
     cursor: pointer;
@@ -194,7 +238,7 @@ input[type="search"]::-webkit-search-decoration {
 }
 
 .btn-add:hover {
-    background: #005236;
+    background: var(--color-primary-dark);
     box-shadow: 0 2px 8px rgba(0, 108, 73, 0.25);
 }
 
@@ -230,9 +274,9 @@ input[type="search"]::-webkit-search-decoration {
     font-family: 'Manrope', sans-serif;
     font-size: 13px;
     font-weight: 500;
-    color: #3c4a42;
-    background: #ffffff;
-    border: 1px solid #E2E8F0;
+    color: var(--color-silk-subtle);
+    background: var(--color-base-100);
+    border: 1px solid var(--color-silk-300);
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -240,14 +284,14 @@ input[type="search"]::-webkit-search-decoration {
 }
 
 .pagination-item:hover:not(.pagination-item--active):not(.pagination-item--disabled) {
-    border-color: #006c49;
-    color: #006c49;
-    background: #f0fdf4;
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    background: var(--color-primary-light);
 }
 
 .pagination-item--active {
-    background: #006c49;
-    border-color: #006c49;
+    background: var(--color-primary);
+    border-color: var(--color-primary);
     color: #ffffff;
     font-weight: 600;
     cursor: default;
@@ -263,8 +307,8 @@ input[type="search"]::-webkit-search-decoration {
    Estilos da página de detalhes
    ─────────────────────────────────────────── */
 .show-card {
-    background: #ffffff;
-    border: 1px solid #E2E8F0;
+    background: var(--color-base-100);
+    border: 1px solid var(--color-silk-300);
     border-radius: 12px;
     overflow: hidden;
 }
@@ -273,14 +317,14 @@ input[type="search"]::-webkit-search-decoration {
     border-radius: 10px;
     width: 100%;
     object-fit: cover;
-    border: 1px solid #E2E8F0;
+    border: 1px solid var(--color-silk-300);
 }
 
 .show-title {
     font-family: 'Manrope', sans-serif;
     font-size: 28px;
     font-weight: 700;
-    color: #191c1e;
+    color: var(--color-silk-content);
     line-height: 1.3;
 }
 
@@ -294,7 +338,7 @@ input[type="search"]::-webkit-search-decoration {
 }
 
 .show-title-link:hover {
-    color: #006c49;
+    color: var(--color-primary);
 }
 
 .show-title-link svg {
@@ -306,7 +350,7 @@ input[type="search"]::-webkit-search-decoration {
 
 .show-title-link:hover svg {
     opacity: 1;
-    color: #006c49;
+    color: var(--color-primary);
 }
 
 .show-label {
@@ -315,14 +359,14 @@ input[type="search"]::-webkit-search-decoration {
     font-weight: 700;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: #6c7a71;
+    color: var(--color-silk-muted);
     margin-bottom: 6px;
 }
 
 .show-text {
     font-family: 'Manrope', sans-serif;
     font-size: 15px;
-    color: #3c4a42;
+    color: var(--color-silk-subtle);
     line-height: 1.6;
 }
 
@@ -330,42 +374,42 @@ input[type="search"]::-webkit-search-decoration {
     font-family: 'Manrope', sans-serif;
     font-size: 26px;
     font-weight: 700;
-    color: #006c49;
+    color: var(--color-primary);
 }
 
 .show-isbn {
     font-family: 'Manrope', sans-serif;
     font-size: 13px;
-    color: #6c7a71;
+    color: var(--color-silk-muted);
 }
 
 .show-section-title {
     font-family: 'Manrope', sans-serif;
     font-size: 20px;
     font-weight: 700;
-    color: #191c1e;
+    color: var(--color-silk-content);
     margin-top: 16px;
     margin-bottom: 16px;
 }
 
 .show-divider {
     height: 1px;
-    background: #E2E8F0;
+    background: var(--color-silk-300);
     margin: 24px 0;
 }
 
 /* Cards em Author/Publisher show */
 .book-card {
-    background: #ffffff;
-    border: 1px solid #E2E8F0;
+    background: var(--color-base-100);
+    border: 1px solid var(--color-silk-300);
     border-radius: 10px;
     overflow: hidden;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .book-card:hover {
-    border-color: #00422b;
-    box-shadow: 0px 4px 20px rgba(15, 23, 42, 0.05);
+    border-color: var(--color-primary);
+    box-shadow: 0px 4px 20px rgba(0, 108, 73, 0.08);
 }
 
 .book-card-image {
@@ -385,12 +429,12 @@ input[type="search"]::-webkit-search-decoration {
     font-family: 'Manrope', sans-serif;
     font-size: 15px;
     font-weight: 600;
-    color: #191c1e;
+    color: var(--color-silk-content);
     line-height: 1.3;
 }
 
 .book-card-isbn {
     font-family: 'Manrope', sans-serif;
     font-size: 12px;
-    color: #6c7a71;
+    color: var(--color-silk-muted);
 }

@@ -94,7 +94,7 @@ const clearPhotoFileInput = () => {
                     <!-- Current Profile Photo -->
                     <div v-show="! photoPreview" class="shrink-0">
                         <img v-if="user.profile_photo_url" :src="user.profile_photo_url" :alt="user.name" class="rounded-full size-20 object-cover shadow-sm border border-gray-100">
-                        <div v-else class="rounded-full size-20 flex items-center justify-center bg-gray-200 text-[#3c4a42] shadow-sm border border-gray-100 text-2xl font-bold font-['Manrope']">
+                        <div v-else class="rounded-full size-20 flex items-center justify-center bg-gray-200 text-base-content/70 shadow-sm border border-gray-100 text-2xl font-bold font-['Manrope']">
                             {{ user.name?.charAt(0)?.toUpperCase() }}
                         </div>
                     </div>

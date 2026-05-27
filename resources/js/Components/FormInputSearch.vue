@@ -83,7 +83,7 @@ const removeItem = (itemToRemove) => {
 <template>
     <div class="form-control w-full relative">
         <label v-if="label" class="label">
-            <span class="label font-semibold text-[#3c4a42]">{{ label }}</span>
+            <span class="label font-semibold text-base-content/70">{{ label }}</span>
         </label>
         
         <input 
@@ -106,7 +106,7 @@ const removeItem = (itemToRemove) => {
                 </a>
             </li>
             <li v-if="search.trim() !== '' && !availableItems.some(i => i.name.toLowerCase() === search.trim().toLowerCase())">
-                <a @mousedown.prevent="selectItem({ id: search.trim(), name: search.trim() })" class="cursor-pointer text-[#006c49] font-bold">
+                <a @mousedown.prevent="selectItem({ id: search.trim(), name: search.trim() })" class="cursor-pointer text-primary font-bold">
                     Criar "{{ search.trim() }}"
                 </a>
             </li>

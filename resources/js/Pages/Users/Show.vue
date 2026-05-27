@@ -19,7 +19,7 @@
         <Head :title="props.user.name" />
 
         <div class="max-w-5xl mx-auto p-4 md:p-8">
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="bg-base-100 rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
                 <!-- Cabeçalho -->
                 <div class="p-8 md:p-12 border-b border-gray-50">
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-10 items-center">
@@ -54,11 +54,11 @@
                             </div>
 
                             <div class="grid grid-cols-2 gap-4 max-w-sm mx-auto md:mx-0">
-                                <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100 transition-all hover:bg-white hover:shadow-md">
+                                <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100 transition-all hover:bg-base-100 hover:shadow-md">
                                     <span class="block text-[10px] uppercase font-bold text-gray-400 tracking-widest mb-1">Requisições</span>
                                     <span class="text-2xl font-black text-primary">{{ props.loans.length }}</span>
                                 </div>
-                                <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100 transition-all hover:bg-white hover:shadow-md">
+                                <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100 transition-all hover:bg-base-100 hover:shadow-md">
                                     <span class="block text-[10px] uppercase font-bold text-gray-400 tracking-widest mb-1">Membro desde</span>
                                     <span class="text-sm font-bold text-gray-700">{{ useDateFormat(props.user.created_at, 'MM/YYYY') }}</span>
                                 </div>
@@ -112,7 +112,7 @@
                     </TableWrapper>
 
                     <div v-else class="bg-gray-50 rounded-3xl py-16 px-8 text-center border-2 border-dashed border-gray-100">
-                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white shadow-sm mb-4">
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-base-100 shadow-sm mb-4">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                             </svg>

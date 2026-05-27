@@ -159,9 +159,9 @@ const hasActiveFilters = () => {
     font-size: 13px;
     font-weight: 600;
     letter-spacing: 0.02em;
-    color: #3c4a42;
-    background: #ffffff;
-    border: 1px solid #E2E8F0;
+    color: var(--color-silk-subtle);
+    background: var(--color-base-100);
+    border: 1px solid var(--color-silk-300);
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -169,21 +169,21 @@ const hasActiveFilters = () => {
 }
 
 .filter-trigger:hover {
-    border-color: #006c49;
-    color: #006c49;
+    border-color: var(--color-primary);
+    color: var(--color-primary);
 }
 
 .filter-trigger.has-filters {
-    border-color: #006c49;
-    color: #006c49;
-    background: #f0fdf4;
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    background: var(--color-primary-light);
 }
 
 .filter-badge {
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background: #10b981;
+    background: var(--color-primary);
     position: absolute;
     top: 5px;
     right: 5px;
@@ -204,10 +204,10 @@ const hasActiveFilters = () => {
     top: calc(100% + 8px);
     right: 0;
     width: 280px;
-    background: #ffffff;
-    border: 1px solid #E2E8F0;
+    background: var(--color-base-100);
+    border: 1px solid var(--color-silk-300);
     border-radius: 8px;
-    box-shadow: 0px 4px 20px rgba(15, 23, 42, 0.08);
+    box-shadow: 0px 4px 20px rgba(0, 108, 73, 0.08);
     padding: 16px;
     z-index: 50;
     display: flex;
@@ -220,7 +220,7 @@ const hasActiveFilters = () => {
     align-items: center;
     justify-content: space-between;
     padding-bottom: 10px;
-    border-bottom: 1px solid #E2E8F0;
+    border-bottom: 1px solid var(--color-silk-300);
 }
 
 .filter-panel-title {
@@ -229,14 +229,14 @@ const hasActiveFilters = () => {
     font-weight: 700;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: #191c1e;
+    color: var(--color-silk-content);
 }
 
 .filter-clear-btn {
     font-family: 'Manrope', sans-serif;
     font-size: 12px;
     font-weight: 600;
-    color: #006c49;
+    color: var(--color-primary);
     background: none;
     border: none;
     cursor: pointer;
@@ -246,7 +246,7 @@ const hasActiveFilters = () => {
 }
 
 .filter-clear-btn:hover {
-    background: #f0fdf4;
+    background: var(--color-primary-light);
 }
 
 .filter-group {
@@ -260,7 +260,7 @@ const hasActiveFilters = () => {
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.03em;
-    color: #6c7a71;
+    color: var(--color-silk-muted);
     text-transform: uppercase;
 }
 
@@ -270,9 +270,9 @@ const hasActiveFilters = () => {
     font-family: 'Manrope', sans-serif;
     font-size: 14px;
     font-weight: 400;
-    color: #191c1e;
-    background-color: #F1F5F9;
-    border: 1px solid #E2E8F0;
+    color: var(--color-silk-content);
+    background-color: var(--color-silk-200);
+    border: 1px solid var(--color-silk-300);
     border-radius: 6px;
     cursor: pointer;
     transition: border-color 0.2s ease;
@@ -283,7 +283,7 @@ const hasActiveFilters = () => {
 }
 
 .filter-select:focus {
-    border-color: #006c49;
+    border-color: var(--color-primary);
     box-shadow: 0 0 0 2px rgba(0, 108, 73, 0.1);
 }
 

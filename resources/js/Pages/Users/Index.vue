@@ -64,7 +64,7 @@
                             <div class="flex items-center gap-3">
                                 <div class="avatar">
                                     <img v-if="user.profile_photo_url" :src="user.profile_photo_url" :alt="user.name" class="rounded-full h-12 w-12 border border-gray-100">
-                                    <div v-else class="rounded-full h-12 w-12 flex items-center justify-center bg-gray-200 text-[#3c4a42] shadow-sm border border-gray-100 text-2xl font-bold font-['Manrope']">
+                                    <div v-else class="rounded-full h-12 w-12 flex items-center justify-center bg-gray-200 text-base-content/70 shadow-sm border border-gray-100 text-2xl font-bold font-['Manrope']">
                                         {{ user.name?.charAt(0)?.toUpperCase() }}
                                     </div>
                                 </div>
@@ -132,7 +132,7 @@
         font-family: 'Manrope', sans-serif;
         font-size: 17px;
         font-weight: 600;
-        color: #191c1e;
+        color: var(--color-silk-content);
         line-height: 1.4;
     }
 
@@ -145,7 +145,7 @@
     .empty-state-text {
         font-family: 'Manrope', sans-serif;
         font-size: 14px;
-        color: #6c7a71;
+        color: var(--color-silk-muted);
         font-style: italic;
     }
 </style>

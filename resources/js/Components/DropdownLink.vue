@@ -32,7 +32,7 @@ defineProps({
     font-size: 13px;
     font-weight: 500;
     line-height: 1.4;
-    color: #3c4a42;
+    color: var(--color-silk-subtle);
     text-align: left;
     text-decoration: none;
     background: none;
@@ -43,12 +43,12 @@ defineProps({
 
 .dropdown-link-item:hover {
     background: #f0fdf4;
-    color: #006c49;
+    color: var(--color-primary);
 }
 
 .dropdown-link-item:focus {
     outline: none;
     background: #f0fdf4;
-    color: #006c49;
+    color: var(--color-primary);
 }
 </style>

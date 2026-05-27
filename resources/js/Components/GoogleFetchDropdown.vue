@@ -35,15 +35,15 @@ const booksList = computed(() => {
             </div>
 
             <div v-if="booksList.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4 justify-items-center bg-base-200 rounded-box max-h-[22rem] overflow-y-auto">
-                <div v-for="book in booksList" :key="book.google_id" class="card card-side w-full max-w-[22rem] bg-white shadow-sm border border-[#E2E8F0] p-3 gap-3 transition-colors hover:border-[#006c49]">
-                    <figure class="w-20 h-28 flex-shrink-0 bg-base-300 rounded-lg overflow-hidden border border-[#E2E8F0]">
+                <div v-for="book in booksList" :key="book.google_id" class="card card-side w-full max-w-[22rem] bg-base-100 shadow-sm border border-base-300 p-3 gap-3 transition-colors hover:border-primary">
+                    <figure class="w-20 h-28 flex-shrink-0 bg-base-300 rounded-lg overflow-hidden border border-base-300">
                         <img :src="book.capa || '/img/default-capa.png'" alt="Capa" class="w-full h-full object-cover" />
                     </figure>
                     <div class="flex flex-col justify-between overflow-hidden w-full">
                         <div>
-                            <h4 class="font-bold text-[14px] leading-tight truncate text-[#191c1e]" style="font-family: 'Manrope', sans-serif;">{{ book.titulo }}</h4>
-                            <p class="text-xs font-semibold text-[#006c49] truncate mt-1">{{ book.autores }}</p>
-                            <p v-if="book.isbn" class="text-[11px] text-[#6c7a71] mt-1">ISBN: {{ book.isbn }}</p>
+                            <h4 class="font-bold text-[14px] leading-tight truncate text-base-content" style="font-family: 'Manrope', sans-serif;">{{ book.titulo }}</h4>
+                            <p class="text-xs font-semibold text-primary truncate mt-1">{{ book.autores }}</p>
+                            <p v-if="book.isbn" class="text-[11px] text-base-content/60 mt-1">ISBN: {{ book.isbn }}</p>
                         </div>
                         <button 
                             type="button" 
@@ -65,9 +65,9 @@ const booksList = computed(() => {
                         :href="link.url ?? ''"
                         class="px-3 py-1 text-xs border rounded-md transition-all duration-200"
                         :class="{
-                            'bg-[#006c49] text-white border-[#006c49] font-semibold shadow-sm': link.active,
-                            'bg-white hover:bg-[#f0fdf4] hover:text-[#006c49] hover:border-[#006c49] border-[#E2E8F0] text-[#3c4a42]': !link.active && link.url,
-                            'opacity-40 cursor-not-allowed text-[#3c4a42]/50 border-[#E2E8F0]': !link.url
+                            'bg-primary text-white border-primary font-semibold shadow-sm': link.active,
+                            'bg-base-100 hover:bg-primary/5 hover:text-primary hover:border-primary border-base-300 text-base-content/70': !link.active && link.url,
+                            'opacity-40 cursor-not-allowed text-base-content/30 border-base-300': !link.url
                         }"
                         v-html="link.label"
                     />

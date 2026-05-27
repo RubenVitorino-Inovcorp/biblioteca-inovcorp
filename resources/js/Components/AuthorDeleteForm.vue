@@ -46,7 +46,7 @@ const deleteAuthorAction = () => {
         </template>
 
         <template #footer>
-            <button type="button" class="px-4 py-2 text-sm font-bold text-[#6c7a71] hover:text-[#191c1e] transition-colors font-['Manrope'] mr-3" @click="showModal = false">
+            <button type="button" class="px-4 py-2 text-sm font-bold text-base-content/60 hover:text-base-content transition-colors font-['Manrope'] mr-3" @click="showModal = false">
                 Cancelar
             </button>
             <button
