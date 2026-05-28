@@ -38,7 +38,7 @@ class ReviewApprovedMail extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            view: 'emails.reviews.approved',
+            markdown: 'emails.reviews.approved',
         );
     }
 

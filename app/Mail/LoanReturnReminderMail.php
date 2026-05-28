@@ -26,7 +26,7 @@ class LoanReturnReminderMail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Lembrete de Devolução - ' . $this->loan->loan_number,
+            subject: 'Lembrete de Devolução - '.$this->loan->loan_number,
         );
     }
 

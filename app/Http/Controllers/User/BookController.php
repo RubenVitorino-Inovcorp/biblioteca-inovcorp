@@ -9,6 +9,7 @@ use App\Models\Author;
 use App\Models\Book;
 use App\Models\Publisher;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class BookController extends Controller
@@ -68,6 +69,19 @@ class BookController extends Controller
     {
         $userId = auth()->id();
 
+        $book->load([
+            'authors',
+            'publisher',
+            'reviews' => function ($query) {
+                $query->with('user')->where('status', ReviewStatus::APPROVED)->latest();
+            },
+        ]);
+
+        $book->has_alert = auth()->check() && DB::table('book_alerts')
+            ->where('book_id', $book->id)
+            ->where('user_id', $userId)
+            ->exists();
+
         $userReview = $book->reviews()
             ->where('user_id', $userId)
             ->first();
@@ -82,13 +96,7 @@ class BookController extends Controller
         }
 
         return Inertia::render('User/Books/Show', [
-            'book' => $book->load([
-                'authors',
-                'publisher',
-                'reviews' => function ($query) {
-                    $query->with('user')->where('status', ReviewStatus::APPROVED)->latest();
-                },
-            ]),
+            'book' => $book,
             'loans' => $book->loans()->with('user')->latest()->get(),
             'userReview' => $userReview,
             'reviewableLoanId' => $reviewableLoanId,

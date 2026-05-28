@@ -2,38 +2,24 @@
 
 namespace App\Mail;
 
-use App\Models\Loan;
+use App\Models\Book;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class LoanRequestedUserMail extends Mailable implements ShouldQueue
+class BookAvailableMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
-     * Número de tentativas antes de falhar definitivamente.
-     */
-    public int $tries = 3;
-
-    /**
-     * Segundos de espera entre tentativas (backoff progressivo).
-     *
-     * @return array<int, int>
-     */
-    public function backoff(): array
-    {
-        return [5, 10];
-    }
-
-    /**
      * Create a new message instance.
      */
-    public function __construct(public Loan $loan) {}
+    public function __construct(
+        public Book $book
+    ) {}
 
     /**
      * Get the message envelope.
@@ -41,7 +27,7 @@ class LoanRequestedUserMail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Confirmação de Pedido de Requisição - '.$this->loan->loan_number,
+            subject: 'O livro que procura já está disponível!',
         );
     }
 
@@ -51,7 +37,7 @@ class LoanRequestedUserMail extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.loans.requested-user',
+            markdown: 'emails.books.available',
         );
     }
 

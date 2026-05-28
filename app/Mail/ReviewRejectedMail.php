@@ -36,7 +36,7 @@ class ReviewRejectedMail extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            view: 'emails.reviews.rejected',
+            markdown: 'emails.reviews.rejected',
         );
     }
 

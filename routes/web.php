@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\PublisherController as AdminPublisherController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\User\AuthorController as UserAuthorController;
+use App\Http\Controllers\User\BookAlertController;
 use App\Http\Controllers\User\BookController as UserBookController;
 use App\Http\Controllers\User\LoanController as UserLoanController;
 use App\Http\Controllers\User\PublisherController as UserPublisherController;
@@ -62,4 +63,8 @@ Route::middleware([
     Route::resource('/opinioes', UserReviewController::class)->parameter('opinioes', 'review')->names('opinioes');
 
     Route::post('/requisicoes/{loan}/devolver', [UserLoanController::class, 'returnBook'])->name('catalog.requisicoes.devolver');
+
+    Route::post('/livros/{book}/alerta', [BookAlertController::class, 'store'])->name('catalog.livros.alerta.store');
+    Route::delete('/livros/{book}/alerta', [BookAlertController::class, 'destroy'])->name('catalog.livros.alerta.destroy');
+
 });

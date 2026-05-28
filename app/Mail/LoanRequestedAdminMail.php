@@ -41,7 +41,7 @@ class LoanRequestedAdminMail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Nova Requisição de Empréstimo - ' . $this->loan->loan_number,
+            subject: 'Nova Requisição de Empréstimo - '.$this->loan->loan_number,
         );
     }
 

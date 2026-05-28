@@ -3,9 +3,9 @@
 
 Uma nova opinião foi submetida pelo cidadão **{{ $review->user->name }}** e aguarda moderação.
 
-**Livro:** {{ $review->book->title }}  
-**Cidadão:** {{ $review->user->name }} ({{ $review->user->email }})  
-**Classificação:** {{ $review->rating }}/10  
+**Livro:** {{ $review->book->title }}
+**Cidadão:** {{ $review->user->name }} ({{ $review->user->email }})
+**Classificação:** {{ $review->rating }}/10
 **Título:** {{ $review->review_title }}
 
 <x-mail::panel>

@@ -7,6 +7,7 @@
     import { usePage } from '@inertiajs/vue3'
     import {Head, Link} from '@inertiajs/vue3'
     import { LibraryBig } from '@lucide/vue';
+    import BookAvailabilityAlert from '@/Components/BookAvailabilityAlert.vue';
 
 
     const props = defineProps({
@@ -18,6 +19,16 @@
 
     const isAdmin = computed(() => {
         return usePage().props.auth.user?.is_admin;
+    });
+
+    const page = usePage();
+
+    const hasActiveLoan = computed(() => {
+        if (!page.props.auth.user) return false;
+        return props.loans?.some(loan => 
+            loan.user_id === page.props.auth.user.id &&
+            ['pending', 'active', 'overdue', 'return_pending'].includes(loan.status)
+        );
     });
 
 </script>
@@ -79,6 +90,9 @@
                                     Requisitar
                                 </button>
                             </LoanCreateForm>
+                        </div>
+                        <div v-else-if="!book.is_available && !hasActiveLoan && $page.props.auth.user" class="flex justify-end mt-2">
+                            <BookAvailabilityAlert :book="book.id" :user="$page.props.auth.user.id" :has_alert="!!book.has_alert" />
                         </div>
                     </div>
 

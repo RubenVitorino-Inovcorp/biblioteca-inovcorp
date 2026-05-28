@@ -5,7 +5,7 @@ O utilizador {{ $loan->user->name }} registou uma nova requisição de emprésti
 
 <div style="text-align: center; margin: 20px 0;">
     @if($loan->book->image_path)
-        <img src="{{ url($loan->book->image_path) }}" alt="Capa do Livro" style="max-height: 200px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <img src="{{ url($loan->book->image_path) }}" alt="Capa do Livro" style="max-height: 200px; border-radius: 8px;">
     @endif
 </div>
 
@@ -18,4 +18,6 @@ O utilizador {{ $loan->user->name }} registou uma nova requisição de emprésti
 Ver Requisição
 </x-mail::button>
 
+Obrigado,<br>
+{{ config('app.name') }}
 </x-mail::message>

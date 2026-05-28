@@ -4,12 +4,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\LoanStatus;
 use App\Http\Controllers\Controller;
+use App\Mail\BookAvailableMail;
 use App\Models\Book;
 use App\Models\Loan;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
@@ -30,12 +33,12 @@ class LoanController extends Controller
             ->when($request->search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('loan_number', 'like', "%{$search}%")
-                      ->orWhereHas('book', function ($bookQuery) use ($search) {
-                           $bookQuery->where('title', 'like', "%{$search}%");
-                       })
-                      ->orWhereHas('user', function ($userQuery) use ($search) {
-                          $userQuery->where('name', 'like', "%{$search}%");
-                      });
+                        ->orWhereHas('book', function ($bookQuery) use ($search) {
+                            $bookQuery->where('title', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('user', function ($userQuery) use ($search) {
+                            $userQuery->where('name', 'like', "%{$search}%");
+                        });
                 });
             })
             ->when($request->status, function ($query, $status) {
@@ -61,7 +64,7 @@ class LoanController extends Controller
 
         $filters = $request->only(['search', 'sort', 'status']);
 
-        if (!in_array($filters['sort'] ?? null, ['inicio_recente', 'inicio_antigo', 'devolucao_proxima', 'devolucao_distante', 'numero_asc', 'numero_desc', 'dias_asc', 'dias_desc'], true)) {
+        if (! in_array($filters['sort'] ?? null, ['inicio_recente', 'inicio_antigo', 'devolucao_proxima', 'devolucao_distante', 'numero_asc', 'numero_desc', 'dias_asc', 'dias_desc'], true)) {
             $filters['sort'] = '';
         }
 
@@ -105,7 +108,7 @@ class LoanController extends Controller
         $user = User::findOrFail($validated['user_id']);
         $book = Book::findOrFail($validated['book_id']);
 
-        if (!$user->canMakeLoans()) {
+        if (! $user->canMakeLoans()) {
             throw ValidationException::withMessages([
                 'user_id' => 'Este utilizador já atingiu o limite de 3 requisições!',
             ]);
@@ -122,7 +125,7 @@ class LoanController extends Controller
             ]);
         }
 
-        if (!$book->is_available) {
+        if (! $book->is_available) {
             throw ValidationException::withMessages([
                 'book_id' => 'Este livro não está disponível.',
             ]);
@@ -139,6 +142,11 @@ class LoanController extends Controller
             ]);
 
             $book->decrement('available_stock');
+
+            DB::table('book_alerts')
+                ->where('user_id', $user->id)
+                ->where('book_id', $book->id)
+                ->delete();
         });
 
         return redirect()->route('requisicoes.index')->with('success', 'Requisição criada com sucesso!');
@@ -172,7 +180,7 @@ class LoanController extends Controller
     public function update(Request $request, Loan $loan)
     {
         $validated = $request->validate([
-            'status' => 'required|in:' . implode(',', array_column(LoanStatus::cases(), 'value')),
+            'status' => 'required|in:'.implode(',', array_column(LoanStatus::cases(), 'value')),
             'end_date' => 'nullable|date',
         ]);
 
@@ -215,6 +223,11 @@ class LoanController extends Controller
             'status' => LoanStatus::ACTIVE,
         ]);
 
+        DB::table('book_alerts')
+            ->where('user_id', $loan->user_id)
+            ->where('book_id', $loan->book_id)
+            ->delete();
+
         return redirect()->route('requisicoes.index')->with('success', 'Requisição aprovada com sucesso!');
     }
 
@@ -248,21 +261,21 @@ class LoanController extends Controller
     {
         Gate::authorize('update', $loan);
 
-        if (!in_array($loan->status, [LoanStatus::ACTIVE, LoanStatus::OVERDUE, LoanStatus::RETURN_PENDING], true)) {
+        if (! in_array($loan->status, [LoanStatus::ACTIVE, LoanStatus::OVERDUE, LoanStatus::RETURN_PENDING], true)) {
             throw ValidationException::withMessages([
                 'status' => 'Esta requisição já se encontra encerrada ou inválida para devolução.',
             ]);
-        }   
+        }
 
         $minDate = $loan->start_date ? $loan->start_date->format('Y-m-d') : now()->format('Y-m-d');
-        
+
         $validated = $request->validate([
             'return_date' => [
                 'required',
                 'date',
                 'before_or_equal:today',
-                'after_or_equal:' . $minDate,
-            ]
+                'after_or_equal:'.$minDate,
+            ],
         ]);
 
         DB::transaction(function () use ($loan, $validated) {
@@ -274,6 +287,37 @@ class LoanController extends Controller
             $loan->book->increment('available_stock');
         });
 
+        $this->processBookAlerts($loan->book_id);
+
         return redirect()->route('requisicoes.index')->with('success', "Boa requisição confirmada! Dias decorridos: {$loan->elapsed_days} dias.");
+    }
+
+    private function processBookAlerts(int $bookId): void
+    {
+        $userIds = DB::table('book_alerts')->where('book_id', $bookId)->pluck('user_id');
+
+        if ($userIds->isEmpty()) {
+            return;
+        }
+
+        $book = Book::find($bookId);
+
+        if (! $book) {
+            return;
+        }
+
+        $users = User::whereIn('id', $userIds)->get();
+
+        DB::beginTransaction();
+        try {
+            foreach ($users as $user) {
+                Mail::to($user->email)->queue(new BookAvailableMail($book));
+            }
+            DB::table('book_alerts')->where('book_id', $bookId)->delete();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Erro ao processar alertas de livros: '.$e->getMessage());
+        }
     }
 }
