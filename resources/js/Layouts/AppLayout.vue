@@ -108,6 +108,14 @@ const toggleSidebar = () => {
                                         <span v-if="sidebarOpen">As minhas requisições</span>
                                     </NavLink>
                                 </li>
+                                <li v-if="$page.props.auth.user.role.id !== $page.props.roles.ADMIN">
+                                    <NavLink :href="route('opinioes.index')" :active="route().current('opinioes.index')">
+                                        <svg role="img" class="w-5 h-5 text-current" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                        </svg>
+                                        <span v-if="sidebarOpen">As minhas opiniões</span>
+                                    </NavLink>
+                                </li>
                             </ul>
                         </div>
 
@@ -137,6 +145,14 @@ const toggleSidebar = () => {
                                     <NavLink :href="route('requisicoes.index')" :active="route().current('requisicoes.*')">
                                         <LibraryBig :size="20"/>
                                         <span v-if="sidebarOpen">Requisições</span>
+                                    </NavLink>
+                                </li>
+                                <li>
+                                    <NavLink :href="route('admin.opinioes.index')" :active="route().current('admin.opinioes.*')">
+                                        <svg role="img" class="w-5 h-5 text-current" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                        </svg>
+                                        <span v-if="sidebarOpen">Opiniões</span>
                                     </NavLink>
                                 </li>
                                 <li>

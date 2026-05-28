@@ -39,7 +39,10 @@
                         <CirclePlus :size="16" /> Adicionar Livro
                     </Link>
                     <ExportButton route-name="livros.export" :filters="filters">
-                        <DownloadIcon :size="16" /> Exportar Livros
+                        <template #icon>
+                            <DownloadIcon :size="16" />
+                        </template>
+                        Exportar Livros
                     </ExportButton>
                     <FilterDropdown
                         route-name="livros.index"

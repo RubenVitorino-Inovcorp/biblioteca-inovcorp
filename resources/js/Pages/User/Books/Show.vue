@@ -1,6 +1,7 @@
 <script setup>
     import Layout from '@/Layouts/AppLayout.vue'
     import LoanCreateForm from '@/Components/LoanCreateForm.vue';
+    import Reviews from '@/Components/Common/Reviews.vue';
     import TableWrapper from '@/Components/TableWrapper.vue';
     import { computed } from 'vue';
     import { usePage } from '@inertiajs/vue3'
@@ -8,13 +9,15 @@
     import { LibraryBig } from '@lucide/vue';
 
 
-    defineProps({
+    const props = defineProps({
         book: Object,
-        loans: Array
+        loans: Array,
+        userReview: Object,
+        reviewableLoanId: Number,
     })
 
     const isAdmin = computed(() => {
-        return usePage().props.auth.user?.role?.id === usePage().props.roles.ADMIN;
+        return usePage().props.auth.user?.is_admin;
     });
 
 </script>
@@ -134,5 +137,7 @@
                 <p class="text-gray-500">Este livro ainda não foi requisitado.</p>
             </div>
         </div>
-    </Layout>
+        <Reviews :reviews="props.book.reviews" :book="props.book" :userReview="props.userReview" :reviewableLoanId="props.reviewableLoanId" />
+    </Layout>   
+
 </template>

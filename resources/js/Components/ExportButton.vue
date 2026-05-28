@@ -9,7 +9,11 @@ const props = defineProps({
 
 <template>
     <a :href="route(props.routeName, props.filters)" class="btn-export">
-        <slot></slot>
+        <slot name="icon"></slot>
+        
+        <span class="truncate">
+            <slot></slot>
+        </span>
     </a>
 </template>
 
@@ -22,17 +26,22 @@ const props = defineProps({
      font-family: 'Manrope', sans-serif;
      font-size: 13px;
      font-weight: 600;
-     letter-spacing: 0.02em;
      color: var(--color-silk-subtle);
      background: var(--color-base-100);
      border: 1px solid var(--color-silk-300);
      border-radius: 6px;
-     cursor: pointer;
-     transition: all 0.2s ease;
-     position: relative;
+     max-width: 100%;
  }
 
- .btn-export:hover {
-         background: var(--color-primary-light);
- }
+.truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0; 
+}
+
+.btn-export:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
 </style>

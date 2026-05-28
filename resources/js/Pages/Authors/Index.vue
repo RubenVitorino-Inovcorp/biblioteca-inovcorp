@@ -35,7 +35,10 @@ import ExportButton from "@/Components/ExportButton.vue";
                         <CirclePlus :size="16" /> Adicionar Autor
                     </Link>
                     <ExportButton route-name="autores.export" :filters="filters">
-                        <DownloadIcon :size="16" /> Exportar Autores
+                        <template #icon>
+                            <DownloadIcon :size="16" />
+                        </template>
+                        Exportar Autores
                     </ExportButton>
                     <FilterDropdown
                         route-name="autores.index"

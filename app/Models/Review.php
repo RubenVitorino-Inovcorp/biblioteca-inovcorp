@@ -40,6 +40,11 @@ class Review extends Model
         return $this->belongsTo(Book::class);
     }
 
+    public function loan(): BelongsTo
+    {
+        return $this->belongsTo(Loan::class);
+    }
+
     protected function casts(): array
     {
         return [

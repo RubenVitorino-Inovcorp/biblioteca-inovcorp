@@ -2,8 +2,18 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Enums\LoanStatus;
+use App\Enums\ReviewStatus;
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
+use App\Mail\ReviewSubmittedAdminMail;
+use App\Models\Loan;
+use App\Models\Review;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rule;
+use Inertia\Inertia;
 
 class ReviewController extends Controller
 {
@@ -17,10 +27,8 @@ class ReviewController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
-
         $reviews = Review::query()
-            ->where('user_id', $user->id)
+            ->where('user_id', auth()->id())
             ->with(['book'])
             ->paginate(10, ['*'], 'pag');
 
@@ -64,7 +72,7 @@ class ReviewController extends Controller
                 Rule::exists('loans', 'id')->where(function ($query) use ($request) {
                     $query->where('user_id', auth()->id())
                         ->where('book_id', $request->book_id)
-                        ->where('status', LoanStatus::COMPLETED);
+                        ->where('status', LoanStatus::RETURNED);
                 }),
             ],
         ]);
@@ -74,7 +82,13 @@ class ReviewController extends Controller
 
         $review = Review::create($validated);
 
-        return redirect()->route('user.reviews.index')->with('success', 'Opinião enviada para moderação.');
+        $admins = User::where('role', UserRole::ADMIN->value)->get();
+        foreach ($admins as $index => $admin) {
+            $delay = 3 + ($index * 3);
+            Mail::to($admin)->later(now()->addSeconds($delay), new ReviewSubmittedAdminMail($review));
+        }
+
+        return redirect()->back()->with('success', 'Opinião enviada para moderação.');
     }
 
     /**
@@ -92,8 +106,34 @@ class ReviewController extends Controller
      */
     public function edit(Review $review)
     {
+        $userId = auth()->id();
+        $book = $review->book;
+        $loan = $review->loan;
+
+        $userReview = Review::where('user_id', $userId)
+            ->where('book_id', $book->id)
+            ->first();
+
+        $reviewableLoanId = null;
+        if (! $userReview) {
+            $reviewableLoanId = $book->loans()
+                ->where('user_id', $userId)
+                ->where('status', LoanStatus::RETURNED)
+                ->whereDoesntHave('review')
+                ->value('id');
+        }
+
         return Inertia::render('User/Reviews/Edit', [
-            'review' => $review,
+            'book' => $book->load([
+                'authors',
+                'publisher',
+                'reviews' => function ($query) {
+                    $query->with('user')->where('status', ReviewStatus::APPROVED)->latest();
+                },
+            ]),
+            'loan' => $loan->load('book.authors', 'book.publisher', 'user'),
+            'userReview' => $userReview,
+            'reviewableLoanId' => $reviewableLoanId,
         ]);
     }
 
@@ -112,6 +152,12 @@ class ReviewController extends Controller
         $validated['rejection_reason'] = null;
 
         $review->update($validated);
+
+        $admins = User::where('role', UserRole::ADMIN->value)->get();
+        foreach ($admins as $index => $admin) {
+            $delay = 3 + ($index * 3);
+            Mail::to($admin)->later(now()->addSeconds($delay), new ReviewSubmittedAdminMail($review));
+        }
 
         return redirect()->back()->with('success', 'Opinião atualizada e enviada para moderação.');
     }

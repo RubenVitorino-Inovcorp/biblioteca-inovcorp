@@ -15,7 +15,6 @@ const props = defineProps({
 const showModal = ref(false);
 const todayStr = computed(() => new Date().toISOString().split('T')[0]);
 
-// Parse start_date from "d/m/Y H:i" format to "Y-m-d" for the HTML date input min attribute
 const startDateISO = computed(() => {
     if (!props.loan.start_date) return '';
     const parts = props.loan.start_date.split(' ')[0].split('/');
@@ -29,7 +28,6 @@ const form = useForm({
     return_date: todayStr.value,
 });
 
-// Preview of elapsed days based on selected return date
 const elapsedDaysPreview = computed(() => {
     if (!form.return_date || !startDateISO.value) return null;
     const start = new Date(startDateISO.value);

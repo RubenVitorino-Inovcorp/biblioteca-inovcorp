@@ -9,7 +9,7 @@
 
     const props = defineProps({
         user: Object,
-        loans: Array
+        loans: Array,
     })
 
 </script>

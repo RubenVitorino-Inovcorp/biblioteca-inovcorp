@@ -8,6 +8,7 @@ namespace App\Models;
 use App\Enums\LoanStatus;
 use App\Enums\UserRole;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -15,7 +16,6 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class User extends Authenticatable
 {
@@ -85,7 +85,7 @@ class User extends Authenticatable
                 }
 
                 // Caminho antigo do Jetstream sem prefixo (ex: profile-photos/xxx.png)
-                return '/storage/' . $attributes['profile_photo_path'];
+                return '/storage/'.$attributes['profile_photo_path'];
             }
         );
     }
@@ -113,5 +113,9 @@ class User extends Authenticatable
     {
         return $this->loans()->whereIn('status', [LoanStatus::ACTIVE, LoanStatus::OVERDUE, LoanStatus::PENDING, LoanStatus::RETURN_PENDING])->count() < 3;
     }
-}
 
+    public function isAdmin(): bool
+    {
+        return $this->role === UserRole::ADMIN;
+    }
+}

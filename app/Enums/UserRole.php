@@ -2,12 +2,13 @@
 
 namespace App\Enums;
 
-enum UserRole : string
+enum UserRole: string
 {
     case ADMIN = 'admin';
     case USER = 'user';
 
-    public function label(): string {
+    public function label(): string
+    {
         return match ($this) {
             UserRole::ADMIN => 'Administrador',
             UserRole::USER => 'Usuário',

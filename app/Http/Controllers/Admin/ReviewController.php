@@ -6,10 +6,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\ReviewStatus;
 use App\Http\Controllers\Controller;
+use App\Mail\ReviewApprovedMail;
+use App\Mail\ReviewRejectedMail;
 use App\Models\Review;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -55,7 +58,7 @@ final class ReviewController extends Controller
     {
         $review->delete();
 
-        return redirect()->route('admin.reviews.index')
+        return redirect()->route('admin.opinioes.index')
             ->with('success', 'Opinião removida com sucesso.');
     }
 
@@ -68,9 +71,10 @@ final class ReviewController extends Controller
             'rejection_reason' => null,
         ]);
 
-        // TODO: Enviar email de notificação de aprovação ao Cidadão
+        // Enviar email de notificação de aprovação ao Cidadão
+        Mail::to($review->user)->queue(new ReviewApprovedMail($review));
 
-        return redirect()->route('admin.reviews.index')
+        return redirect()->route('admin.opinioes.index')
             ->with('success', 'Opinião aprovada com sucesso e publicada no catálogo.');
     }
 
@@ -87,9 +91,10 @@ final class ReviewController extends Controller
             'rejection_reason' => $validated['rejection_reason'],
         ]);
 
-        // TODO: Enviar email de notificação de rejeição com a $validated['rejection_reason']
+        // Enviar email de notificação de rejeição com a $validated['rejection_reason']
+        Mail::to($review->user)->queue(new ReviewRejectedMail($review));
 
-        return redirect()->route('admin.reviews.index')
+        return redirect()->route('admin.opinioes.index')
             ->with('success', 'Opinião rejeitada com sucesso.');
     }
 }

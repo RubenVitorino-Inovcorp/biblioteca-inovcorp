@@ -51,9 +51,9 @@ class Book extends Model
     protected function imageUrl(): Attribute
     {
         return Attribute::make(
-            get: fn (?string $value, array $attributes) => $attributes['image_path'] 
+            get: fn (?string $value, array $attributes) => $attributes['image_path']
                 ? (str_starts_with($attributes['image_path'], 'http') ? $attributes['image_path'] : asset($attributes['image_path']))
-                : asset('/storage/imagens/default.webp') 
+                : asset('/storage/imagens/default.webp')
         );
     }
 
@@ -80,5 +80,10 @@ class Book extends Model
     public function loans(): HasMany
     {
         return $this->hasMany(Loan::class);
+    }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
     }
 }

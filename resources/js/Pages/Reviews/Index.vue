@@ -1,11 +1,12 @@
 <script setup>
   import AppLayout from '@/Layouts/AppLayout.vue'
   import {Head, Link} from '@inertiajs/vue3'
-  import {MessageCircle} from "@lucide/vue";
+  import {MessageCircle, Star} from "@lucide/vue";
   import TableWrapper from "@/Components/TableWrapper.vue";
   import { computed } from 'vue';
   import { usePage } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import ReviewPendingButton from '@/Components/ReviewPendingButton.vue';
 
   const props = defineProps({
       reviews: Object,
@@ -13,7 +14,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
   })
 
   const isAdmin = computed(() => {
-      return usePage().props.auth.user?.role?.id === usePage().props.roles.ADMIN;
+      return usePage().props.auth.user?.is_admin;
   });
 
 </script>
@@ -50,6 +51,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
               <th>#</th>
               <th>Livro</th>
               <th>Avaliador</th>
+              <th>Opinião</th>
               <th>Data da Avaliação</th>
               <th>Estado</th>
               <th></th>
@@ -57,11 +59,11 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 
           <template #body>
               <tr v-for="review in reviews.data" :key="review.id" class="hover:bg-base-300">
-                  <Link class="hover:text-primary" :href="route(isAdmin ? 'requisicoes.show' : 'catalog.requisicoes.show', review.id)">
                   <td>
-                      {{ review.review_number }}
-                    </td>
-                </Link>
+                      <Link class="hover:text-primary" :href="route(isAdmin ? 'admin.opinioes.show' : 'opinioes.show', review.id)">
+                          {{ review.id }}
+                      </Link>
+                  </td>
 
                   <td>
                       <div class="flex items-center gap-3">
@@ -73,7 +75,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
                               </div>
                           </div>
                           <div>
-                              <Link :href="route(isAdmin ? 'livros.show' : 'catalog.livros.show', review.book.id)">
+                              <Link class="hover:text-primary" :href="route(isAdmin ? 'livros.show' : 'catalog.livros.show', review.book.id)">
                                   {{ review.book.title }}
                               </Link>
                           </div>
@@ -98,6 +100,15 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
                       </div>
                   </td>
                   <td>
+                      <Link :href="route(isAdmin ? 'admin.opinioes.show' : 'opinioes.show', review.id)" class="flex flex-col max-w-xs group">
+                          <span class="font-bold text-sm truncate text-base-content group-hover:text-primary transition-colors duration-200">{{ review.review_title }}</span>
+                          <span class="text-xs text-gray-500 line-clamp-2 mt-0.5 whitespace-normal group-hover:text-primary/80 transition-colors duration-200">{{ review.review_text }}</span>
+                          <div class="flex items-center gap-1 mt-1.5">
+                              <Star :size="12" fill="#EFBF04" color="#EFBF04"/> <span class="font-bold text-xs text-base-content">{{ review.rating }}/10</span>
+                          </div>
+                      </Link>
+                  </td>
+                  <td>
                       {{ review.created_at }}
                   </td>
                   <td>
@@ -106,17 +117,9 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
                     </span>
                   </td>
                   <td>
-                    <div class="flex items-center gap-2">
-                        <!-- <ApproveReviewModal v-if="isAdmin && review.status === 'pending'" :review="review">
-                            <PrimaryButton class="px-4">
-                                Confirmar Avaliação
-                            </PrimaryButton>
-                        </ApproveReviewModal>
-                        <RejectReviewModal v-if="isAdmin && review.status === 'pending'" :review="review">
-                            <PrimaryButton class="px-4">
-                                Rejeitar Avaliação
-                            </PrimaryButton>
-                        </RejectReviewModal> -->
+                    <div v-if="isAdmin && review.status === 'pending'" class="flex items-center gap-2">
+                        <ReviewPendingButton action="approve" :review="review" />
+                        <ReviewPendingButton action="reject" :review="review" />
                     </div>
                   </td>
               </tr>
@@ -126,6 +129,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
               <th>#</th>
               <th>Livro</th>
               <th>Avaliador</th>
+              <th>Opinião</th>
               <th>Data da Avaliação</th>
               <th>Estado</th>
               <th></th>

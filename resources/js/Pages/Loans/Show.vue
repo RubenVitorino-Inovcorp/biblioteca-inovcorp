@@ -15,7 +15,7 @@
 
     const page = usePage();
     const isAdmin = computed(() => {
-        return usePage().props.auth.user?.role?.id === usePage().props.roles.ADMIN;
+        return usePage().props.auth.user?.is_admin;
     });
 </script>
 

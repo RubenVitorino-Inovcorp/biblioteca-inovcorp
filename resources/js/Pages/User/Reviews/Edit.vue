@@ -4,6 +4,7 @@
     import {Head, Link} from '@inertiajs/vue3'
     import ReturnBookButton from "@/Components/ReturnBookButton.vue";
     import Reviews from '@/Components/Common/Reviews.vue';
+import ReviewForm from '@/Components/ReviewForm.vue';
 
     const props = defineProps({
         loan: Object,
@@ -130,8 +131,8 @@
                     <td>{{ loan.status_label }}</td>
                 </template>
             </TableWrapper>
+            <ReviewForm :bookId="book.id" :review="userReview" :loanId="loan.id" />
         </div>
-        <Reviews :reviews="props.book.reviews" :book="props.book" :userReview="props.userReview" :reviewableLoanId="props.reviewableLoanId" />
     </Layout>
 </template>
 

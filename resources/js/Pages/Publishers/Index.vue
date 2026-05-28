@@ -35,7 +35,10 @@
                         <CirclePlus :size="16" /> Adicionar Editora
                     </Link>
                     <ExportButton route-name="editoras.export" :filters="filters">
-                        <DownloadIcon :size="16" /> Exportar Editoras
+                        <template #icon>
+                            <DownloadIcon :size="16" />
+                        </template>
+                        Exportar Editoras
                     </ExportButton>
                     <FilterDropdown
                         route-name="editoras.index"

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 class Loan extends Model
@@ -28,7 +29,7 @@ class Loan extends Model
     protected $appends = [
         'status_label',
         'status_color',
-        'elapsed_days'
+        'elapsed_days',
     ];
 
     public function user(): BelongsTo
@@ -39,6 +40,11 @@ class Loan extends Model
     public function book(): BelongsTo
     {
         return $this->belongsTo(Book::class);
+    }
+
+    public function review(): HasOne
+    {
+        return $this->hasOne(Review::class);
     }
 
     protected function casts(): array
@@ -74,7 +80,7 @@ class Loan extends Model
                 }
 
                 $startDate = Carbon::parse($attributes['start_date']);
-                $endDate = !empty($attributes['end_date']) ? Carbon::parse($attributes['end_date']) : now();
+                $endDate = ! empty($attributes['end_date']) ? Carbon::parse($attributes['end_date']) : now();
 
                 return (int) $startDate->diffInDays($endDate);
             },
@@ -91,9 +97,9 @@ class Loan extends Model
                 /** @var Loan|null $lastloan */
                 $lastloan = self::lockForUpdate()->latest('id')->first();
                 $number = $lastloan ? (int) str_replace('REQ-', '', (string) $lastloan->loan_number) + 1 : 1;
-                $loan->loan_number = 'REQ-' . str_pad((string) $number, 6, '0', STR_PAD_LEFT);
+                $loan->loan_number = 'REQ-'.str_pad((string) $number, 6, '0', STR_PAD_LEFT);
 
-                if (!self::where('loan_number', $loan->loan_number)->exists()) {
+                if (! self::where('loan_number', $loan->loan_number)->exists()) {
                     break;
                 }
             }

@@ -44,7 +44,7 @@ Route::middleware([
         Route::resource('admin/editoras', AdminPublisherController::class)->parameter('editoras', 'publisher');
         Route::resource('admin/utilizadores', AdminUserController::class)->parameter('utilizadores', 'user');
         Route::resource('admin/requisicoes', AdminLoanController::class)->parameter('requisicoes', 'loan');
-        Route::resource('admin/opinioes', AdminReviewController::class)->except(['edit', 'update'])->parameter('opinioes', 'review');
+        Route::resource('admin/opinioes', AdminReviewController::class)->except(['create', 'store', 'edit', 'update'])->names('admin.opinioes')->parameter('opinioes', 'review');
 
         Route::post('admin/opinioes/{review}/aprovar', [AdminReviewController::class, 'approve'])->name('opinioes.aprovar');
         Route::post('admin/opinioes/{review}/rejeitar', [AdminReviewController::class, 'reject'])->name('opinioes.rejeitar');

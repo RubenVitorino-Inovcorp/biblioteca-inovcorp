@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\User;
 
 use App\Enums\LoanStatus;
+use App\Enums\ReviewStatus;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Mail\LoanRequestedAdminMail;
 use App\Mail\LoanRequestedUserMail;
 use App\Models\Book;
 use App\Models\Loan;
+use App\Models\Review;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -38,9 +40,9 @@ class LoanController extends Controller
             ->when($request->search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('loan_number', 'like', "%{$search}%")
-                      ->orWhereHas('book', function ($bookQuery) use ($search) {
-                           $bookQuery->where('title', 'like', "%{$search}%");
-                       });
+                        ->orWhereHas('book', function ($bookQuery) use ($search) {
+                            $bookQuery->where('title', 'like', "%{$search}%");
+                        });
                 });
             })
             ->when($request->status, function ($query, $status) {
@@ -66,7 +68,7 @@ class LoanController extends Controller
 
         $filters = $request->only(['search', 'sort', 'status']);
 
-        if (!in_array($filters['sort'] ?? null, ['inicio_recente', 'inicio_antigo', 'devolucao_proxima', 'devolucao_distante', 'numero_asc', 'numero_desc', 'dias_asc', 'dias_desc'], true)) {
+        if (! in_array($filters['sort'] ?? null, ['inicio_recente', 'inicio_antigo', 'devolucao_proxima', 'devolucao_distante', 'numero_asc', 'numero_desc', 'dias_asc', 'dias_desc'], true)) {
             $filters['sort'] = '';
         }
 
@@ -98,7 +100,7 @@ class LoanController extends Controller
         $book = Book::findOrFail($validated['book_id']);
 
         $loan = DB::transaction(function () use ($user, $book) {
-            if (!$user->canMakeLoans()) {
+            if (! $user->canMakeLoans()) {
                 throw ValidationException::withMessages([
                     'book_id' => 'Já atingiu o limite de 3 requisições!',
                 ]);
@@ -106,7 +108,7 @@ class LoanController extends Controller
 
             $alreadyHasBook = Loan::where('user_id', $user->id)
                 ->where('book_id', $book->id)
-                ->whereIn('status', [\App\Enums\LoanStatus::ACTIVE, \App\Enums\LoanStatus::OVERDUE, \App\Enums\LoanStatus::PENDING])
+                ->whereIn('status', [LoanStatus::ACTIVE, LoanStatus::OVERDUE, LoanStatus::PENDING])
                 ->exists();
 
             if ($alreadyHasBook) {
@@ -116,8 +118,8 @@ class LoanController extends Controller
             }
 
             $book = Book::where('id', $book->id)->lockForUpdate()->first();
-            
-            if (!$book->is_available) {
+
+            if (! $book->is_available) {
                 throw ValidationException::withMessages([
                     'book_id' => 'Este livro não está disponível.',
                 ]);
@@ -140,13 +142,12 @@ class LoanController extends Controller
         Mail::to($user)->queue(new LoanRequestedUserMail($loan));
 
         $admins = User::where('role', UserRole::ADMIN->value)->get();
-        
+
         // Manda emails de 3 em 3 segundos para evitar sobrecarga no servidor gratuito do mailtrap
         foreach ($admins as $index => $admin) {
-            $delay = 3 + ($index * 3); 
+            $delay = 3 + ($index * 3);
             Mail::to($admin)->later(now()->addSeconds($delay), new LoanRequestedAdminMail($loan));
         }
-
 
         return redirect()->route('catalog.requisicoes.index')->with('success', 'Requisição enviada com sucesso! Aguarde aprovação.');
     }
@@ -156,8 +157,33 @@ class LoanController extends Controller
      */
     public function show(Loan $loan)
     {
+        $userId = auth()->id();
+        $book = $loan->book;
+
+        $userReview = Review::where('user_id', $userId)
+            ->where('book_id', $book->id)
+            ->first();
+
+        $reviewableLoanId = null;
+        if (! $userReview) {
+            $reviewableLoanId = $book->loans()
+                ->where('user_id', $userId)
+                ->where('status', LoanStatus::RETURNED)
+                ->whereDoesntHave('review')
+                ->value('id');
+        }
+
         return Inertia::render('User/Loans/Show', [
+            'book' => $book->load([
+                'authors',
+                'publisher',
+                'reviews' => function ($query) {
+                    $query->with('user')->where('status', ReviewStatus::APPROVED)->latest();
+                },
+            ]),
             'loan' => $loan->load('book.authors', 'book.publisher', 'user'),
+            'userReview' => $userReview,
+            'reviewableLoanId' => $reviewableLoanId,
         ]);
     }
 
@@ -168,7 +194,7 @@ class LoanController extends Controller
     {
         Gate::authorize('update', $loan);
 
-        if (!in_array($loan->status, [LoanStatus::ACTIVE, LoanStatus::OVERDUE], true)) {
+        if (! in_array($loan->status, [LoanStatus::ACTIVE, LoanStatus::OVERDUE], true)) {
             throw ValidationException::withMessages([
                 'status' => 'Esta requisição não pode ser devolvida no estado atual.',
             ]);

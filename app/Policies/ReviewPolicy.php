@@ -25,8 +25,7 @@ class ReviewPolicy
      */
     public function viewAny(User $user): bool
     {
-        // Apenas Admins listam todas as reviews
-        return false;
+        return true;
     }
 
     /**

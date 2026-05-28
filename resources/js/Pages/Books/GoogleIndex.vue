@@ -40,7 +40,10 @@ const quickAdd = (book) => {
                 <InputSearch :filters="filters" route="livros.google-index" placeholder="Pesquisar livros..." />
                 <div class="header-actions">
                     <ExportButton route-name="livros.google-export" :filters="filters">
-                        <DownloadIcon :size="16" /> Exportar Google
+                        <template #icon>
+                            <DownloadIcon :size="16" />
+                        </template>
+                        Exportar Google
                     </ExportButton>
                 </div>
             </div>
