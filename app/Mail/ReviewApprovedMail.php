@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Mail;
 
 use App\Models\Review;
@@ -26,7 +28,7 @@ class ReviewApprovedMail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Opinião Aprovada - ' . $this->review->book->title,
+            subject: 'Opinião Aprovada - '.($this->review->book?->title ?? 'Livro'),
         );
     }
 

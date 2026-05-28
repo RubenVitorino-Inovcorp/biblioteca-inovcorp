@@ -108,7 +108,7 @@ const toggleSidebar = () => {
                                         <span v-if="sidebarOpen">As minhas requisições</span>
                                     </NavLink>
                                 </li>
-                                <li v-if="$page.props.auth.user.role.id !== $page.props.roles.ADMIN">
+                                <li v-if="!$page.props.auth.user.is_admin">
                                     <NavLink :href="route('opinioes.index')" :active="route().current('opinioes.index')">
                                         <svg role="img" class="w-5 h-5 text-current" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -120,7 +120,7 @@ const toggleSidebar = () => {
                         </div>
 
                         <!-- GESTÃO (ADMIN) -->
-                        <div class="sidebar-nav-section" v-if="$page.props.auth.user.role.id === $page.props.roles.ADMIN">
+                        <div class="sidebar-nav-section" v-if="$page.props.auth.user.is_admin">
                            <span class="sidebar-nav-label" v-if="sidebarOpen">GESTÃO</span>
                            <ul class="sidebar-nav-list">
                                 <li>
@@ -180,9 +180,9 @@ const toggleSidebar = () => {
                             <Dropdown align="left" width="48" direction="up">
                                 <template #trigger>
                                     <button class="sidebar-user-btn" type="button">
-                                        <div class="avatar" :class="{ 'indicator': $page.props.auth.user.role.id === $page.props.roles.ADMIN }">
+                                        <div class="avatar" :class="{ 'indicator': $page.props.auth.user.is_admin }">
                                             <span
-                                                v-if="$page.props.auth.user.role.id === $page.props.roles.ADMIN"
+                                                v-if="$page.props.auth.user.is_admin"
                                                 class="indicator-item indicator-start badge badge-xs badge-primary py-2 px-1 text-[9px]"
                                             >
                                                 Admin.

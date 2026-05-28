@@ -26,7 +26,7 @@ class ReviewRejectedMail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Atualização sobre a sua Opinião - ' . $this->review->book->title,
+            subject: 'Atualização sobre a sua Opinião - '.($this->review->book?->title ?? 'Livro'),
         );
     }
 

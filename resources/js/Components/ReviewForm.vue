@@ -3,6 +3,9 @@ import { useForm, Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import { toast } from 'vue-sonner';
 import { Star, Send, CircleCheck, CircleX, ClockAlert } from '@lucide/vue';
+import { useReviewRating } from '@/Composables/useReviewRating';
+
+const { getRatingLabel } = useReviewRating();
 
 const props = defineProps({
     bookId: { type: Number, required: true },
@@ -51,16 +54,7 @@ const submitReview = () => {
     }
 };
 
-const getRatingLabel = (rating) => {
-    if (!rating) return 'Sem avaliação';
-    const LABELS = {
-        1: 'Péssimo', 2: 'Muito Mau', 3: 'Mau', 4: 'Abaixo da Média',
-        5: 'Razoável', 6: 'Bom', 7: 'Muito Bom', 8: 'Ótimo',
-        9: 'Excelente', 10: 'Obra-Prima',
-    };
-    const key = Math.floor(rating);
-    return LABELS[key] || 'Sem classificação';
-};
+
 </script>
 
 <template>
@@ -131,7 +125,7 @@ const getRatingLabel = (rating) => {
                                 v-model.number="form.rating"
                                 min="1"
                                 max="10"
-                                step="0.5"
+                                step="1"
                                 class="range range-primary range-sm"
                             />
                             <div class="rating-value-badge">

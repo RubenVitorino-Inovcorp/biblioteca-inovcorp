@@ -11,6 +11,7 @@ use App\Models\Loan;
 use App\Models\Review;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -84,8 +85,15 @@ class ReviewController extends Controller
 
         $admins = User::where('role', UserRole::ADMIN->value)->get();
         foreach ($admins as $index => $admin) {
-            $delay = 3 + ($index * 3);
-            Mail::to($admin)->later(now()->addSeconds($delay), new ReviewSubmittedAdminMail($review));
+            try {
+                Mail::to($admin)->later(now()->addSeconds(5), new ReviewSubmittedAdminMail($review));
+            } catch (\Exception $e) {
+                Log::error('Failed to queue ReviewSubmittedAdminMail', [
+                    'admin_id' => $admin->id,
+                    'review_id' => $review->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
 
         return redirect()->back()->with('success', 'Opinião enviada para moderação.');
@@ -114,15 +122,6 @@ class ReviewController extends Controller
             ->where('book_id', $book->id)
             ->first();
 
-        $reviewableLoanId = null;
-        if (! $userReview) {
-            $reviewableLoanId = $book->loans()
-                ->where('user_id', $userId)
-                ->where('status', LoanStatus::RETURNED)
-                ->whereDoesntHave('review')
-                ->value('id');
-        }
-
         return Inertia::render('User/Reviews/Edit', [
             'book' => $book->load([
                 'authors',
@@ -133,7 +132,6 @@ class ReviewController extends Controller
             ]),
             'loan' => $loan->load('book.authors', 'book.publisher', 'user'),
             'userReview' => $userReview,
-            'reviewableLoanId' => $reviewableLoanId,
         ]);
     }
 
@@ -155,8 +153,16 @@ class ReviewController extends Controller
 
         $admins = User::where('role', UserRole::ADMIN->value)->get();
         foreach ($admins as $index => $admin) {
-            $delay = 3 + ($index * 3);
-            Mail::to($admin)->later(now()->addSeconds($delay), new ReviewSubmittedAdminMail($review));
+            try {
+                $delay = 3 + ($index * 3);
+                Mail::to($admin)->later(now()->addSeconds($delay), new ReviewSubmittedAdminMail($review));
+            } catch (\Exception $e) {
+                Log::error('Failed to queue ReviewSubmittedAdminMail on update', [
+                    'admin_id' => $admin->id,
+                    'review_id' => $review->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
 
         return redirect()->back()->with('success', 'Opinião atualizada e enviada para moderação.');

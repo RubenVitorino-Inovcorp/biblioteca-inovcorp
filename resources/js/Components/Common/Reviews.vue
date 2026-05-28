@@ -1,7 +1,7 @@
 <script setup>
 import { usePage, Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
-import { MessageSquareText, CircleX, CircleCheck, ClockAlert } from '@lucide/vue';
+import { MessageSquareText, CircleX, CircleCheck, ClockAlert, Star } from '@lucide/vue';
 import ReviewForm from '@/Components/ReviewForm.vue';
 
 const props = defineProps({

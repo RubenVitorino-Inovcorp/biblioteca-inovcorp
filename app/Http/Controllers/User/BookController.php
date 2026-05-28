@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Author;
 use App\Models\Book;
 use App\Models\Publisher;
-use App\Models\Review;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -69,8 +68,8 @@ class BookController extends Controller
     {
         $userId = auth()->id();
 
-        $userReview = Review::where('user_id', $userId)
-            ->where('book_id', $book->id)
+        $userReview = $book->reviews()
+            ->where('user_id', $userId)
             ->first();
 
         $reviewableLoanId = null;

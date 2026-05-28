@@ -71,19 +71,5 @@ class Review extends Model
     protected static function boot(): void
     {
         parent::boot();
-
-        // static::creating(function (Loan $loan): void {
-        //     $maxAttempts = 5;
-        //     for ($i = 0; $i < $maxAttempts; $i++) {
-        //         /** @var Loan|null $lastloan */
-        //         $lastloan = self::lockForUpdate()->latest('id')->first();
-        //         $number = $lastloan ? (int) str_replace('REQ-', '', (string) $lastloan->loan_number) + 1 : 1;
-        //         $loan->loan_number = 'REQ-'.str_pad((string) $number, 6, '0', STR_PAD_LEFT);
-
-        //         if (! self::where('loan_number', $loan->loan_number)->exists()) {
-        //             break;
-        //         }
-        //     }
-        // });
     }
 }
