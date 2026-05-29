@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Author;
 use App\Models\Book;
 use App\Models\Publisher;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Http;
@@ -33,7 +34,7 @@ class BookController extends Controller
     public function index(Request $request)
     {
         $books = Book::query()
-            ->with(['publisher', 'authors'])
+            ->with(['publisher', 'authors', 'tags'])
             ->when($request->search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('title', 'like', "%{$search}%")
@@ -76,6 +77,7 @@ class BookController extends Controller
             'filters' => $filters,
             'publishers' => Publisher::query()->orderBy('name')->get(),
             'authors' => Author::query()->orderBy('name')->get(),
+            'tags' => Tag::select(['id', 'name'])->orderBy('name')->get(),
         ]);
     }
 
@@ -145,6 +147,7 @@ class BookController extends Controller
         return Inertia::render('Books/Create', [
             'publishers' => Publisher::select(['id', 'name'])->get(),
             'authors' => Author::select(['id', 'name'])->get(),
+            'tags' => Tag::select(['id', 'name'])->orderBy('name')->get(),
             'externalBooks' => $paginatedExternalBooks,
             'filters' => ['search' => $search],
         ]);
@@ -164,6 +167,8 @@ class BookController extends Controller
             'publisher_id' => 'required',
             'author_ids' => 'required|array',
             'author_ids.*' => 'required',
+            'tag_ids' => 'nullable|array',
+            'tag_ids.*' => 'required',
         ];
 
         if ($request->hasFile('image_path')) {
@@ -218,6 +223,9 @@ class BookController extends Controller
 
         $book->authors()->sync($authorIds);
 
+        $tagIds = $this->resolveTagIds($request->input('tag_ids', []));
+        $book->tags()->sync($tagIds);
+
         return redirect()->route('livros.index')->with('success', 'Livro adicionado com sucesso!');
     }
 
@@ -227,7 +235,7 @@ class BookController extends Controller
     public function show(Book $book)
     {
         return Inertia::render('Books/Show', [
-            'book' => $book->load('authors', 'publisher'),
+            'book' => $book->load('authors', 'publisher', 'tags'),
             'loans' => $book->loans()->with('user')->latest()->get(),
         ]);
     }
@@ -238,9 +246,10 @@ class BookController extends Controller
     public function edit(Book $book)
     {
         return Inertia::render('Books/Edit', [
-            'book' => $book->load('authors', 'publisher'),
+            'book' => $book->load('authors', 'publisher', 'tags'),
             'publishers' => Publisher::query()->orderBy('name')->get(),
             'authors' => Author::query()->orderBy('name')->get(),
+            'tags' => Tag::select(['id', 'name'])->orderBy('name')->get(),
         ]);
     }
 
@@ -264,18 +273,20 @@ class BookController extends Controller
             'author_ids' => 'required|array',
             'author_ids.*' => 'required',
             'image_path' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:2048',
+            'tag_ids' => 'nullable|array',
+            'tag_ids.*' => 'required',
         ]);
 
         $finalPath = $book->image_path;
 
         // Apagar a imagem antiga e guardar a nova imagem
         if ($request->hasFile('image_path')) {
-            if ($book->image_path && !str_contains($book->image_path, 'http') && basename($book->image_path) !== 'default.webp') {
+            if ($book->image_path && ! str_contains($book->image_path, 'http') && basename($book->image_path) !== 'default.webp') {
                 Storage::disk('public')->delete(str_replace('/storage/', '', $book->image_path));
             }
 
             $path = $request->file('image_path')->store('imagens', 'public');
-            $finalPath = '/storage/' . $path;
+            $finalPath = '/storage/'.$path;
         }
 
         $diff = $request->total_stock - $book->total_stock;
@@ -316,6 +327,9 @@ class BookController extends Controller
 
         $book->authors()->sync($authorIds);
 
+        $tagIds = $this->resolveTagIds($request->input('tag_ids', []));
+        $book->tags()->sync($tagIds);
+
         return redirect()->route('livros.show', $book->id)->with('success', 'Livro atualizado com sucesso!');
     }
 
@@ -324,7 +338,7 @@ class BookController extends Controller
      */
     public function destroy(Book $book)
     {
-        if ($book->image_path && !str_contains($book->image_path, 'http') && basename($book->image_path) !== 'default.webp') {
+        if ($book->image_path && ! str_contains($book->image_path, 'http') && basename($book->image_path) !== 'default.webp') {
             $path = str_replace('/storage/', '', $book->image_path);
             Storage::disk('public')->delete($path);
         }
@@ -344,5 +358,27 @@ class BookController extends Controller
         } catch (Exception $e) {
             return response()->json(['error' => 'Ocorreu um erro ao exportar os livros.'], 500);
         }
+    }
+
+    /**
+     * Resolve tag inputs: numeric values are treated as existing IDs,
+     * string values create new tags via firstOrCreate.
+     *
+     * @param  array<int, int|string>  $tagInputs
+     * @return array<int, int>
+     */
+    private function resolveTagIds(array $tagInputs): array
+    {
+        $tagIds = [];
+
+        foreach ($tagInputs as $input) {
+            if (is_numeric($input) && Tag::find($input)) {
+                $tagIds[] = (int) $input;
+            } else {
+                $tagIds[] = Tag::firstOrCreate(['name' => trim((string) $input)])->id;
+            }
+        }
+
+        return $tagIds;
     }
 }

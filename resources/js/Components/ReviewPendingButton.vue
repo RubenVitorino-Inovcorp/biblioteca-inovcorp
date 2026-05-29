@@ -86,7 +86,7 @@ const executeAction = () => {
 
             <div class="bg-base-200/50 border border-base-300 rounded-xl p-5 flex items-center gap-4 text-sm">
                 <div class="shrink-0 rounded-md overflow-hidden shadow-sm bg-base-100">
-                    <img v-if="review.book?.image_path" :src="review.book.image_path" :alt="review.book?.title" class="w-12 h-16 object-cover" />
+                    <img v-if="review.book?.image_url" :src="review.book.image_url" :alt="review.book?.title" class="w-12 h-16 object-cover" />
                     <div v-else class="w-12 h-16 bg-gray-100 flex items-center justify-center">
                         <BookOpen class="text-gray-400" :size="20" />
                     </div>

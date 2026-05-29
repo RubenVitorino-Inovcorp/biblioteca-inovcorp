@@ -40,7 +40,7 @@ const submit = () => {
         <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
 
             <div class="md:col-span-3">
-                <img :src="publisher.logo_path" :alt="publisher.name" class="show-image shadow-lg" />
+                <img :src="publisher.logo_url" :alt="publisher.name" class="show-image shadow-lg" />
             </div>
 
             <div class="md:col-span-9 space-y-6">

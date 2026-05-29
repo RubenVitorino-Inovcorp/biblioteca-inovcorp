@@ -40,10 +40,11 @@ class Book extends Model
             'isbn' => (string) $this->isbn,
             'publisher' => (string) ($this->publisher?->name ?? ''),
             'authors' => (string) ($this->authors?->pluck('name')->join(', ') ?? ''),
+            'tags' => (string) ($this->tags?->pluck('name')->join(', ') ?? ''),
         ];
     }
 
-    protected $appends = ['is_available'];
+    protected $appends = ['is_available', 'image_url'];
 
     /**
      * Get the attributes that should be cast.
@@ -65,7 +66,7 @@ class Book extends Model
     protected function imageUrl(): Attribute
     {
         return Attribute::make(
-            get: fn (?string $value, array $attributes) => $attributes['image_path']
+            get: fn (?string $value, array $attributes) => ($attributes['image_path'] ?? null)
                 ? (str_starts_with($attributes['image_path'], 'http') ? $attributes['image_path'] : asset($attributes['image_path']))
                 : asset('/storage/imagens/default.webp')
         );
@@ -84,6 +85,11 @@ class Book extends Model
     public function authors(): BelongsToMany
     {
         return $this->belongsToMany(Author::class);
+    }
+
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class);
     }
 
     public function publisher(): BelongsTo

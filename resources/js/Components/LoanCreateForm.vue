@@ -53,7 +53,7 @@ const createLoanAction = () => {
                 <!-- Detalhes do Livro -->
                 <div class="flex items-center gap-4">
                     <div class="shrink-0 rounded-md overflow-hidden shadow-sm bg-base-100">
-                        <img v-if="props.book.image_path" :src="props.book.image_path" :alt="props.book.title" class="w-12 h-16 object-cover" />
+                        <img v-if="props.book.image_url" :src="props.book.image_url" :alt="props.book.title" class="w-12 h-16 object-cover" />
                         <div v-else class="w-12 h-16 bg-gray-100 flex items-center justify-center">
                             <LibraryBig class="text-gray-400" :size="20" />
                         </div>

@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Book;
+
 return [
 
     /*
@@ -143,6 +145,14 @@ return [
             // 'users' => [
             //     'filterableAttributes'=> ['id', 'name', 'email'],
             // ],
+            Book::class => [
+                'stopWords' => [
+                    // Português
+                    'o', 'a', 'os', 'as', 'de', 'do', 'da', 'dos', 'das', 'e', 'em', 'no', 'na', 'nos', 'nas', 'por', 'para', 'com', 'um', 'uma', 'que', 'se',
+                    // Inglês
+                    'the', 'of', 'and', 'in', 'to', 'a', 'is', 'for', 'with', 'on', 'by', 'an', 'this', 'that', 'it', 'from', 'as',
+                ],
+            ],
         ],
     ],
 

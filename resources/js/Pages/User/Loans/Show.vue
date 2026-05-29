@@ -38,7 +38,7 @@
             <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
 
                 <div class="md:col-span-4">
-                    <img :src="loan.book?.image_path" :alt="loan.book?.title" class="show-image" />
+                    <img :src="loan.book?.image_url" :alt="loan.book?.title" class="show-image" />
                 </div>
                 <div class="md:col-span-8 space-y-6">
                     <div class="flex items-start justify-between">

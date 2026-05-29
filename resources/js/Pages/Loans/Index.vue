@@ -143,7 +143,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
                           <div>
                               <div class="mask mask-square h-12 w-12">
                                   <img
-                                      :src="loan.book.image_path"
+                                      :src="loan.book.image_url"
                                       :alt="loan.book.title" />
                               </div>
                           </div>

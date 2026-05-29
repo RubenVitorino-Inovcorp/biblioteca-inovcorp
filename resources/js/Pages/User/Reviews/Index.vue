@@ -40,7 +40,7 @@ import ReviewPendingButton from '@/Components/ReviewPendingButton.vue';
                         <div>
                             <div class="mask mask-square h-12 w-12">
                                 <img
-                                    :src="review.book.image_path"
+                                    :src="review.book.image_url"
                                     :alt="review.book.title" />
                             </div>
                         </div>

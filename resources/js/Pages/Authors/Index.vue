@@ -73,7 +73,7 @@ import ExportButton from "@/Components/ExportButton.vue";
                             <div class="avatar">
                                 <div class="mask mask-squircle h-12 w-12">
                                     <img
-                                        :src="author.photo_path"
+                                        :src="author.photo_url"
                                         :alt="author.name" />
                                 </div>
                             </div>

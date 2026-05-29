@@ -80,6 +80,7 @@ class BookController extends Controller
         $book->load([
             'authors',
             'publisher',
+            'tags',
             'reviews' => function ($query) {
                 $query->with('user')->where('status', ReviewStatus::APPROVED)->latest();
             },

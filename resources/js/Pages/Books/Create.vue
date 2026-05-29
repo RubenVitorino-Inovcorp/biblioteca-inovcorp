@@ -8,6 +8,7 @@
     defineProps({
       publishers: Array,
       authors: Array,
+      tags: Array,
       externalBooks: {type: Array, default: () => []},
       filters: Object,
     });
@@ -25,7 +26,7 @@
     <Head title="Novo livro" />
     <div class="p-6 md:p-8 max-w-5xl w-full mx-auto my-auto space-y-6">
         <GoogleFetchDropdown :filters="filters" :external-books="externalBooks" @select-book="handleBookSelection" />
-        <BookCreateForm :publishers="publishers" :authors="authors" :selected-book="selectedBook" />
+        <BookCreateForm :publishers="publishers" :authors="authors" :tags="tags" :selected-book="selectedBook" />
       </div>
   </Layout>
 </template>

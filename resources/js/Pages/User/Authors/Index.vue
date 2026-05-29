@@ -41,7 +41,7 @@ const authorSortOptions = [
                 <Link :href="route('catalog.autores.show', author.id)" class="block flex-grow">
                     <div class="pt-8 pb-4 flex justify-center bg-[#f8fafc] relative">
                         <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        <img :src="author.photo_path" :alt="author.name" class="relative rounded-full w-28 h-28 object-cover shadow-sm ring-4 ring-white" />
+                        <img :src="author.photo_url" :alt="author.name" class="relative rounded-full w-28 h-28 object-cover shadow-sm ring-4 ring-white" />
                     </div>
                     <div class="p-5 flex flex-col items-center text-center">
                         <h2 class="font-bold text-lg text-base-content truncate w-full group-hover:text-primary transition-colors" :title="author.name">

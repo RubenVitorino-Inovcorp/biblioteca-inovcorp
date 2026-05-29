@@ -21,15 +21,17 @@ class Author extends Model
         'photo_path',
     ];
 
+    protected $appends = ['photo_url'];
+
     /**
      * Resolve o URL público da foto ou retorna a imagem por defeito.
      */
     protected function photoUrl(): Attribute
     {
         return Attribute::make(
-            get: fn (?string $value, array $attributes) => $attributes['photo_path'] 
-                ? asset($attributes['photo_path']) 
-                : asset('/storage/autores/default.webp') 
+            get: fn (?string $value, array $attributes) => ($attributes['photo_path'] ?? null)
+                ? asset($attributes['photo_path'])
+                : asset('/storage/autores/default.webp')
         );
     }
 

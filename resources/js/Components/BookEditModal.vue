@@ -6,6 +6,7 @@ const props = defineProps({
     book: Object,
     publishers: Array,
     authors: Array,
+    tags: Array,
 });
 
 const modalRef = ref(null);
@@ -44,6 +45,7 @@ const closeModal = () => {
                 :book="selectedBook"
                 :publishers="publishers"
                 :authors="authors"
+                :tags="tags"
                 :isModal="true"
                 @success="closeModal"
             />

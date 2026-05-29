@@ -17,7 +17,7 @@
           <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
               
               <div class="md:col-span-3">
-                  <img :src="publisher.logo_path" :alt="publisher.name" class="show-image shadow-lg" />
+                  <img :src="publisher.logo_url" :alt="publisher.name" class="show-image shadow-lg" />
               </div>
 
               <div class="md:col-span-9 space-y-6">
@@ -38,7 +38,7 @@
               <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
                   <div v-for="book in books" :key="book.id" class="book-card">
                       <Link :href="route('livros.show', book.id)">
-                          <img :src="book.image_path" :alt="book.title" class="book-card-image" />
+                          <img :src="book.image_url" :alt="book.title" class="book-card-image" />
                       </Link>
                       <div class="book-card-body">
                           <Link :href="route('livros.show', book.id)" class="show-title-link">

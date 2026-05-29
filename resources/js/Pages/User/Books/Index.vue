@@ -50,7 +50,7 @@ const bookSortOptions = [
                     <span v-else class="absolute top-2 right-2 opacity-80 bg-gray-400 text-base-100 px-2 py-1 rounded-lg text-xs font-bold">Indisponível</span>
 
                     <img 
-                        :src="book.image_path" 
+                        :src="book.image_url" 
                         :alt="book.title" 
                         class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" 
                     />

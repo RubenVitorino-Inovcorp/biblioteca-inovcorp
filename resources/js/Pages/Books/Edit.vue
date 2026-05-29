@@ -7,12 +7,13 @@
       book: Object,
       publishers: Array,
       authors: Array,
+      tags: Array,
   });
 </script>
 
 <template>
     <Layout>
         <Head :title="`Atualizar livro - ${book.title}`" />
-        <BookEditForm :book="book" :publishers="publishers" :authors="authors" />
+        <BookEditForm :book="book" :publishers="publishers" :authors="authors" :tags="tags" />
     </Layout>
 </template>

@@ -20,7 +20,7 @@ const quickAdd = (book) => {
         total_stock: 1,      
         publisher_id: book.publisher_name || 'Desconhecida', 
         author_ids: Array.isArray(book.autores) ? book.autores : (book.autores ? book.autores.split(',').map(a => a.trim()).filter(Boolean) : []),                          
-        image_path: book.image_path
+        image_path: book.image_url
     }, {
         onSuccess: () => toast.success('Livro importado e guardado localmente!'),
         onError: () => toast.error('Erro ao importar o livro.')
@@ -54,7 +54,7 @@ const quickAdd = (book) => {
                 
                 <Link :href="route('livros.google-show', book.google_id)" class="relative aspect-[4/5] overflow-hidden rounded-xl w-full block">
                     <img 
-                        :src="book.image_path" 
+                        :src="book.image_url" 
                         :alt="book.title" 
                         class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" 
                     />
