@@ -38,7 +38,7 @@ class BookController extends Controller
                 ->when($filters['publisher'] ?? null, fn ($q, $pubId) => $q->where('publisher_id', $pubId))
                 ->when($filters['author'] ?? null, fn ($q, $authId) => $q->whereHas('authors', fn ($q2) => $q2->where('authors.id', $authId)))
                 ->when($filters['sort'] ?? null, function ($q, $sort) {
-                    match ($sort) {
+                    return match ($sort) {
                         'preco_asc' => $q->orderBy('price', 'asc'),
                         'preco_desc' => $q->orderBy('price', 'desc'),
                         'titulo_az' => $q->orderBy('title', 'asc'),
@@ -104,7 +104,7 @@ class BookController extends Controller
         }
 
         $keywords = Str::words($book->bibliography, 15, '');
-        $similarQuery = "{$book->title} {$keywords}";
+        $similarityQuery = "{$book->title} {$keywords}";
 
         $relatedBooks = Book::search($similarityQuery)
             ->query(fn ($q) => $q->with(['authors'])) // Evita N+1 na renderização das sugestões

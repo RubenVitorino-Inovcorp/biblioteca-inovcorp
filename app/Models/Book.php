@@ -38,8 +38,8 @@ class Book extends Model
             'title' => (string) $this->title,
             'bibliography' => (string) $this->bibliography,
             'isbn' => (string) $this->isbn,
-            'publisher' => (string) $this->publisher->name,
-            'authors' => (string) $this->authors->pluck('name')->join(', '),
+            'publisher' => (string) ($this->publisher?->name ?? ''),
+            'authors' => (string) ($this->authors?->pluck('name')->join(', ') ?? ''),
         ];
     }
 
