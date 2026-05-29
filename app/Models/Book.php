@@ -12,11 +12,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Laravel\Scout\Searchable;
 
 #[ObservedBy(BookObserver::class)]
 class Book extends Model
 {
     use HasFactory;
+    use Searchable;
 
     protected $fillable = [
         'title',
@@ -28,6 +30,18 @@ class Book extends Model
         'publisher_id',
         'image_path',
     ];
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => (int) $this->id,
+            'title' => (string) $this->title,
+            'bibliography' => (string) $this->bibliography,
+            'isbn' => (string) $this->isbn,
+            'publisher' => (string) $this->publisher->name,
+            'authors' => (string) $this->authors->pluck('name')->join(', '),
+        ];
+    }
 
     protected $appends = ['is_available'];
 

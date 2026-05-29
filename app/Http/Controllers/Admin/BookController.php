@@ -270,12 +270,12 @@ class BookController extends Controller
 
         // Apagar a imagem antiga e guardar a nova imagem
         if ($request->hasFile('image_path')) {
-            if ($book->image_path && ! str_contains($book->image_path, 'http')) {
+            if ($book->image_path && !str_contains($book->image_path, 'http') && !str_contains($book->image_path, 'default.webp')) {
                 Storage::disk('public')->delete(str_replace('/storage/', '', $book->image_path));
             }
 
             $path = $request->file('image_path')->store('imagens', 'public');
-            $finalPath = '/storage/'.$path;
+            $finalPath = '/storage/' . $path;
         }
 
         $diff = $request->total_stock - $book->total_stock;
@@ -324,7 +324,7 @@ class BookController extends Controller
      */
     public function destroy(Book $book)
     {
-        if ($book->image_path && ! str_contains($book->image_path, 'http')) {
+        if ($book->image_path && !str_contains($book->image_path, 'http') && !str_contains($book->image_path, 'default.webp')) {
             $path = str_replace('/storage/', '', $book->image_path);
             Storage::disk('public')->delete($path);
         }
