@@ -142,15 +142,19 @@ return [
         'host' => env('MEILISEARCH_HOST', 'http://localhost:7700'),
         'key' => env('MEILISEARCH_KEY'),
         'index-settings' => [
-            // 'users' => [
-            //     'filterableAttributes'=> ['id', 'name', 'email'],
-            // ],
             Book::class => [
                 'stopWords' => [
-                    // Português
                     'o', 'a', 'os', 'as', 'de', 'do', 'da', 'dos', 'das', 'e', 'em', 'no', 'na', 'nos', 'nas', 'por', 'para', 'com', 'um', 'uma', 'que', 'se',
-                    // Inglês
                     'the', 'of', 'and', 'in', 'to', 'a', 'is', 'for', 'with', 'on', 'by', 'an', 'this', 'that', 'it', 'from', 'as',
+                ],
+                // Configuração de IA Local
+                'embedders' => [
+                    'default' => [
+                        'source' => 'huggingFace',
+                        'model' => 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2',
+                        'documentTemplate' => '{{doc.bibliography}} Título: {{doc.title}}. Tags: {{doc.tags}}.',
+                        'documentTemplateMaxBytes' => 2048,
+                    ],
                 ],
             ],
         ],

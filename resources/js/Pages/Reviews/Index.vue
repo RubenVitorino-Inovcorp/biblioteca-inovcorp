@@ -65,13 +65,14 @@ import ReviewPendingButton from '@/Components/ReviewPendingButton.vue';
                       </Link>
                   </td>
 
-                  <td>
+                  <td class="align-middle">
                       <div class="flex items-center gap-3">
-                          <div>
+                          <div class="shrink-0">
                               <div class="mask mask-square h-12 w-12">
                                   <img
                                       :src="review.book.image_url"
-                                      :alt="review.book.title" />
+                                      :alt="review.book.title"
+                                      class="h-full w-full object-cover" />
                               </div>
                           </div>
                           <div>

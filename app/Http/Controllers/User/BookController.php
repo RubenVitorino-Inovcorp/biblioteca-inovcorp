@@ -10,7 +10,7 @@ use App\Models\Book;
 use App\Models\Publisher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class BookController extends Controller
@@ -51,7 +51,14 @@ class BookController extends Controller
         // Meilisearch ou Eloquent normal no caso de não haver pesquisa texto
         if ($searchQuery) {
             // O Meilisearch filtra o texto; o callback aplica o SQL aos IDs devolvidos
-            $books = Book::search($searchQuery)
+            $books = Book::search($searchQuery, function ($meiliSearch, $query, $options) {
+                $options['hybrid'] = [
+                    'semanticRatio' => 0.8,
+                    'embedder' => 'default',
+                ];
+
+                return $meiliSearch->search($query, $options);
+            })
                 ->query($applySqlFilters)
                 ->paginate(15, 'pag');
         } else {
@@ -104,16 +111,35 @@ class BookController extends Controller
                 ->value('id');
         }
 
-        $keywords = Str::words($book->bibliography, 15, '');
-        $similarityQuery = "{$book->title} {$keywords}";
+        // Contexto base para a pesquisa (EX: titulo, tags, bibliografia)
+        $tagsQuery = $book->tags->pluck('name')->implode(', ');
+        $searchContext = "{$book->title} {$tagsQuery} {$book->bibliography}";
 
-        $relatedBooks = Book::search($similarityQuery)
-            ->query(fn ($q) => $q->with(['authors'])) // Evita N+1 na renderização das sugestões
-            ->take(6) // Pede 6 livros para termos a certeza que temos 5 (o livro atual será quase sempre o resultado #1)
-            ->get()
-            ->reject(fn ($b) => $b->id === $book->id) // Remove o próprio livro da lista
-            ->take(5) // Garante que o frontend recebe um máximo de 5 sugestões
-            ->values();
+        // Pesquisa Híbrida (passar as opções avançadas diretamente ao Meilisearch)
+        try {
+            $relatedBooks = Book::search($searchContext, function ($meiliSearch, $query, $options) {
+                $options['hybrid'] = [
+                    // 80% do peso vai para a semântica (IA), 20% para a correspondência exata de palavras
+                    'semanticRatio' => 0.8,
+                    'embedder' => 'default',
+                ];
+
+                return $meiliSearch->search($query, $options);
+            })
+                ->query(fn ($q) => $q->with(['authors']))
+                ->take(6)
+                ->get()
+                ->reject(fn ($b) => $b->id === $book->id)
+                ->take(5)
+                ->values();
+        } catch (\Throwable $e) {
+            Log::warning('Hybrid search failed for related books', [
+                'book_id' => $book->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            $relatedBooks = collect();
+        }
 
         return Inertia::render('User/Books/Show', [
             'book' => $book,
