@@ -120,7 +120,7 @@ class PublisherController extends Controller
 
         // 1. Apagar a imagem antiga e guardar a nova imagem
         if ($request->hasFile('logo_path')) {
-            if ($publisher->logo_path && !str_starts_with($publisher->logo_path, 'http') && str_starts_with($publisher->logo_path, '/storage/')) {
+            if ($publisher->logo_path && !str_starts_with($publisher->logo_path, 'http') && !str_contains($publisher->logo_path, 'default.webp')) {
                 Storage::disk('public')->delete(substr($publisher->logo_path, 9));
             }
 
@@ -141,7 +141,12 @@ class PublisherController extends Controller
      */
     public function destroy(Publisher $publisher)
     {
+        if ($publisher->logo_path && !str_starts_with($publisher->logo_path, 'http') && !str_contains($publisher->logo_path, 'default.webp')) {
+            Storage::disk('public')->delete(substr($publisher->logo_path, 9));
+        }
+
         $publisher->delete();
+
         return redirect()->route('editoras.index')->with('success', 'Editora removida com sucesso!');
     }
 

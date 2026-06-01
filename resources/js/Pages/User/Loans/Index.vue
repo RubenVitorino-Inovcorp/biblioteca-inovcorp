@@ -90,22 +90,21 @@
                       {{ loan.loan_number }}
                     </td>
                 </Link>
-
-                  <td>
-                      <div class="flex items-center gap-3">
-                          <div>
-                              <div class="mask mask-square h-12 w-12">
-                                  <img
-                                      :src="loan.book.image_path"
-                                      :alt="loan.book.title" />
-                              </div>
-                          </div>
-                          <div>
-                              <Link :href="route('catalog.livros.show', loan.book.id)">
-                                  {{ loan.book.title }}
-                              </Link>
-                          </div>
-                      </div>
+                <td class="align-middle">
+                    <div class="flex items-center gap-3">
+                        <div class="avatar">
+                            <div class="mask mask-squircle h-12 w-12">
+                                <img
+                                    :src="loan.book.image_url"
+                                    :alt="loan.book.title" />
+                            </div>
+                        </div>
+                        <div>
+                        <Link :href="route('catalog.livros.show', loan.book.id)">
+                            {{ loan.book.title }}
+                        </Link>
+                        </div>
+                    </div>
                   </td>
                   <td>
                       {{ loan.start_date }}

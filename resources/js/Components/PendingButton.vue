@@ -75,7 +75,7 @@
 
             <div class="bg-base-200/50 border border-base-300 rounded-xl p-5 flex items-center gap-4 text-sm">
                 <div class="shrink-0 rounded-md overflow-hidden shadow-sm bg-base-100">
-                    <img v-if="loan.book?.image_path" :src="loan.book.image_path" :alt="loan.book?.title" class="w-12 h-16 object-cover" />
+                    <img v-if="loan.book?.image_url" :src="loan.book.image_url" :alt="loan.book?.title" class="w-12 h-16 object-cover" />
                     <div v-else class="w-12 h-16 bg-gray-100 flex items-center justify-center">
                         <LibraryBig class="text-gray-400" :size="20" />
                     </div>

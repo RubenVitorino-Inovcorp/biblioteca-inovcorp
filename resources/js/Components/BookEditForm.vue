@@ -3,20 +3,17 @@ import {Link, useForm} from '@inertiajs/vue3';
 import { toast } from "vue-sonner";
 import BookDeleteForm from "@/Components/BookDeleteForm.vue";
 import {Pencil} from "@lucide/vue";
+import FormInputSearch from '@/Components/FormInputSearch.vue';
 
 const props = defineProps({
     book: { type: Object, required: true },
     publishers: Array,
     authors: Array,
+    tags: Array,
     isModal: { type: Boolean, default: false }
 });
 
 const emit = defineEmits(['success']);
-
-const getAuthorIds = () => {
-    if (!props.book?.authors) return [];
-    return props.book.authors.map(author => author.id);
-};
 
 const form = useForm({
     _method: "put",
@@ -25,8 +22,9 @@ const form = useForm({
     isbn: props.book.isbn ?? '',
     price: props.book.price ?? 0,
     total_stock: props.book.total_stock ?? 0,
-    publisher_id: props.book.publisher_id ?? '',
-    author_ids: getAuthorIds(),
+    publisher: props.book.publisher ?? null,
+    authors: props.book.authors ?? [],
+    tags: props.book.tags ?? [],
     image_path: null,
 });
 
@@ -35,7 +33,12 @@ const handleFileChange = (e) => {
 };
 
 const submit = () => {
-    form.post(route('livros.update', props.book.id), {
+    form.transform((data) => ({
+        ...data,
+        publisher_id: data.publisher?.id || '',
+        author_ids: data.authors.map(a => a.id),
+        tag_ids: data.tags.map(t => t.id),
+    })).post(route('livros.update', props.book.id), {
         preserveScroll: true,
         onSuccess: () => {
             emit('success')
@@ -53,7 +56,7 @@ const submit = () => {
         <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
 
             <div class="md:col-span-4">
-                <img :src="book.image_path" :alt="book.title" class="show-image shadow-lg" />
+                <img :src="book.image_url" :alt="book.title" class="show-image shadow-lg" />
             </div>
 
             <div class="md:col-span-8 space-y-6">
@@ -111,68 +114,76 @@ const submit = () => {
 
     <form @submit.prevent="submit" :class="isModal ? 'w-full' : 'max-w-2xl mx-auto p-8 bg-base-100 rounded-2xl shadow-sm border border-gray-100'">
         <div v-if="!isModal" class="mb-6 pb-4 border-b border-gray-100">
-            <h2 class="text-xl font-bold font-['Manrope'] text-base-content">Atualizar Dados do Livro</h2>
+            <h2 class="text-xl text-base-content">Atualizar Dados do Livro</h2>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="form-control">
-                <label class="label font-semibold text-base-content/70">Título</label>
+                <label class="label text-base-content/70">Título</label>
                 <input v-model="form.title" type="text" class="input input-bordered w-full" />
                 <span v-if="form.errors.title" class="text-red-500 text-xs mt-1">{{ form.errors.title }}</span>
             </div>
 
             <div class="form-control">
-                <label class="label font-semibold text-base-content/70">ISBN</label>
+                <label class="label text-base-content/70">ISBN</label>
                 <input v-model="form.isbn" type="text" class="input input-bordered w-full" />
                 <span v-if="form.errors.isbn" class="text-red-500 text-xs mt-1">{{ form.errors.isbn }}</span>
             </div>
         </div>
 
         <div class="form-control mt-2">
-            <label class="label font-semibold text-base-content/70">Bibliografia</label>
+            <label class="label text-base-content/70">Bibliografia</label>
             <textarea v-model="form.bibliography" class="textarea textarea-bordered h-24 w-full"></textarea>
             <span v-if="form.errors.bibliography" class="text-red-500 text-xs mt-1">{{ form.errors.bibliography }}</span>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
             <div class="form-control">
-                <label class="label font-semibold text-base-content/70">Preço (€)</label>
+                <label class="label text-base-content/70">Preço (€)</label>
                 <input v-model="form.price" type="number" step="0.01" class="input input-bordered w-full" />
                 <span v-if="form.errors.price" class="text-red-500 text-xs mt-1">{{ form.errors.price }}</span>
             </div>
 
             <div class="form-control">
-                <label class="label font-semibold text-base-content/70">Total Stock</label>
+                <label class="label text-base-content/70">Total Stock</label>
                 <input v-model="form.total_stock" type="number" class="input input-bordered w-full" />
                 <span v-if="form.errors.total_stock" class="text-red-500 text-xs mt-1">{{ form.errors.total_stock }}</span>
             </div>
         </div>
 
         <div class="form-control mt-2 mb-4 space-y-4">
-                        <div class="form-control">
-                <label class="label font-semibold text-base-content/70">Editora</label>
-                <select v-model="form.publisher_id" class="select select-bordered w-full">
-                    <option disabled value="">Selecione uma editora...</option>
-                    <option v-for="pub in publishers" :key="pub.id" :value="pub.id">
-                        {{ pub.name }}
-                    </option>
-                </select>
-                <span v-if="form.errors.publisher_id" class="text-red-500 text-xs mt-1">{{ form.errors.publisher_id }}</span>
-            </div>
-            <label class="label font-semibold text-base-content/70">Autor(es)</label>
-            <select multiple v-model="form.author_ids" class="select select-bordered min-h-[120px] w-full">
-                <option v-for="aut in authors" :key="aut.id" :value="aut.id">
-                    {{ aut.name }}
-                </option>
-            </select>
+            <FormInputSearch
+                 v-model="form.publisher"
+                 label="Editora"
+                 placeholder="Procurar editora..."
+                 :items="publishers"
+                 :multiple="false"
+            />
+            <span v-if="form.errors.publisher_id" class="text-red-500 text-xs mt-1">{{ form.errors.publisher_id }}</span>
+
+            <FormInputSearch
+                 v-model="form.authors"
+                 label="Autor(es)"
+                 placeholder="Procurar autor..."
+                 :items="authors"
+                 :multiple="true"
+             />
             <span v-if="form.errors.author_ids" class="text-red-500 text-xs mt-1">{{ form.errors.author_ids }}</span>
-            <label class="label">
-                <span class="label-text-alt text-base-content/60">Ctrl/Cmd + Clique para selecionar vários</span>
-            </label>
+        </div>
+
+        <div class="form-control mt-2 mb-4">
+             <FormInputSearch
+                 v-model="form.tags"
+                 label="Tags"
+                 placeholder="Procurar ou criar tag..."
+                 :items="tags"
+                 :multiple="true"
+             />
+            <span v-if="form.errors.tag_ids" class="text-red-500 text-xs mt-1">{{ form.errors.tag_ids }}</span>
         </div>
 
         <div class="form-control">
-            <label class="label font-semibold text-base-content/70">Capa do Livro</label>
+            <label class="label text-base-content/70">Capa do Livro</label>
             <input
                 type="file"
                 @input="handleFileChange"

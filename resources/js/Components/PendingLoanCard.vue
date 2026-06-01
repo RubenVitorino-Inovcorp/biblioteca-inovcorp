@@ -23,8 +23,8 @@ const formattedDate = (date) => {
             <!-- Book Cover -->
             <div class="pending-card-cover">
                 <img
-                    v-if="loan.book?.image_path"
-                    :src="loan.book.image_path"
+                    v-if="loan.book?.image_url"
+                    :src="loan.book.image_url"
                     :alt="loan.book?.title"
                     class="pending-card-cover-img"
                 />

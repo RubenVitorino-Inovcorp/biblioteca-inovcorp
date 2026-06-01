@@ -12,11 +12,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Laravel\Scout\Searchable;
 
 #[ObservedBy(BookObserver::class)]
 class Book extends Model
 {
     use HasFactory;
+    use Searchable;
 
     protected $fillable = [
         'title',
@@ -29,7 +31,20 @@ class Book extends Model
         'image_path',
     ];
 
-    protected $appends = ['is_available'];
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => (int) $this->id,
+            'title' => (string) $this->title,
+            'bibliography' => (string) $this->bibliography,
+            'isbn' => (string) $this->isbn,
+            'publisher' => (string) ($this->publisher?->name ?? ''),
+            'authors' => (string) ($this->authors?->pluck('name')->join(', ') ?? ''),
+            'tags' => (string) ($this->tags?->pluck('name')->join(', ') ?? ''),
+        ];
+    }
+
+    protected $appends = ['is_available', 'image_url'];
 
     /**
      * Get the attributes that should be cast.
@@ -51,7 +66,7 @@ class Book extends Model
     protected function imageUrl(): Attribute
     {
         return Attribute::make(
-            get: fn (?string $value, array $attributes) => $attributes['image_path']
+            get: fn (?string $value, array $attributes) => ($attributes['image_path'] ?? null)
                 ? (str_starts_with($attributes['image_path'], 'http') ? $attributes['image_path'] : asset($attributes['image_path']))
                 : asset('/storage/imagens/default.webp')
         );
@@ -70,6 +85,11 @@ class Book extends Model
     public function authors(): BelongsToMany
     {
         return $this->belongsToMany(Author::class);
+    }
+
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class);
     }
 
     public function publisher(): BelongsTo

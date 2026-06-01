@@ -8,6 +8,7 @@ import FormInputSearch from '../FormInputSearch.vue';
 const props = defineProps({
     publishers: Array,
     authors: Array,
+    tags: Array,
     selectedBook: { type: Object, default: null },
 });
 
@@ -21,6 +22,7 @@ const form = useForm({
     total_stock: 0,
     publisher: null,
     authors: [],
+    tags: [],
     image_path: null,
 });
 
@@ -51,6 +53,7 @@ const submit = () => {
         ...data,
         publisher_id: data.publisher ? data.publisher.id : null,
         author_ids: data.authors.map(a => a.id),
+        tag_ids: data.tags.map(t => t.id),
     })).post(route('livros.store'), {
         preserveScroll: true,
         onSuccess: () => {
@@ -160,6 +163,17 @@ watch(() => props.selectedBook, (newBook) => {
                  :multiple="true"
              />
              <span v-if="form.errors.author_ids" class="text-red-500 text-xs mt-1">{{ form.errors.author_ids }}</span>
+        </div>
+
+        <div class="form-control mb-4">
+             <FormInputSearch
+                 v-model="form.tags"
+                 label="Tags"
+                 placeholder="Procurar ou criar tag..."
+                 :items="tags"
+                 :multiple="true"
+             />
+             <span v-if="form.errors.tag_ids" class="text-red-500 text-xs mt-1">{{ form.errors.tag_ids }}</span>
         </div>
 
         <div class="form-control">

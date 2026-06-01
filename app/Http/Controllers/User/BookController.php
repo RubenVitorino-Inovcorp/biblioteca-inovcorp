@@ -10,6 +10,7 @@ use App\Models\Book;
 use App\Models\Publisher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class BookController extends Controller
@@ -21,41 +22,55 @@ class BookController extends Controller
 
     public function index(Request $request)
     {
-        $books = Book::query()
-            ->with(['publisher', 'authors'])
-            ->when($request->search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('title', 'like', "%{$search}%")
-                        ->orWhere('isbn', 'like', "%{$search}%");
-                });
-            })
-            ->when($request->publisher, function ($query, $publisherId) {
-                $query->where('publisher_id', $publisherId);
-            })
-            ->when($request->author, function ($query, $authorId) {
-                $query->whereHas('authors', function ($q) use ($authorId) {
-                    $q->where('authors.id', $authorId);
-                });
-            })
-            ->when($request->sort, function ($query, $sort) {
-                match ($sort) {
-                    'preco_asc' => $query->orderBy('price', 'asc'),
-                    'preco_desc' => $query->orderBy('price', 'desc'),
-                    'titulo_az' => $query->orderBy('title', 'asc'),
-                    'titulo_za' => $query->orderBy('title', 'desc'),
-                    default => $query->latest(),
-                };
-            }, function ($query) {
-                $query->latest();
-            })
-            ->paginate(15, ['*'], 'pag')
-            ->withQueryString();
-
+        // Implementação de pesquisa inteligente com Meilisearch.
+        // Extrair e normalizar os filtros (resolver a diferença entre "search" e "filters.search").
         $filters = $request->only(['search', 'sort', 'publisher', 'author']);
+        $searchQuery = $filters['search'] ?? $request->input('filters.search');
 
+        // Limpeza estrita de ordenações inválidas
         if (! in_array($filters['sort'] ?? null, ['preco_asc', 'preco_desc', 'titulo_az', 'titulo_za'], true)) {
             $filters['sort'] = '';
         }
+
+        // Definir as regras de SQL que se aplicam a ambos os cenários
+        $applySqlFilters = function ($query) use ($filters) {
+            $query->with(['authors', 'publisher'])
+                ->when($filters['publisher'] ?? null, fn ($q, $pubId) => $q->where('publisher_id', $pubId))
+                ->when($filters['author'] ?? null, fn ($q, $authId) => $q->whereHas('authors', fn ($q2) => $q2->where('authors.id', $authId)))
+                ->when($filters['sort'] ?? null, function ($q, $sort) {
+                    return match ($sort) {
+                        'preco_asc' => $q->orderBy('price', 'asc'),
+                        'preco_desc' => $q->orderBy('price', 'desc'),
+                        'titulo_az' => $q->orderBy('title', 'asc'),
+                        'titulo_za' => $q->orderBy('title', 'desc'),
+                        default => $q->latest(),
+                    };
+                }, fn ($q) => $q->latest());
+        };
+
+        // Meilisearch ou Eloquent normal no caso de não haver pesquisa texto
+        if ($searchQuery) {
+            // O Meilisearch filtra o texto; o callback aplica o SQL aos IDs devolvidos
+            $books = Book::search($searchQuery, function ($meiliSearch, $query, $options) {
+                $options['hybrid'] = [
+                    'semanticRatio' => 0.8,
+                    'embedder' => 'default',
+                ];
+
+                return $meiliSearch->search($query, $options);
+            })
+                ->query($applySqlFilters)
+                ->paginate(15, 'pag');
+        } else {
+            // Sem pesquisa texto, aplica-se as regras diretamente à query base do SQL
+            $booksQuery = Book::query();
+            $applySqlFilters($booksQuery);
+
+            $books = $booksQuery->paginate(15, ['*'], 'pag');
+        }
+
+        // Executar e paginar
+        $books->withQueryString();
 
         return Inertia::render('User/Books/Index', [
             'books' => $books,
@@ -72,6 +87,7 @@ class BookController extends Controller
         $book->load([
             'authors',
             'publisher',
+            'tags',
             'reviews' => function ($query) {
                 $query->with('user')->where('status', ReviewStatus::APPROVED)->latest();
             },
@@ -95,8 +111,39 @@ class BookController extends Controller
                 ->value('id');
         }
 
+        // Contexto base para a pesquisa (EX: titulo, tags, bibliografia)
+        $tagsQuery = $book->tags->pluck('name')->implode(', ');
+        $searchContext = "{$book->title} {$tagsQuery} {$book->bibliography}";
+
+        // Pesquisa Híbrida (passar as opções avançadas diretamente ao Meilisearch)
+        try {
+            $relatedBooks = Book::search($searchContext, function ($meiliSearch, $query, $options) {
+                $options['hybrid'] = [
+                    // 80% do peso vai para a semântica (IA), 20% para a correspondência exata de palavras
+                    'semanticRatio' => 0.8,
+                    'embedder' => 'default',
+                ];
+
+                return $meiliSearch->search($query, $options);
+            })
+                ->query(fn ($q) => $q->with(['authors']))
+                ->take(6)
+                ->get()
+                ->reject(fn ($b) => $b->id === $book->id)
+                ->take(5)
+                ->values();
+        } catch (\Throwable $e) {
+            Log::warning('Hybrid search failed for related books', [
+                'book_id' => $book->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            $relatedBooks = collect();
+        }
+
         return Inertia::render('User/Books/Show', [
             'book' => $book,
+            'relatedBooks' => $relatedBooks,
             'loans' => $book->loans()->with('user')->latest()->get(),
             'userReview' => $userReview,
             'reviewableLoanId' => $reviewableLoanId,

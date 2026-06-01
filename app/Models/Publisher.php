@@ -21,15 +21,17 @@ class Publisher extends Model
         'logo_path',
     ];
 
+    protected $appends = ['logo_url'];
+
     /**
      * Resolve o URL público do logo ou retorna a imagem por defeito.
      */
     protected function logoUrl(): Attribute
     {
         return Attribute::make(
-            get: fn (?string $value, array $attributes) => $attributes['logo_path'] 
+            get: fn (?string $value, array $attributes) => ($attributes['logo_path'] ?? null)
                 ? (str_starts_with($attributes['logo_path'], 'http') ? $attributes['logo_path'] : asset($attributes['logo_path']))
-                : asset('/storage/editoras/default.webp') 
+                : asset('/storage/editoras/default.webp')
         );
     }
 

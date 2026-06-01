@@ -26,8 +26,8 @@ const isReturnable = (status) => {
             <!-- Book Cover -->
             <div class="active-card-cover">
                 <img
-                    v-if="loan.book?.image_path"
-                    :src="loan.book.image_path"
+                    v-if="loan.book?.image_url"
+                    :src="loan.book.image_url"
                     :alt="loan.book?.title"
                     class="active-card-cover-img"
                 />

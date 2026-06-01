@@ -41,7 +41,7 @@ const publisherSortOptions = [
                 <Link :href="route('catalog.editoras.show', publisher.id)" class="block flex-grow">
                     <div class="pt-6 pb-4 flex justify-center items-center bg-[#f8fafc] h-36 relative">
                         <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        <img :src="publisher.logo_path" :alt="publisher.name" class="relative max-w-[80%] max-h-24 object-contain mix-blend-multiply" />
+                        <img :src="publisher.logo_url" :alt="publisher.name" class="relative max-w-[80%] max-h-24 object-contain mix-blend-multiply" />
                     </div>
                     <div class="p-5 flex flex-col items-center text-center border-t border-gray-50">
                         <h2 class="font-bold text-lg text-base-content truncate w-full group-hover:text-primary transition-colors" :title="publisher.name">

@@ -14,6 +14,7 @@
       books: Object,
       authors: Array,
       publishers: Array,
+      tags: Array,
       filters: Object,
   })
 
@@ -75,7 +76,7 @@
                                 <div class="avatar">
                                     <div class="mask mask-squircle h-12 w-12">
                                         <img
-                                            :src="book.image_path"
+                                            :src="book.image_url"
                                             :alt="book.title" />
                                     </div>
                                 </div>
@@ -109,7 +110,7 @@
                             </div>
                         </td>
                         <th>
-                            <BookEditModal :book="book" :publishers="publishers" :authors="authors" />
+                            <BookEditModal :book="book" :publishers="publishers" :authors="authors" :tags="tags" />
                         </th>
                         <th>
                             <BookDeleteForm :book="book" />

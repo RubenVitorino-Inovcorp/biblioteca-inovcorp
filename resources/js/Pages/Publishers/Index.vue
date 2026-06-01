@@ -73,7 +73,7 @@
                             <div class="avatar">
                                 <div class="mask mask-squircle h-12 w-12">
                                     <img
-                                        :src="publisher.logo_path"
+                                        :src="publisher.logo_url"
                                         :alt="publisher.name" />
                                 </div>
                             </div>

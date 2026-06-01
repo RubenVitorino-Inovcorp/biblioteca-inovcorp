@@ -121,7 +121,7 @@ class AuthorController extends Controller
 
         // 1. Apagar a imagem antiga e guardar a nova imagem
         if ($request->hasFile('photo_path')) {
-            if ($author->photo_path && str_starts_with($author->photo_path, '/storage/')) {
+            if ($author->photo_path && !str_contains($author->photo_path, 'http') && basename($author->photo_path) !== 'default.webp') {
                 Storage::disk('public')->delete(str_replace('/storage/', '', $author->photo_path));
             }
 
@@ -142,7 +142,12 @@ class AuthorController extends Controller
      */
     public function destroy(Author $author)
     {
+        if ($author->photo_path && !str_contains($author->photo_path, 'http') && basename($author->photo_path) !== 'default.webp') {
+            Storage::disk('public')->delete(str_replace('/storage/', '', $author->photo_path));
+        }
+
         $author->delete();
+
         return redirect()->route('autores.index')->with('success', 'Autor removido com sucesso!');
     }
 

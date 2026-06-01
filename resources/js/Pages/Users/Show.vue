@@ -93,7 +93,7 @@
                                 </td>
                                 <td>
                                     <div class="flex items-center gap-3">
-                                        <img :src="loan.book?.image_path" class="w-8 h-10 object-cover rounded shadow-sm" />
+                                        <img :src="loan.book?.image_url" class="w-8 h-10 object-cover rounded shadow-sm" />
                                         <Link :href="route('catalog.livros.show', loan.book?.id)" class="font-bold text-sm hover:text-primary transition-colors line-clamp-1">
                                             {{ loan.book?.title }}
                                         </Link>

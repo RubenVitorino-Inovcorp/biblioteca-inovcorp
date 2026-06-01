@@ -41,7 +41,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
                 <div class="md:col-span-4">
-                    <img :src="review.book?.image_path" :alt="review.book?.title" class="w-full h-auto object-cover shadow-lg rounded-xl" />
+                    <img :src="review.book?.image_url" :alt="review.book?.title" class="w-full h-auto object-cover shadow-lg rounded-xl" />
                 </div>
                 <div class="md:col-span-8 space-y-6">
                     <div class="flex items-start justify-between">

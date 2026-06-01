@@ -8,10 +8,12 @@
     import {Head, Link} from '@inertiajs/vue3'
     import { LibraryBig } from '@lucide/vue';
     import BookAvailabilityAlert from '@/Components/BookAvailabilityAlert.vue';
+    import BookSuggestionsCarousel from '@/Components/BookSuggestionsCarousel.vue';
 
 
     const props = defineProps({
         book: Object,
+        relatedBooks: Array,
         loans: Array,
         userReview: Object,
         reviewableLoanId: Number,
@@ -41,7 +43,7 @@
             <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
 
                 <div class="md:col-span-4">
-                    <img :src="book.image_path" :alt="book.title" class="show-image shadow-lg" />
+                    <img :src="book.image_url" :alt="book.title" class="show-image shadow-lg" />
                 </div>
 
                 <div class="md:col-span-8 space-y-6">
@@ -70,6 +72,15 @@
                                     </Link>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <div v-if="book.tags?.length">
+                        <div class="show-label">Tags</div>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="badge badge-outline badge-sm" v-for="tag in book.tags" :key="tag.id">
+                                {{ tag.name }}
+                            </span>
                         </div>
                     </div>
 
@@ -107,6 +118,11 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div class="w-full mx-auto flex flex-col justify-center p-4 rounded-lg" v-if="relatedBooks.length > 0">
+                <div class="text-2xl font-bold text-base-content mb-4">Outros livros que poderá querer ler</div>
+                <BookSuggestionsCarousel :books="relatedBooks" />
             </div>
             
             <TableWrapper v-if="loans && loans.length > 0 && isAdmin">
@@ -147,9 +163,6 @@
                     </tr>
                 </template>
             </TableWrapper>
-            <div v-else-if="loans && loans.length === 0 && isAdmin" class="text-center p-8">
-                <p class="text-gray-500">Este livro ainda não foi requisitado.</p>
-            </div>
         </div>
         <Reviews :reviews="props.book.reviews" :book="props.book" :userReview="props.userReview" :reviewableLoanId="props.reviewableLoanId" />
     </Layout>   

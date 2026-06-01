@@ -18,7 +18,7 @@
             total_stock: 1,      
             publisher_id: props.book.publisher_name || 'Desconhecida', 
             author_ids: props.book.authors.map(a => a.name),                          
-            image_path: props.book.image_path
+            image_path: props.book.image_url
         }, {
             onSuccess: () => toast.success('Livro importado e guardado localmente!'),
             onError: () => toast.error('Erro ao importar o livro.')
@@ -35,7 +35,7 @@
             <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
 
                 <div class="md:col-span-4">
-                    <img :src="book.image_path" :alt="book.title" class="show-image shadow-lg" />
+                    <img :src="book.image_url" :alt="book.title" class="show-image shadow-lg" />
                 </div>
 
                 <div class="md:col-span-8 space-y-6">

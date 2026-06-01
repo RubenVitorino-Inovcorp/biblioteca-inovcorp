@@ -132,27 +132,28 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 
           <template #body>
               <tr v-for="loan in loans.data" :key="loan.id" class="hover:bg-base-300">
-                  <Link class="hover:text-primary" :href="route(isAdmin ? 'requisicoes.show' : 'catalog.requisicoes.show', loan.id)">
                   <td>
-                      {{ loan.loan_number }}
-                    </td>
-                </Link>
+                      <Link class="hover:text-primary" :href="route(isAdmin ? 'requisicoes.show' : 'catalog.requisicoes.show', loan.id)">
+                          {{ loan.loan_number }}
+                      </Link>
+                  </td>
 
-                  <td>
-                      <div class="flex items-center gap-3">
-                          <div>
-                              <div class="mask mask-square h-12 w-12">
-                                  <img
-                                      :src="loan.book.image_path"
-                                      :alt="loan.book.title" />
-                              </div>
-                          </div>
-                          <div>
-                              <Link :href="route(isAdmin ? 'livros.show' : 'catalog.livros.show', loan.book.id)">
-                                  {{ loan.book.title }}
-                              </Link>
-                          </div>
-                      </div>
+                  <td class="align-middle">
+                    <div class="flex items-center gap-3">
+                    <div class="avatar">
+                        <div class="mask mask-squircle h-12 w-12">
+                            <img
+                                :src="loan.book.image_url"
+                                :alt="loan.book.title" />
+                        </div>
+                    </div>
+                    <div>
+                        <Link class="hover:text-primary" :href="route('catalog.livros.show', loan.book.id)">
+                            <div class="font-bold">{{ loan.book?.title }}</div>
+                            <div class="text-sm opacity-50">{{ loan.book?.isbn ?? 'N/A' }}</div>
+                        </Link>
+                    </div>
+                    </div>
                   </td>
 
                   <td>
