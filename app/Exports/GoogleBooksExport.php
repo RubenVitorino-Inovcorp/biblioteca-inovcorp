@@ -38,7 +38,7 @@ class GoogleBooksExport implements FromArray, WithHeadings
 
             foreach ($items as $item) {
                 $volumeInfo = $item['volumeInfo'] ?? [];
-                
+
                 $isbn = collect($volumeInfo['industryIdentifiers'] ?? [])
                     ->firstWhere('type', 'ISBN_13')?->{'identifier'} ?? 'N/D';
                 $title = $volumeInfo['title'] ?? 'Sem título';
@@ -66,7 +66,7 @@ class GoogleBooksExport implements FromArray, WithHeadings
             'Título',
             'Editora',
             'Autores',
-            'Descrição'
+            'Descrição',
         ];
     }
 }

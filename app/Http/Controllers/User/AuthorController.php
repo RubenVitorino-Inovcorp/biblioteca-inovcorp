@@ -17,19 +17,19 @@ class AuthorController extends Controller
     public function index(Request $request)
     {
         $authors = Author::query()
-            ->when($request->search, function($query, $search){
+            ->when($request->search, function ($query, $search) {
                 $query->where('name', 'like', '%'.$search.'%');
             })
             ->withCount('books')
-            ->when($request->sort, function($query, $sort){
+            ->when($request->sort, function ($query, $sort) {
                 match ($sort) {
-                    'nome_az'          => $query->orderBy('name', 'asc'),
-                    'nome_za'          => $query->orderBy('name', 'desc'),
-                    'livros_asc'       => $query->orderBy('books_count', 'asc'),
-                    'livros_desc'      => $query->orderBy('books_count', 'desc'),
-                    default            => $query->latest(),
+                    'nome_az' => $query->orderBy('name', 'asc'),
+                    'nome_za' => $query->orderBy('name', 'desc'),
+                    'livros_asc' => $query->orderBy('books_count', 'asc'),
+                    'livros_desc' => $query->orderBy('books_count', 'desc'),
+                    default => $query->latest(),
                 };
-            }, function($query){
+            }, function ($query) {
                 $query->latest();
             })
             ->paginate(15, ['*'], 'pag')
@@ -37,7 +37,7 @@ class AuthorController extends Controller
 
         $filters = $request->only(['search', 'sort']);
 
-        if (!in_array($filters['sort'] ?? null, ['nome_az', 'nome_za', 'livros_asc', 'livros_desc'], true)) {
+        if (! in_array($filters['sort'] ?? null, ['nome_az', 'nome_za', 'livros_asc', 'livros_desc'], true)) {
             $filters['sort'] = '';
         }
 
@@ -51,7 +51,7 @@ class AuthorController extends Controller
     {
         return Inertia::render('User/Authors/Show', [
             'author' => $author,
-            'books' => $author->books()->with('publisher')->get()
+            'books' => $author->books()->with('publisher')->get(),
         ]);
     }
 }

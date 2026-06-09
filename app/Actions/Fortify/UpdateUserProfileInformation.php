@@ -4,6 +4,7 @@ namespace App\Actions\Fortify;
 
 use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
@@ -27,12 +28,12 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             // Delete old photo if it exists
             if ($user->profile_photo_path && str_starts_with($user->profile_photo_path, '/storage/')) {
                 $oldPath = substr($user->profile_photo_path, 9);
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+                Storage::disk('public')->delete($oldPath);
             }
-            
+
             $path = $input['photo']->store('fotos-perfil', 'public');
             $user->forceFill([
-                'profile_photo_path' => '/storage/' . $path,
+                'profile_photo_path' => '/storage/'.$path,
             ])->save();
         }
 
@@ -63,4 +64,3 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
         $user->sendEmailVerificationNotification();
     }
 }
-

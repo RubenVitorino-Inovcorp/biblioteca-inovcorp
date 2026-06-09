@@ -2,7 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\CartStatus;
 use App\Enums\UserRole;
+use App\Models\Cart;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -55,6 +57,16 @@ class HandleInertiaRequests extends Middleware
                         'name' => $request->user()->role?->label(),
                     ],
                 ] : null,
+            ],
+            'cart' => fn () => $request->user()
+                ? Cart::where('user_id', $request->user()->id)
+                    ->where('status', CartStatus::ACTIVE->value)
+                    ->with('items.book')
+                    ->first()
+                : null,
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
             ],
         ];
     }

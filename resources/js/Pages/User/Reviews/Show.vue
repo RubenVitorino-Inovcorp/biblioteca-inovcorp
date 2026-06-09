@@ -1,29 +1,32 @@
-<script setup>
+<script setup lang="ts">
     import Layout from '@/Layouts/AppLayout.vue'
-    import { Head, Link, useForm } from '@inertiajs/vue3'
+    import { Link, useForm, usePage } from '@inertiajs/vue3'
     import { computed, ref } from 'vue';
-    import { usePage } from '@inertiajs/vue3';
     import { Star } from '@lucide/vue';
     import ReviewPendingButton from '@/Components/ReviewPendingButton.vue';
     import { useReviewRating } from '@/Composables/useReviewRating';
+    import { Review, User } from '@/types';
 
     const { getRatingLabel } = useReviewRating();
 
-    const props = defineProps({
-        review: Object,
-    })
+    const props = defineProps<{
+        review: Review;
+    }>();
 
-    const page = usePage();
-    const isAdmin = computed(() => {
-        return usePage().props.auth.user?.is_admin;
+    const page = usePage<{
+        auth: {
+            user?: User | null;
+        };
+    }>();
+    
+    const isAdmin = computed<boolean>(() => {
+        return !!page.props.auth.user?.is_admin;
     });
-
-
 </script>
 
 <template>
-    <Layout>
-        <Head :title="`Opinião - ${review.book.title}`" />
+    <Layout :title="`Opinião - ${review.book.title}`">
+
         <div class="show-card p-6 md:p-8 max-w-5xl w-full mx-auto my-auto space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
                 <div class="md:col-span-12">

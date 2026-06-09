@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-
 use App\Exports\AuthorsExport;
+use App\Http\Controllers\Controller;
 use App\Models\Author;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -25,19 +24,19 @@ class AuthorController extends Controller
     public function index(Request $request)
     {
         $authors = Author::query()
-            ->when($request->search, function($query, $search){
+            ->when($request->search, function ($query, $search) {
                 $query->where('name', 'like', '%'.$search.'%');
             })
             ->withCount('books')
-            ->when($request->sort, function($query, $sort){
+            ->when($request->sort, function ($query, $sort) {
                 match ($sort) {
-                    'nome_az'          => $query->orderBy('name', 'asc'),
-                    'nome_za'          => $query->orderBy('name', 'desc'),
-                    'livros_asc'       => $query->orderBy('books_count', 'asc'),
-                    'livros_desc'      => $query->orderBy('books_count', 'desc'),
-                    default            => $query->latest(),
+                    'nome_az' => $query->orderBy('name', 'asc'),
+                    'nome_za' => $query->orderBy('name', 'desc'),
+                    'livros_asc' => $query->orderBy('books_count', 'asc'),
+                    'livros_desc' => $query->orderBy('books_count', 'desc'),
+                    default => $query->latest(),
                 };
-            }, function($query){
+            }, function ($query) {
                 $query->latest();
             })
             ->paginate(15, ['*'], 'pag')
@@ -45,7 +44,7 @@ class AuthorController extends Controller
 
         $filters = $request->only(['search', 'sort']);
 
-        if (!in_array($filters['sort'] ?? null, ['nome_az', 'nome_za', 'livros_asc', 'livros_desc'], true)) {
+        if (! in_array($filters['sort'] ?? null, ['nome_az', 'nome_za', 'livros_asc', 'livros_desc'], true)) {
             $filters['sort'] = '';
         }
 
@@ -80,7 +79,7 @@ class AuthorController extends Controller
 
         Author::create([
             'name' => $validated['name'],
-            'photo_path' => $path ? '/storage/' . $path : '/storage/autores/default.webp',
+            'photo_path' => $path ? '/storage/'.$path : '/storage/autores/default.webp',
         ]);
 
         return redirect()->route('autores.index')->with('success', 'Autor adicionado com sucesso!');
@@ -93,7 +92,7 @@ class AuthorController extends Controller
     {
         return Inertia::render('Authors/Show', [
             'author' => $author,
-            'books' => $author->books()->with('publisher')->get()
+            'books' => $author->books()->with('publisher')->get(),
         ]);
     }
 
@@ -102,9 +101,9 @@ class AuthorController extends Controller
      */
     public function edit(Author $author)
     {
-       return Inertia::render('Authors/Edit', [
-       'author' => $author,
-       ]);
+        return Inertia::render('Authors/Edit', [
+            'author' => $author,
+        ]);
     }
 
     /**
@@ -121,12 +120,12 @@ class AuthorController extends Controller
 
         // 1. Apagar a imagem antiga e guardar a nova imagem
         if ($request->hasFile('photo_path')) {
-            if ($author->photo_path && !str_contains($author->photo_path, 'http') && basename($author->photo_path) !== 'default.webp') {
+            if ($author->photo_path && ! str_contains($author->photo_path, 'http') && basename($author->photo_path) !== 'default.webp') {
                 Storage::disk('public')->delete(str_replace('/storage/', '', $author->photo_path));
             }
 
             $path = $request->file('photo_path')->store('autores', 'public');
-            $finalPath = '/storage/' . $path;
+            $finalPath = '/storage/'.$path;
         }
 
         $author->update([
@@ -142,7 +141,7 @@ class AuthorController extends Controller
      */
     public function destroy(Author $author)
     {
-        if ($author->photo_path && !str_contains($author->photo_path, 'http') && basename($author->photo_path) !== 'default.webp') {
+        if ($author->photo_path && ! str_contains($author->photo_path, 'http') && basename($author->photo_path) !== 'default.webp') {
             Storage::disk('public')->delete(str_replace('/storage/', '', $author->photo_path));
         }
 
@@ -151,7 +150,8 @@ class AuthorController extends Controller
         return redirect()->route('autores.index')->with('success', 'Autor removido com sucesso!');
     }
 
-    public function export(Request $request){
+    public function export(Request $request)
+    {
         try {
             return Excel::download(new AuthorsExport($request), 'autores.xlsx');
         } catch (Exception|\PhpOffice\PhpSpreadsheet\Exception $e) {
@@ -159,4 +159,3 @@ class AuthorController extends Controller
         }
     }
 }
-

@@ -8,9 +8,9 @@ use App\Models\Author;
 use App\Models\Book;
 use App\Models\Publisher;
 use App\Models\Tag;
+use App\Services\GoogleBooksService;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -84,65 +84,18 @@ class BookController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request): Response
+    public function create(Request $request, GoogleBooksService $googleBooks): Response
     {
         $search = $request->query('search', '');
-        $paginatedExternalBooks = null;
 
-        if (trim($search) !== '') {
-
-            $perPage = 3;
-            $maxPages = 10;
-            $page = (int) $request->query('page', 1);
-
-            $startIndex = ($page - 1) * $perPage;
-
-            $response = Http::get('https://www.googleapis.com/books/v1/volumes', [
-                'q' => $search,
-                'maxResults' => $perPage,
-                'startIndex' => $startIndex,
-                'key' => config('services.google.books_key'),
-            ]);
-
-            if ($response->successful()) {
-                $data = $response->json();
-
-                $googleTotal = $data['totalItems'] ?? 0;
-                $totalItems = min($googleTotal, $perPage * $maxPages);
-
-                $externalBooks = collect($data['items'] ?? [])->map(function ($item) {
-
-                    $googlePublisher = $item['volumeInfo']['publisher'] ?? null;
-
-                    $localPublisherId = $googlePublisher
-                        ? Publisher::where('name', 'like', trim($googlePublisher))->first()?->id
-                        : null;
-
-                    return [
-                        'google_id' => $item['id'] ?? null,
-                        'titulo' => $item['volumeInfo']['title'] ?? 'Sem título',
-                        'autores' => implode(', ', $item['volumeInfo']['authors'] ?? ['Autor Desconhecido']),
-                        'publisher_id' => $localPublisherId,
-                        'publisher_name' => $googlePublisher,
-                        'capa' => $item['volumeInfo']['imageLinks']['thumbnail'] ?? null,
-                        'isbn' => collect($item['volumeInfo']['industryIdentifiers'] ?? [])
-                            ->firstWhere('type', 'ISBN_13')?->{'identifier'} ?? null,
-                        'description' => $item['volumeInfo']['description'] ?? '',
-                    ];
-                })->all();
-
-                $paginatedExternalBooks = new LengthAwarePaginator(
-                    $externalBooks,
-                    $totalItems,
-                    $perPage,
-                    $page,
-                    [
-                        'path' => $request->url(),
-                        'query' => $request->query(),
-                    ]
-                );
-            }
-        }
+        $paginatedExternalBooks = $googleBooks->search(
+            query: $search,
+            page: (int) $request->query('page', 1),
+            perPage: 3,
+            maxPages: 10,
+            path: $request->url(),
+            queryParams: $request->query()
+        );
 
         return Inertia::render('Books/Create', [
             'publishers' => Publisher::select(['id', 'name'])->get(),
@@ -190,41 +143,25 @@ class BookController extends Controller
             $path = $request->image_path;
         }
 
-        $publisherId = $validated['publisher_id'];
-        if (! is_numeric($publisherId) || ! Publisher::find($publisherId)) {
-            $publisher = Publisher::firstOrCreate(
-                ['name' => trim($publisherId)],
-                ['logo_path' => '/storage/editoras/default.webp']
-            );
-            $publisherId = $publisher->id;
-        }
+        DB::transaction(function () use ($validated, $path, $request) {
+            $publisherId = $this->resolvePublisherId($validated['publisher_id']);
+            $authorIds = $this->resolveAuthorIds($validated['author_ids']);
+            $tagIds = $this->resolveTagIds($request->input('tag_ids', []));
 
-        $authorIds = [];
-        foreach ($validated['author_ids'] as $authorInput) {
-            if (is_numeric($authorInput) && Author::find($authorInput)) {
-                $authorIds[] = $authorInput;
-            } else {
-                $author = Author::firstOrCreate(['name' => $authorInput],
-                    ['photo_path' => '/storage/autores/default.webp']);
-                $authorIds[] = $author->id;
-            }
-        }
+            $book = Book::create([
+                'title' => $validated['title'],
+                'bibliography' => $validated['bibliography'] ?? null,
+                'isbn' => $validated['isbn'] ?? null,
+                'price' => $validated['price'],
+                'total_stock' => $validated['total_stock'],
+                'available_stock' => $validated['total_stock'],
+                'publisher_id' => $publisherId,
+                'image_path' => $path ?? '/storage/imagens/default.webp',
+            ]);
 
-        $book = Book::create([
-            'title' => $validated['title'],
-            'bibliography' => $validated['bibliography'] ?? null,
-            'isbn' => $validated['isbn'] ?? null,
-            'price' => $validated['price'],
-            'total_stock' => $validated['total_stock'],
-            'available_stock' => $validated['total_stock'],
-            'publisher_id' => $publisherId,
-            'image_path' => $path ?? '/storage/imagens/default.webp',
-        ]);
-
-        $book->authors()->sync($authorIds);
-
-        $tagIds = $this->resolveTagIds($request->input('tag_ids', []));
-        $book->tags()->sync($tagIds);
+            $book->authors()->sync($authorIds);
+            $book->tags()->sync($tagIds);
+        });
 
         return redirect()->route('livros.index')->with('success', 'Livro adicionado com sucesso!');
     }
@@ -298,37 +235,25 @@ class BookController extends Controller
             ]);
         }
 
-        $publisherId = $validated['publisher_id'];
-        if (! is_numeric($publisherId) || ! Publisher::find($publisherId)) {
-            $publisher = Publisher::firstOrCreate(['name' => $publisherId]);
-            $publisherId = $publisher->id;
-        }
+        DB::transaction(function () use ($validated, $book, $finalPath, $newAvailableStock, $request) {
+            $publisherId = $this->resolvePublisherId($validated['publisher_id']);
+            $authorIds = $this->resolveAuthorIds($validated['author_ids']);
+            $tagIds = $this->resolveTagIds($request->input('tag_ids', []));
 
-        $authorIds = [];
-        foreach ($validated['author_ids'] as $authorInput) {
-            if (is_numeric($authorInput) && Author::find($authorInput)) {
-                $authorIds[] = $authorInput;
-            } else {
-                $author = Author::firstOrCreate(['name' => $authorInput]);
-                $authorIds[] = $author->id;
-            }
-        }
+            $book->update([
+                'title' => $validated['title'],
+                'bibliography' => $validated['bibliography'],
+                'isbn' => $validated['isbn'],
+                'price' => $validated['price'],
+                'total_stock' => $validated['total_stock'],
+                'available_stock' => $newAvailableStock,
+                'publisher_id' => $publisherId,
+                'image_path' => $finalPath,
+            ]);
 
-        $book->update([
-            'title' => $validated['title'],
-            'bibliography' => $validated['bibliography'],
-            'isbn' => $validated['isbn'],
-            'price' => $validated['price'],
-            'total_stock' => $validated['total_stock'],
-            'available_stock' => $newAvailableStock,
-            'publisher_id' => $publisherId,
-            'image_path' => $finalPath,
-        ]);
-
-        $book->authors()->sync($authorIds);
-
-        $tagIds = $this->resolveTagIds($request->input('tag_ids', []));
-        $book->tags()->sync($tagIds);
+            $book->authors()->sync($authorIds);
+            $book->tags()->sync($tagIds);
+        });
 
         return redirect()->route('livros.show', $book->id)->with('success', 'Livro atualizado com sucesso!');
     }
@@ -358,6 +283,42 @@ class BookController extends Controller
         } catch (Exception $e) {
             return response()->json(['error' => 'Ocorreu um erro ao exportar os livros.'], 500);
         }
+    }
+
+    private function resolvePublisherId(mixed $publisherId): int
+    {
+        if (is_numeric($publisherId)) {
+            if (Publisher::find($publisherId)) {
+                return (int) $publisherId;
+            }
+            throw ValidationException::withMessages(['publisher_id' => 'Invalid publisher id']);
+        }
+
+        return Publisher::firstOrCreate(
+            ['name' => trim((string) $publisherId)],
+            ['logo_path' => '/storage/editoras/default.webp']
+        )->id;
+    }
+
+    private function resolveAuthorIds(array $authorInputs): array
+    {
+        $authorIds = [];
+        foreach ($authorInputs as $input) {
+            if (is_numeric($input)) {
+                if (Author::find($input)) {
+                    $authorIds[] = (int) $input;
+                } else {
+                    throw ValidationException::withMessages(['author_ids' => "Invalid author id: {$input}"]);
+                }
+            } else {
+                $authorIds[] = Author::firstOrCreate(
+                    ['name' => trim((string) $input)],
+                    ['photo_path' => '/storage/autores/default.webp']
+                )->id;
+            }
+        }
+
+        return $authorIds;
     }
 
     /**

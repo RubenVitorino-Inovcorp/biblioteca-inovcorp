@@ -5,13 +5,14 @@ namespace App\Exports;
 use App\Models\Author;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Concerns\FromQuery;
 
 class AuthorsExport implements FromQuery, WithHeadings, WithMapping
 {
     use Exportable;
+
     protected $request;
 
     public function __construct(Request $request)

@@ -1,17 +1,22 @@
-<script setup>
+<script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3'
 import AppLayout from "@/Layouts/AppLayout.vue";
 import InputSearch from "@/Components/InputSearch.vue";
 import ExportButton from "@/Components/ExportButton.vue";
 import { Book, Plus, DownloadIcon } from "@lucide/vue";
 import { toast } from 'vue-sonner'
+import { PaginatedData } from '@/types';
 
-const props = defineProps({
-    books: Object,
-    filters: Object,
-})
+interface Filters {
+    search?: string;
+}
 
-const quickAdd = (book) => {
+const props = defineProps<{
+    books: PaginatedData<any>;
+    filters: Filters;
+}>();
+
+const quickAdd = (book: any) => {
     router.post(route('livros.store'), {
         title: book.title,
         isbn: book.isbn,
@@ -19,7 +24,7 @@ const quickAdd = (book) => {
         price: 0,            
         total_stock: 1,      
         publisher_id: book.publisher_name || 'Desconhecida', 
-        author_ids: Array.isArray(book.autores) ? book.autores : (book.autores ? book.autores.split(',').map(a => a.trim()).filter(Boolean) : []),                          
+        author_ids: Array.isArray(book.autores) ? book.autores : (book.autores ? book.autores.split(',').map((a: string) => a.trim()).filter(Boolean) : []),                          
         image_path: book.image_url
     }, {
         onSuccess: () => toast.success('Livro importado e guardado localmente!'),

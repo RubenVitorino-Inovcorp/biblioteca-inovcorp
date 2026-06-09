@@ -1,16 +1,16 @@
-<script setup>
+<script setup lang="ts">
   import Layout from '@/Layouts/AppLayout.vue'
-  import { Head } from '@inertiajs/vue3'
   import AuthorCreateForm from "@/Components/AuthorCreateForm.vue";
+  import { Author } from '@/types';
 
-  defineProps({
-      author: { type: Object },
-  })
+  const props = defineProps<{
+      author?: Author;
+  }>();
 </script>
 
 <template>
-  <Layout>
-    <Head title="Adicionar Autor" />
-    <AuthorCreateForm author="author"/>
+  <Layout title="Adicionar Autor">
+    <AuthorCreateForm :author="author"/>
   </Layout>
+
 </template>

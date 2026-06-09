@@ -2,16 +2,16 @@
 
 namespace App\Exports;
 
-use App\Models\Author;
 use App\Models\Publisher;
 use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Concerns\FromQuery;
 
 class PublishersExport implements FromQuery, WithHeadings, WithMapping
 {
     use Exportable;
+
     protected $request;
 
     public function __construct($request)

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
   import AppLayout from '@/Layouts/AppLayout.vue'
   import {Head, Link} from '@inertiajs/vue3'
   import {LibraryBig} from "@lucide/vue";
@@ -6,16 +6,31 @@
   import FilterDropdown from "@/Components/FilterDropdown.vue";
   import TableWrapper from "@/Components/TableWrapper.vue";
   import ActiveLoanCard from "@/Components/ActiveLoanCard.vue";
+  import { PaginatedData, Loan } from '@/types';
 
-  const props = defineProps({
-      loans: Object,
-      active_loans: Array,
-      filters: Object,
-  })
+  interface Filters {
+      search?: string;
+      sort?: string;
+      status?: string;
+  }
 
+  const props = defineProps<{
+      loans: PaginatedData<Loan>;
+      active_loans?: Loan[];
+      filters: Filters;
+  }>();
 
+  interface SortOption {
+      value: string;
+      label: string;
+  }
 
-  const loanSortOptions = [
+  interface StatusOption {
+      value: string;
+      label: string;
+  }
+
+  const loanSortOptions: SortOption[] = [
       {value: 'inicio_recente', label: 'Data de Início: Mais recente'},
       {value: 'inicio_antigo', label: 'Data de Início: Mais antigo'},
       {value: 'devolucao_proxima', label: 'Data de Devolução: Mais próxima'},
@@ -24,15 +39,15 @@
       {value: 'numero_desc', label: 'Nº Requisição: Decrescente'},
       {value: 'dias_asc', label: 'Dias Decorridos: Menos a Mais'},
       {value: 'dias_desc', label: 'Dias Decorridos: Mais a Menos'},
-  ]
+  ];
 
-  const loanStatusOptions = [
+  const loanStatusOptions: StatusOption[] = [
       {value: 'pending', label: 'Pendente'},
       {value: 'active', label: 'Ativo'},
       {value: 'returned', label: 'Devolvido'},
       {value: 'overdue', label: 'Em Atraso'},
       {value: 'rejected', label: 'Rejeitado'},
-  ]
+  ];
 </script>
 
 <template>

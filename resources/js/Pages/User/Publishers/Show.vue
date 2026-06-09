@@ -1,16 +1,16 @@
-<script setup>
+<script setup lang="ts">
   import Layout from '@/Layouts/AppLayout.vue'
-  import {Head, Link} from '@inertiajs/vue3'
+  import {Link} from '@inertiajs/vue3'
+  import { Publisher, Book } from '@/types';
 
-  defineProps({
-      publisher: Object,
-      books: Array,
-  })
+  const props = defineProps<{
+      publisher: Publisher;
+      books: Book[];
+  }>();
 </script>
 
 <template>
-  <Layout>
-      <Head :title="publisher.name" />
+    <Layout :title="publisher.name">
 
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <!-- Publisher Header Profile -->

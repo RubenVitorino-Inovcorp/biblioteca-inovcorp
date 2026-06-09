@@ -1,32 +1,32 @@
-<script setup>
+<script setup lang="ts">
     import TableWrapper from '@/Components/TableWrapper.vue';
     import Layout from '@/Layouts/AppLayout.vue'
-    import {Head, Link} from '@inertiajs/vue3'
+    import { Link } from '@inertiajs/vue3'
     import ReturnBookButton from "@/Components/ReturnBookButton.vue";
     import Reviews from '@/Components/Common/Reviews.vue';
-import ReviewForm from '@/Components/ReviewForm.vue';
+    import ReviewForm from '@/Components/ReviewForm.vue';
+    import { Loan, Book, Review } from '@/types';
 
-    const props = defineProps({
-        loan: Object,
-        book: Object,
-        userReview: Object,
-        reviewableLoanId: Number,
-    })
+    const props = defineProps<{
+        loan: Loan;
+        book: Book;
+        userReview?: Review | null;
+        reviewableLoanId?: number | null;
+    }>();
 
-    const formattedDate = (date) => {
+    const formattedDate = (date?: string | null): string => {
         if (!date) return '—';
         return date;
     };
 
-    const isReturnable = (status) => {
+    const isReturnable = (status: string): boolean => {
         return status === 'active' || status === 'overdue';
     };
-
 </script>
 
 <template>
-    <Layout>
-        <Head :title="`Requisição ${loan.loan_number}`" />
+    <Layout :title="`Requisição ${loan.loan_number}`">
+
         <div class="show-card p-6 md:p-8 max-w-5xl w-full mx-auto my-auto space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
                 <div class="md:col-span-6 md:col-start-4">

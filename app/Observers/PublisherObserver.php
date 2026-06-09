@@ -14,10 +14,9 @@ class PublisherObserver
      */
     public function deleting(Publisher $publisher): void
     {
-        if ($publisher->logo_path && !str_starts_with($publisher->logo_path, 'http')) {
+        if ($publisher->logo_path && ! str_starts_with($publisher->logo_path, 'http')) {
             $path = str_replace('/storage/', '', $publisher->logo_path);
             Storage::disk('public')->delete($path);
         }
     }
 }
-

@@ -1,16 +1,17 @@
-<script setup>
+<script setup lang="ts">
   import AppLayout from '@/Layouts/AppLayout.vue'
   import {Head, Link} from '@inertiajs/vue3'
-  import {MessageCircle, Star} from "@lucide/vue";
+  import {MessageSquareText, Star} from "@lucide/vue";
   import TableWrapper from "@/Components/TableWrapper.vue";
   import { computed } from 'vue';
   import { usePage } from '@inertiajs/vue3';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import ReviewPendingButton from '@/Components/ReviewPendingButton.vue';
+  import PrimaryButton from '@/Components/PrimaryButton.vue';
+  import ReviewPendingButton from '@/Components/ReviewPendingButton.vue';
+  import { PaginatedData, Review } from '@/types';
 
-  const props = defineProps({
-      reviews: Object,
-  })
+  const props = defineProps<{
+      reviews: PaginatedData<Review>;
+  }>();
 </script>
 
 <template>

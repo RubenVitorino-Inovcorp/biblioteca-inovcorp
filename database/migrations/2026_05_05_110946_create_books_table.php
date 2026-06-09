@@ -23,9 +23,9 @@ return new class extends Migration
             $table->integer('total_stock')->unsigned()->default(1);
             $table->integer('available_stock')->unsigned()->default(1);
             $table->foreignId('publisher_id')
-                  ->nullable()
-                  ->constrained('publishers')
-                  ->nullOnDelete();
+                ->nullable()
+                ->constrained('publishers')
+                ->nullOnDelete();
             $table->timestamps();
         });
     }

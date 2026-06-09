@@ -1,29 +1,34 @@
-<script setup>
+<script setup lang="ts">
     import Layout from '@/Layouts/AppLayout.vue'
     import TableWrapper from '@/Components/TableWrapper.vue';
     import PrimaryButton from '@/Components/PrimaryButton.vue';
     import LoanCreateForm from '@/Components/LoanCreateForm.vue';
     import { computed } from 'vue';
     import { usePage } from '@inertiajs/vue3'
-    import {Head, Link} from '@inertiajs/vue3'
+    import { Link } from '@inertiajs/vue3'
     import { Pencil } from '@lucide/vue';
+    import { Book, Loan, User } from '@/types';
 
+    const props = defineProps<{
+        book: Book;
+        loans?: Loan[];
+    }>();
 
-    defineProps({
-        book: Object,
-        loans: Array
-    })
+    const page = usePage<{
+        auth: {
+            user?: User | null;
+        };
+    }>();
 
-
-    const isAdmin = computed(() => {
-        return usePage().props.auth.user?.is_admin;
+    const isAdmin = computed<boolean>(() => {
+        return !!page.props.auth.user?.is_admin;
     });
 
 </script>
 
 <template>
-    <Layout>
-        <Head :title="book.title" />
+    <Layout :title="book.title">
+
 
         <div class="show-card p-6 md:p-8 max-w-5xl w-full mx-auto my-auto space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Console\Commands;
@@ -6,10 +7,10 @@ namespace App\Console\Commands;
 use App\Enums\LoanStatus;
 use App\Mail\LoanReturnReminderMail;
 use App\Models\Loan;
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Mail;
 
 #[Signature('loans:send-reminders')]
 #[Description('Envio de alertas por email para requisições que terminam amanhã')]

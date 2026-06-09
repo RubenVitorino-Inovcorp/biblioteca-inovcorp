@@ -1,17 +1,18 @@
-<script setup>
+<script setup lang="ts">
   import Layout from '@/Layouts/AppLayout.vue'
-  import {Head, Link} from '@inertiajs/vue3'
+  import { Link } from '@inertiajs/vue3'
   import {Pencil} from "@lucide/vue";
+  import { Author, Book } from '@/types';
 
-  defineProps({
-      author: Object,
-      books: Array,
-  })
+  const props = defineProps<{
+      author: Author;
+      books: Book[];
+  }>();
 </script>
 
 <template>
-  <Layout>
-      <Head :title="author.name" />
+  <Layout :title="author.name">
+
 
       <div class="show-card p-6 md:p-8 max-w-5xl w-full mx-auto my-auto">
           <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">

@@ -1,6 +1,6 @@
-<script setup>
-import { ref } from 'vue';
-import { Head, Link, router } from '@inertiajs/vue3';
+<script setup lang="ts">
+import { ref, watch } from 'vue';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import Banner from '@/Components/Banner.vue';
 import AppFooter from '@/Components/AppFooter.vue';
 import Dropdown from '@/Components/Dropdown.vue';
@@ -8,18 +8,22 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import { Toaster, toast } from 'vue-sonner'
 import 'vue-sonner/style.css'
-import { Book, Building, LibraryBig, LayoutDashboard, User2Icon, UserPen } from "@lucide/vue";
+import { Book, Building, LibraryBig, LayoutDashboard, User2Icon, UserPen, ShoppingCart } from "@lucide/vue";
+import CartDropdown from '@/Components/CartDropdown.vue';
 
-const props = defineProps({
-    title: String,
-    hideSidebar: {
-        type: Boolean,
-        default: false,
-    },
-    noPadding: {
-        type: Boolean,
-        default: false,
-    },
+
+defineSlots<{
+    header?: (props: Record<string, never>) => any;
+    default?: (props: Record<string, never>) => any;
+}>();
+
+const props = withDefaults(defineProps<{
+    title?: string;
+    hideSidebar?: boolean;
+    noPadding?: boolean;
+}>(), {
+    hideSidebar: false,
+    noPadding: false,
 });
 
 const showingNavigationDropdown = ref(false);
@@ -29,7 +33,7 @@ const savedSidebarState = typeof window !== 'undefined'
     : null;
 const sidebarOpen = ref(savedSidebarState !== null ? savedSidebarState === 'true' : true);
 
-const switchToTeam = (team) => {
+const switchToTeam = (team: { id: number }) => {
     router.put(route('current-team.update'), {
         team_id: team.id,
     }, {
@@ -43,8 +47,22 @@ const logout = () => {
 
 const toggleSidebar = () => {
     sidebarOpen.value = !sidebarOpen.value;
-    localStorage.setItem('sidebar-open', sidebarOpen.value);
+    localStorage.setItem('sidebar-open', String(sidebarOpen.value));
 };
+
+const page = usePage();
+const shownMessages = ref(new Set());
+
+watch(() => page.props.flash, (flash) => {
+    if (flash?.success && !shownMessages.value.has(flash.success)) {
+        toast.success(flash.success as string);
+        shownMessages.value.add(flash.success);
+    }
+    if (flash?.error && !shownMessages.value.has(flash.error)) {
+        toast.error(flash.error as string);
+        shownMessages.value.add(flash.error);
+    }
+}, { deep: true, immediate: true });
 </script>
 
 <template>
@@ -102,6 +120,12 @@ const toggleSidebar = () => {
                         <div class="sidebar-nav-section">
                             <span class="sidebar-nav-label" v-if="sidebarOpen">PESSOAL</span>
                             <ul class="sidebar-nav-list">
+                                <li v-if="!$page.props.auth.user.is_admin">
+                                    <NavLink :href="route('encomendas.index')" :active="route().current('encomendas.*')">
+                                        <ShoppingCart :size="20"/>
+                                        <span v-if="sidebarOpen">As minhas encomendas</span>
+                                    </NavLink>
+                                </li>
                                 <li>
                                     <NavLink :href="route('catalog.requisicoes.index')" :active="route().current('catalog.requisicoes.*')">
                                         <LibraryBig :size="20"/>
@@ -127,6 +151,12 @@ const toggleSidebar = () => {
                                     <NavLink :href="route('livros.index')" :active="route().current('livros.*') && !route().current('livros.google-index*')">
                                         <Book :size="20"/>
                                         <span v-if="sidebarOpen">Livros</span>
+                                    </NavLink>
+                                </li>
+                                <li>
+                                    <NavLink :href="route('admin.encomendas.index')" :active="route().current('admin.encomendas.*')">
+                                        <ShoppingCart :size="20"/>
+                                        <span v-if="sidebarOpen">Encomendas</span>
                                     </NavLink>
                                 </li>
                                 <li>
@@ -292,7 +322,7 @@ const toggleSidebar = () => {
                 }"
             >
                 <!-- Page Header -->
-                <header v-if="$slots.header" class="content-header">
+                <header class="content-header">
                     <div class="content-header-inner flex items-center w-full">
                         <div class="flex items-center flex-1 w-full">
                             <button v-if="!hideSidebar" @click="toggleSidebar" class="sidebar-toggle mr-4" type="button">
@@ -309,7 +339,11 @@ const toggleSidebar = () => {
                             <div class="h-6 w-px bg-gray-300 mx-4"></div>
 
                             <div class="flex-1 min-w-0">
-                                <slot name="header" />
+                                <slot name="header">
+                                    <h2 v-if="title" class="page-title-fallback">
+                                        {{ title }}
+                                    </h2>
+                                </slot>
                             </div>
 
                             <!-- User Dropdown (shown in header when sidebar is hidden) -->
@@ -364,6 +398,12 @@ const toggleSidebar = () => {
                                 <Link :href="route('login')" class="header-auth-link">Iniciar Sessão</Link>
                                 <Link :href="route('register')" class="header-auth-btn">Registar</Link>
                             </div>
+
+                            <!-- Cart Dropdown -->
+                            <CartDropdown 
+                                v-if="$page.props.auth?.user && !$page.props.auth.user.is_admin" 
+                                class="ml-4 flex-shrink-0" 
+                            />
                         </div>
                     </div>
                 </header>
@@ -807,6 +847,14 @@ const toggleSidebar = () => {
 
 .header-auth-btn:hover {
     background: var(--color-primary-dark);
+}
+
+.page-title-fallback {
+    font-family: 'Manrope', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--color-silk-content);
+    line-height: 1.4;
 }
 
 /* ───────────────────────────────────────────

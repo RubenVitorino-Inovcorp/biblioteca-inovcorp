@@ -1,25 +1,30 @@
-<script setup>
+<script setup lang="ts">
     import TableWrapper from '@/Components/TableWrapper.vue';
     import Layout from '@/Layouts/AppLayout.vue'
-    import {Head, Link} from '@inertiajs/vue3'
+    import { Link } from '@inertiajs/vue3'
     import ConfirmationModal from "@/Components/ConfirmationModal.vue";
     import PendingButton from '@/Components/PendingButton.vue';
     import ReturnBookButton from '@/Components/ReturnBookButton.vue';
     import { computed } from 'vue';
     import { usePage } from '@inertiajs/vue3';
+    import { Loan, User } from '@/types';
 
+    const props = defineProps<{
+        loan: Loan;
+    }>();
 
-    const props = defineProps({
-        loan: Object,
-    })
-
-    const page = usePage();
-    const isAdmin = computed(() => page.props.auth.user?.is_admin);
+    const page = usePage<{
+        auth: {
+            user?: User | null;
+        };
+    }>();
+    
+    const isAdmin = computed<boolean>(() => !!page.props.auth.user?.is_admin);
 </script>
 
 <template>
-    <Layout>
-        <Head :title="`Requisição ${loan.loan_number}`" />
+    <Layout :title="`Requisição ${loan.loan_number}`">
+
         <div class="show-card p-6 md:p-8 max-w-5xl w-full mx-auto my-auto space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
                 <div class="md:col-span-6 md:col-start-4">

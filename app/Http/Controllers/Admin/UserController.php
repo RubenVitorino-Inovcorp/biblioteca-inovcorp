@@ -6,9 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
-use Inertia\Inertia;
 use Illuminate\Validation\Rules\Password;
+use Inertia\Inertia;
 
 class UserController extends Controller
 {
@@ -24,7 +23,7 @@ class UserController extends Controller
                 ->when($request->search, function ($query, $search) {
                     $query->where(function ($q) use ($search) {
                         $q->where('name', 'like', "%{$search}%")
-                          ->orWhere('email', 'like', "%{$search}%");
+                            ->orWhere('email', 'like', "%{$search}%");
                     });
                 })
                 ->latest()
@@ -43,7 +42,7 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
+            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Password::defaults()],
             'role' => 'required|in:admin,user',
         ]);
@@ -58,7 +57,6 @@ class UserController extends Controller
 
         return redirect()->route('utilizadores.index')->with('success', 'Utilizador adicionado com sucesso!');
     }
-
 
     public function update(Request $request, User $user)
     {
