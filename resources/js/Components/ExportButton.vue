@@ -1,5 +1,9 @@
-<script setup>
+<script setup lang="ts">
 
+defineSlots<{
+    icon?: (props: Record<string, never>) => any;
+    default?: (props: Record<string, never>) => any;
+}>();
 
 const props = defineProps({
     filters: { type: Object, required: true },

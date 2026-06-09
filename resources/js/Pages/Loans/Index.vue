@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
   import AppLayout from '@/Layouts/AppLayout.vue'
   import {Head, Link} from '@inertiajs/vue3'
   import {DownloadIcon, LibraryBig, Activity, CalendarDays, BookOpenCheck} from "@lucide/vue";
@@ -10,22 +10,51 @@
   import ReceiveBookModal from "@/Components/ReceiveBookModal.vue";
   import { computed } from 'vue';
   import { usePage } from '@inertiajs/vue3';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
+  import PrimaryButton from '@/Components/PrimaryButton.vue';
+  import { PaginatedData, Loan, User, Book } from '@/types';
 
-  const props = defineProps({
-      loans: Object,
-      users: Array,
-      books: Array,
-      pending_loans: Array,
-      filters: Object,
-      stats: Object,
-  })
+  interface Filters {
+      search?: string;
+      sort?: string;
+      status?: string;
+  }
 
-  const isAdmin = computed(() => {
-      return usePage().props.auth.user?.is_admin;
+  interface Stats {
+      active_loans: number;
+      last_30_days: number;
+      returned_today: number;
+  }
+
+  const props = defineProps<{
+      loans: PaginatedData<Loan>;
+      users?: User[];
+      books?: Book[];
+      pending_loans?: Loan[];
+      filters: Filters;
+      stats?: Stats;
+  }>();
+
+  const page = usePage<{
+      auth: {
+          user?: User | null;
+      };
+  }>();
+
+  const isAdmin = computed<boolean>(() => {
+      return !!page.props.auth.user?.is_admin;
   });
 
-  const loanSortOptions = [
+  interface SortOption {
+      value: string;
+      label: string;
+  }
+
+  interface StatusOption {
+      value: string;
+      label: string;
+  }
+
+  const loanSortOptions: SortOption[] = [
       {value: 'inicio_recente', label: 'Data de Início: Mais recente'},
       {value: 'inicio_antigo', label: 'Data de Início: Mais antigo'},
       {value: 'devolucao_proxima', label: 'Data de Devolução: Mais próxima'},
@@ -36,7 +65,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
       {value: 'dias_desc', label: 'Dias Decorridos: Mais a Menos'},
   ]
 
-  const loanStatusOptions = [
+  const loanStatusOptions: StatusOption[] = [
       {value: 'pending', label: 'Pendente'},
       {value: 'return_pending', label: 'Devolução Pendente'},
       {value: 'active', label: 'Ativo'},

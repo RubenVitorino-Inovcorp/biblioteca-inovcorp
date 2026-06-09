@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'failed'   => 'Estas credenciais não correspondem aos nossos registos.',
+    'failed' => 'Estas credenciais não correspondem aos nossos registos.',
     'password' => 'A palavra-passe fornecida está incorreta.',
     'throttle' => 'Demasiadas tentativas de autenticação. Por favor, tente novamente em :seconds segundos.',
 

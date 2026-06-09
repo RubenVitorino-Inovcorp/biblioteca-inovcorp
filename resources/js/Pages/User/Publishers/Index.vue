@@ -1,14 +1,20 @@
-<script setup>
-import {Head, Link} from '@inertiajs/vue3'
-import AppLayout from "@/Layouts/AppLayout.vue";
+<script setup lang="ts">
+import { Link } from '@inertiajs/vue3'
+import Layout from '@/Layouts/AppLayout.vue'
 import InputSearch from "@/Components/InputSearch.vue";
 import FilterDropdown from "@/Components/FilterDropdown.vue";
 import { Building } from "@lucide/vue";
+import { Publisher } from '@/types';
 
-const props = defineProps({
-    publishers: Object,
-    filters: Object,
-})
+interface Filters {
+    search?: string;
+    sort?: string;
+}
+
+const props = defineProps<{
+    publishers: PaginatedData<Publisher>;
+    filters: Filters;
+}>();
 
 const publisherSortOptions = [
     { value: 'nome_az', label: 'Nome (A-Z)' },
@@ -19,7 +25,7 @@ const publisherSortOptions = [
 </script>
 
 <template>
-    <AppLayout title="Catálogo de Editoras">
+<Layout :title="'Catálogo de Editoras'">
         <template #header>
             <div class="flex justify-between space-x-2 items-center">
                 <h2 class="page-title flex items-center gap-2">
@@ -80,7 +86,7 @@ const publisherSortOptions = [
         <div v-if="publishers.data.length === 0" class="text-center py-10">
             <p class="empty-state-text">Nenhuma editora encontrada.</p>
         </div>
-    </AppLayout>
+    </Layout>
 </template>
 
 <style scoped>

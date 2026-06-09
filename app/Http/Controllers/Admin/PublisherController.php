@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-
 use App\Exports\PublishersExport;
+use App\Http\Controllers\Controller;
 use App\Models\Publisher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -25,26 +24,27 @@ class PublisherController extends Controller
     public function index(Request $request)
     {
         $publishers = Publisher::query()
-        ->when($request->search, function($query, $search) {
-            $query->where('name', 'like', "%{$search}%");
-        })
+            ->when($request->search, function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%");
+            })
             ->withCount('books')
-            ->when($request->sort, function($query, $sort) {
+            ->when($request->sort, function ($query, $sort) {
                 match ($sort) {
-                    'nome_az'          => $query->orderBy('name', 'asc'),
-                    'nome_za'          => $query->orderBy('name', 'desc'),
-                    'livros_asc'       => $query->orderBy('books_count', 'asc'),
-                    'livros_desc'      => $query->orderBy('books_count', 'desc'),
-                    default            => $query->latest(),
+                    'nome_az' => $query->orderBy('name', 'asc'),
+                    'nome_za' => $query->orderBy('name', 'desc'),
+                    'livros_asc' => $query->orderBy('books_count', 'asc'),
+                    'livros_desc' => $query->orderBy('books_count', 'desc'),
+                    default => $query->latest(),
                 };
             }, function ($query) {
-            $query->latest();})
+                $query->latest();
+            })
             ->paginate(15, ['*'], 'pag')
             ->withQueryString();
 
         $filters = $request->only(['search', 'sort']);
 
-        if (!in_array($filters['sort'] ?? null, ['nome_az', 'nome_za', 'livros_asc', 'livros_desc'], true)) {
+        if (! in_array($filters['sort'] ?? null, ['nome_az', 'nome_za', 'livros_asc', 'livros_desc'], true)) {
             $filters['sort'] = '';
         }
 
@@ -79,7 +79,7 @@ class PublisherController extends Controller
 
         Publisher::create([
             'name' => $validated['name'],
-            'logo_path' => $path ? '/storage/' . $path : '/storage/editoras/default.webp',
+            'logo_path' => $path ? '/storage/'.$path : '/storage/editoras/default.webp',
         ]);
 
         return redirect()->route('editoras.index')->with('success', 'Editora adicionada com sucesso!');
@@ -92,7 +92,7 @@ class PublisherController extends Controller
     {
         return Inertia::render('Publishers/Show', [
             'publisher' => $publisher,
-            'books' => $publisher->books()->with('publisher')->get()
+            'books' => $publisher->books()->with('publisher')->get(),
         ]);
     }
 
@@ -120,12 +120,12 @@ class PublisherController extends Controller
 
         // 1. Apagar a imagem antiga e guardar a nova imagem
         if ($request->hasFile('logo_path')) {
-            if ($publisher->logo_path && !str_starts_with($publisher->logo_path, 'http') && !str_contains($publisher->logo_path, 'default.webp')) {
+            if ($publisher->logo_path && ! str_starts_with($publisher->logo_path, 'http') && ! str_contains($publisher->logo_path, 'default.webp')) {
                 Storage::disk('public')->delete(substr($publisher->logo_path, 9));
             }
 
             $path = $request->file('logo_path')->store('editoras', 'public');
-            $finalPath = '/storage/' . $path;
+            $finalPath = '/storage/'.$path;
         }
 
         $publisher->update([
@@ -141,7 +141,7 @@ class PublisherController extends Controller
      */
     public function destroy(Publisher $publisher)
     {
-        if ($publisher->logo_path && !str_starts_with($publisher->logo_path, 'http') && !str_contains($publisher->logo_path, 'default.webp')) {
+        if ($publisher->logo_path && ! str_starts_with($publisher->logo_path, 'http') && ! str_contains($publisher->logo_path, 'default.webp')) {
             Storage::disk('public')->delete(substr($publisher->logo_path, 9));
         }
 
@@ -150,7 +150,8 @@ class PublisherController extends Controller
         return redirect()->route('editoras.index')->with('success', 'Editora removida com sucesso!');
     }
 
-    public function export(Request $request){
+    public function export(Request $request)
+    {
         try {
             return Excel::download(new PublishersExport($request), 'editoras.xlsx');
         } catch (Exception|\PhpOffice\PhpSpreadsheet\Exception $e) {
@@ -158,4 +159,3 @@ class PublisherController extends Controller
         }
     }
 }
-

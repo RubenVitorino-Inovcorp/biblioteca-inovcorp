@@ -1,13 +1,14 @@
-<script setup>
+<script setup lang="ts">
     import Layout from '@/Layouts/AppLayout.vue'
-    import {Head, Link, router} from '@inertiajs/vue3'
+    import { Link, router } from '@inertiajs/vue3'
     import { Plus } from '@lucide/vue';
     import { toast } from 'vue-sonner'
+    import { Loan } from '@/types';
 
-    const props = defineProps({
-        book: Object,
-        loans: Array
-    })
+    const props = defineProps<{
+        book: any;
+        loans?: Loan[];
+    }>();
 
     const quickAdd = () => {
         router.post(route('livros.store'), {
@@ -17,7 +18,7 @@
             price: 0,            
             total_stock: 1,      
             publisher_id: props.book.publisher_name || 'Desconhecida', 
-            author_ids: props.book.authors.map(a => a.name),                          
+            author_ids: props.book.authors.map((a: any) => a.name),                          
             image_path: props.book.image_url
         }, {
             onSuccess: () => toast.success('Livro importado e guardado localmente!'),
@@ -28,8 +29,8 @@
 </script>
 
 <template>
-    <Layout>
-        <Head :title="book.title" />
+    <Layout :title="book.title">
+
 
         <div class="show-card p-6 md:p-8 max-w-5xl w-full mx-auto my-auto space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">

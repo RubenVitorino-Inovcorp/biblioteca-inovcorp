@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
   import {Link} from '@inertiajs/vue3'
   import AppLayout from "@/Layouts/AppLayout.vue";
   import PublisherDeleteForm from "@/Components/PublisherDeleteForm.vue";
@@ -8,13 +8,24 @@
   import FilterDropdown from "@/Components/FilterDropdown.vue";
   import { Building, CirclePlus, DownloadIcon } from "@lucide/vue";
   import ExportButton from "@/Components/ExportButton.vue";
+  import { PaginatedData, Publisher } from '@/types';
 
-  const props = defineProps({
-      publishers: Object,
-      filters: Object,
-  })
+  interface Filters {
+      search?: string;
+      sort?: string;
+  }
 
-  const publisherSortOptions = [
+  const props = defineProps<{
+      publishers: PaginatedData<Publisher>;
+      filters: Filters;
+  }>();
+
+  interface SortOption {
+      value: string;
+      label: string;
+  }
+
+  const publisherSortOptions: SortOption[] = [
       { value: 'nome_az', label: 'Nome (A-Z)' },
       { value: 'nome_za', label: 'Nome (Z-A)' },
       { value: 'livros_desc', label: 'Mais Livros' },

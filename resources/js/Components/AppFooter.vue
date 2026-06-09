@@ -8,7 +8,7 @@ import { Link } from '@inertiajs/vue3';
             <!-- Brand Column -->
             <div class="footer-brand">
                 <Link :href="route('home')" class="footer-logo-link">
-                    <img class="footer-logo" src="/logo.webp" alt="Biblioteca Inovcorp" />
+                    <img class="footer-logo" src="/logo-white.webp" alt="Biblioteca Inovcorp" />
                     <span class="footer-brand-name">Biblioteca</span>
                 </Link>
                 <p class="footer-description">
@@ -51,7 +51,11 @@ import { Link } from '@inertiajs/vue3';
    Footer
    ─────────────────────────────────────────── */
 .app-footer {
-    background: var(--color-primary);
+    background-image: url('/footer-bg.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: var(--color-primary);
     color: rgba(255, 255, 255, 0.85);
     border-top: 1px solid rgba(255, 255, 255, 0.08);
 }

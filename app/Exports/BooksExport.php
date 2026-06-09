@@ -4,13 +4,14 @@ namespace App\Exports;
 
 use App\Models\Book;
 use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Concerns\FromQuery;
 
 class BooksExport implements FromQuery, WithHeadings, WithMapping
 {
     use Exportable;
+
     protected $request;
 
     public function __construct($request)
@@ -28,7 +29,7 @@ class BooksExport implements FromQuery, WithHeadings, WithMapping
                         ->orWhere('isbn', 'like', "%{$search}%");
                 });
             })
-            ->when($this->request->publisher, fn($query, $id) => $query->where('publisher_id', $id))
+            ->when($this->request->publisher, fn ($query, $id) => $query->where('publisher_id', $id))
             ->when($this->request->author, function ($query, $authorId) {
                 $query->whereHas('authors', function ($q) use ($authorId) {
                     $q->where('authors.id', $authorId);

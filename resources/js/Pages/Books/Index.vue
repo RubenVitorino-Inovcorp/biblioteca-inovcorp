@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 
   import {Head, Link, router} from '@inertiajs/vue3'
   import AppLayout from "@/Layouts/AppLayout.vue";
@@ -8,17 +8,30 @@
   import InputSearch from "@/Components/InputSearch.vue";
   import FilterDropdown from "@/Components/FilterDropdown.vue";
   import ExportButton from "@/Components/ExportButton.vue";
-  import { Book, CirclePlus, DownloadIcon } from "@lucide/vue";
+  import { Book as BookIcon, CirclePlus, DownloadIcon } from "@lucide/vue";
+  import { PaginatedData, Book, Author, Publisher, Tag } from '@/types';
 
-  const props = defineProps({
-      books: Object,
-      authors: Array,
-      publishers: Array,
-      tags: Array,
-      filters: Object,
-  })
+  interface Filters {
+      search?: string;
+      sort?: string;
+      publisher?: string;
+      author?: string;
+  }
 
-  const bookSortOptions = [
+  const props = defineProps<{
+      books: PaginatedData<Book>;
+      authors: Author[];
+      publishers: Publisher[];
+      tags?: Tag[];
+      filters: Filters;
+  }>();
+
+  interface SortOption {
+      value: string;
+      label: string;
+  }
+
+  const bookSortOptions: SortOption[] = [
       { value: 'preco_asc', label: 'Preço: Baixo para Alto' },
       { value: 'preco_desc', label: 'Preço: Alto para Baixo' },
       { value: 'titulo_az', label: 'Título (A-Z)' },
@@ -31,7 +44,7 @@
         <template #header>
             <div class="flex justify-between space-x-2 items-center">
                 <h2 class="page-title flex items-center gap-2">
-                    <Book :size="20"/> Livros
+                    <BookIcon :size="20"/> Livros
                 </h2>
                <InputSearch :filters="filters" route="livros.index" placeholder="Pesquisar livro..." />
 

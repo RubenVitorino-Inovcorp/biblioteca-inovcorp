@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use App\Enums\LoanStatus;
@@ -10,7 +12,6 @@ use Illuminate\Console\Command;
 
 #[Signature('loans:update-overdue')]
 #[Description('Verifica e atualiza automaticamente as requisições ativas que ultrapassaram a data estimada de devolução')]
-
 
 class UpdateOverdueLoans extends Command
 {

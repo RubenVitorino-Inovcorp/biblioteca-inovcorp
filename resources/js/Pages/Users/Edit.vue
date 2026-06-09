@@ -1,13 +1,16 @@
-<script setup>
+<script setup lang="ts">
 import { useForm } from '@inertiajs/vue3';
 import { toast } from "vue-sonner";
 import AppLayout from '@/Layouts/AppLayout.vue';
+import { User } from '@/types';
 
-const props = defineProps({
-    user: Object,
-});
+const props = defineProps<{
+    user: User;
+}>();
 
-const emit = defineEmits(['success']);
+const emit = defineEmits<{
+    (e: 'success'): void;
+}>();
 
 const form = useForm({
     name: props.user.name || '',

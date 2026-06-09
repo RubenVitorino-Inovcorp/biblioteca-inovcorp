@@ -14,10 +14,12 @@ class BookObserver
      */
     public function deleting(Book $book): void
     {
-        if ($book->image_path && !str_starts_with($book->image_path, 'http')) {
-            $path = str_replace('/storage/', '', $book->image_path);
-            Storage::disk('public')->delete($path);
+        if ($book->image_path && ! str_starts_with($book->image_path, 'http') && str_starts_with($book->image_path, '/storage/')) {
+            $path = substr($book->image_path, 9); // Remove '/storage/' prefix (9 characters)
+            // Ensure the path doesn't contain directory traversal sequences
+            if (! str_contains($path, '..')) {
+                Storage::disk('public')->delete($path);
+            }
         }
     }
 }
-

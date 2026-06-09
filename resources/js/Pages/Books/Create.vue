@@ -1,29 +1,32 @@
-<script setup>
+<script setup lang="ts">
     import Layout from "@/Layouts/AppLayout.vue";
-    import { Head } from '@inertiajs/vue3';
     import { ref } from 'vue';
     import GoogleFetchDropdown from "@/Components/GoogleFetchDropdown.vue";
     import BookCreateForm from "@/Components/Books/BookCreateForm.vue";
+    import { Publisher, Author, Tag } from '@/types';
 
-    defineProps({
-      publishers: Array,
-      authors: Array,
-      tags: Array,
-      externalBooks: {type: Array, default: () => []},
-      filters: Object,
-    });
+    interface Filters {
+        search?: string;
+    }
 
-    const selectedBook = ref(null);
+    const props = defineProps<{
+      publishers: Publisher[];
+      authors: Author[];
+      tags: Tag[];
+      externalBooks?: any[];
+      filters?: Filters;
+    }>();
 
-    const handleBookSelection = (book) => {
+    const selectedBook = ref<any | null>(null);
+
+    const handleBookSelection = (book: any) => {
       selectedBook.value = book;
     };
-
 </script>
 
 <template>
-  <Layout>
-    <Head title="Novo livro" />
+  <Layout title="Novo livro">
+
     <div class="p-6 md:p-8 max-w-5xl w-full mx-auto my-auto space-y-6">
         <GoogleFetchDropdown :filters="filters" :external-books="externalBooks" @select-book="handleBookSelection" />
         <BookCreateForm :publishers="publishers" :authors="authors" :tags="tags" :selected-book="selectedBook" />

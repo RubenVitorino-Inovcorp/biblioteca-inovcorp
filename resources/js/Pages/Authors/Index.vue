@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import {Head, Link, router} from '@inertiajs/vue3'
   import AppLayout from "@/Layouts/AppLayout.vue";
   import AuthorEditModal from "@/Components/AuthorEditModal.vue";
@@ -8,13 +8,24 @@ import {Head, Link, router} from '@inertiajs/vue3'
   import FilterDropdown from "@/Components/FilterDropdown.vue";
 import { CirclePlus, DownloadIcon, UserPen } from "@lucide/vue";
 import ExportButton from "@/Components/ExportButton.vue";
+import { PaginatedData, Author } from '@/types';
 
-  const props = defineProps({
-      authors: Object,
-      filters: Object,
-  })
+  interface Filters {
+      search?: string;
+      sort?: string;
+  }
 
-  const authorSortOptions = [
+  const props = defineProps<{
+      authors: PaginatedData<Author>;
+      filters: Filters;
+  }>();
+
+  interface SortOption {
+      value: string;
+      label: string;
+  }
+
+  const authorSortOptions: SortOption[] = [
       { value: 'nome_az', label: 'Nome (A-Z)' },
       { value: 'nome_za', label: 'Nome (Z-A)' },
       { value: 'livros_desc', label: 'Mais Livros' },

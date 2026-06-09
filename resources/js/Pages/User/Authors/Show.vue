@@ -1,16 +1,17 @@
-<script setup>
+<script setup lang="ts">
   import Layout from '@/Layouts/AppLayout.vue'
-  import {Head, Link} from '@inertiajs/vue3'
+  import { Link } from '@inertiajs/vue3'
+  import { Author, Book } from '@/types';
 
-  defineProps({
-      author: Object,
-      books: Array,
-  })
+  const props = defineProps<{
+      author: Author;
+      books: Book[];
+  }>();
 </script>
 
 <template>
-  <Layout>
-      <Head :title="author.name" />
+  <Layout :title="author.name">
+
 
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <!-- Author Header Profile -->

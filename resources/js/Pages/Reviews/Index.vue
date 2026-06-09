@@ -1,20 +1,27 @@
-<script setup>
+<script setup lang="ts">
   import AppLayout from '@/Layouts/AppLayout.vue'
   import {Head, Link} from '@inertiajs/vue3'
   import {MessageCircle, Star} from "@lucide/vue";
   import TableWrapper from "@/Components/TableWrapper.vue";
   import { computed } from 'vue';
   import { usePage } from '@inertiajs/vue3';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import ReviewPendingButton from '@/Components/ReviewPendingButton.vue';
+  import PrimaryButton from '@/Components/PrimaryButton.vue';
+  import ReviewPendingButton from '@/Components/ReviewPendingButton.vue';
+  import { PaginatedData, Review, User } from '@/types';
 
-  const props = defineProps({
-      reviews: Object,
-      pending_reviews: Array,
-  })
+  const props = defineProps<{
+      reviews: PaginatedData<Review>;
+      pending_reviews?: Review[];
+  }>();
 
-  const isAdmin = computed(() => {
-      return usePage().props.auth.user?.is_admin;
+  const page = usePage<{
+      auth: {
+          user?: User | null;
+      };
+  }>();
+
+  const isAdmin = computed<boolean>(() => {
+      return !!page.props.auth.user?.is_admin;
   });
 
 </script>

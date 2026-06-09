@@ -1,16 +1,27 @@
-<script setup>
+<script setup lang="ts">
 import {Head, Link} from '@inertiajs/vue3'
 import AppLayout from "@/Layouts/AppLayout.vue";
 import InputSearch from "@/Components/InputSearch.vue";
 import FilterDropdown from "@/Components/FilterDropdown.vue";
 import { UserPen } from "@lucide/vue";
+import { PaginatedData, Author } from '@/types';
 
-const props = defineProps({
-    authors: Object,
-    filters: Object,
-})
+interface Filters {
+    search?: string;
+    sort?: string;
+}
 
-const authorSortOptions = [
+const props = defineProps<{
+    authors: PaginatedData<Author>;
+    filters: Filters;
+}>();
+
+interface SortOption {
+    value: string;
+    label: string;
+}
+
+const authorSortOptions: SortOption[] = [
     { value: 'nome_az', label: 'Nome (A-Z)' },
     { value: 'nome_za', label: 'Nome (Z-A)' },
     { value: 'livros_desc', label: 'Mais Livros' },

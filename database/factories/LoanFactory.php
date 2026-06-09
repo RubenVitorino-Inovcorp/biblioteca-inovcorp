@@ -3,9 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\LoanStatus;
-use App\Models\Author;
 use App\Models\Book;
-use App\Models\Publisher;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
@@ -27,11 +25,11 @@ class LoanFactory extends Factory
         return [
             'user_id' => User::factory(),
             'book_id' => Book::factory(),
-            'user_photo_snapshot' => 'https://api.dicebear.com/9.x/avataaars-neutral/svg?backgroundType=gradientLinear&backgroundColor=006c49,014730&seed=' . $this->faker->uuid(),
+            'user_photo_snapshot' => 'https://api.dicebear.com/9.x/avataaars-neutral/svg?backgroundType=gradientLinear&backgroundColor=006c49,014730&seed='.$this->faker->uuid(),
             'start_date' => $startDate,
             'estimated_return_date' => Carbon::parse($startDate)->addDays(5),
             'end_date' => null,
-            'status' => LoanStatus::ACTIVE
+            'status' => LoanStatus::ACTIVE,
         ];
     }
 

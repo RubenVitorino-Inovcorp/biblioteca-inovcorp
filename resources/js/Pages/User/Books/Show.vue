@@ -1,43 +1,59 @@
-<script setup>
+<script setup lang="ts">
     import Layout from '@/Layouts/AppLayout.vue'
     import LoanCreateForm from '@/Components/LoanCreateForm.vue';
     import Reviews from '@/Components/Common/Reviews.vue';
     import TableWrapper from '@/Components/TableWrapper.vue';
     import { computed } from 'vue';
     import { usePage } from '@inertiajs/vue3'
-    import {Head, Link} from '@inertiajs/vue3'
-    import { LibraryBig } from '@lucide/vue';
+    import { Link, router } from '@inertiajs/vue3'
+    import { LibraryBig, ShoppingCart } from '@lucide/vue';
     import BookAvailabilityAlert from '@/Components/BookAvailabilityAlert.vue';
     import BookSuggestionsCarousel from '@/Components/BookSuggestionsCarousel.vue';
+    import { Book, Loan, Review, User } from '@/types';
+    import { toast } from "vue-sonner";
 
+    const addToCart = (bookId: number): void => {
+        router.post(route('catalog.carrinho.store'), {
+            book_id: bookId,
+            quantity: 1
+        },{
+            preserveScroll: true,
+            onError: (errors) => {
+                toast.error(errors.message || "Erro ao adicionar o livro ao carrinho.");
+            }
+        });
+    };
+    
+    const props = defineProps<{
+        book: Book;
+        relatedBooks: Book[];
+        loans?: Loan[];
+        userReview?: Review | null;
+        reviewableLoanId?: number | null;
+    }>();
 
-    const props = defineProps({
-        book: Object,
-        relatedBooks: Array,
-        loans: Array,
-        userReview: Object,
-        reviewableLoanId: Number,
-    })
+    const page = usePage<{
+        auth: {
+            user?: User | null;
+        };
+    }>();
 
-    const isAdmin = computed(() => {
-        return usePage().props.auth.user?.is_admin;
+    const isAdmin = computed<boolean>(() => {
+        return !!page.props.auth.user?.is_admin;
     });
 
-    const page = usePage();
-
-    const hasActiveLoan = computed(() => {
+    const hasActiveLoan = computed<boolean>(() => {
         if (!page.props.auth.user) return false;
         return props.loans?.some(loan => 
-            loan.user_id === page.props.auth.user.id &&
+            loan.user_id === page.props.auth.user!.id &&
             ['pending', 'active', 'overdue', 'return_pending'].includes(loan.status)
-        );
+        ) ?? false;
     });
-
 </script>
 
 <template>
-    <Layout>
-        <Head :title="book.title" />
+    <Layout :title="book.title">
+
 
         <div class="show-card p-6 md:p-8 max-w-5xl w-full mx-auto my-auto space-y-6 mt-8">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
@@ -96,7 +112,7 @@
                         </div>
                         <div v-if="book.is_available" class="flex justify-end mt-2">
                             <LoanCreateForm :book="book">
-                                <button type="button" class="flex items-center gap-2 text-sm font-bold text-white bg-primary rounded-lg hover:bg-green-900 transition-colors font-['Manrope'] px-4 py-2">
+                                <button type="button" class="hover:cursor-pointer flex items-center gap-2 text-sm font-bold text-white bg-primary rounded-lg hover:bg-green-900 transition-colors font-['Manrope'] px-4 py-2">
                                     <LibraryBig :size="16" />
                                     Requisitar
                                 </button>
@@ -109,12 +125,20 @@
 
                     <div class="show-divider"></div>
 
-                    <div class="flex justify-between items-center">
-                        <div class="show-isbn">
+                    <div class="flex justify-between">
+                        <div class="show-isbn mb-2">
                             ISBN: {{ book.isbn }}
                         </div>
-                        <div class="show-price">
+                        <div class="show-price flex flex-col items-end gap-2">
                             {{ book.price }}€
+                            <button v-if="book.is_available && !hasActiveLoan && $page.props.auth.user" type="button" @click="addToCart(book.id)" class="hover:cursor-pointer flex items-center gap-2 text-sm font-bold text-white bg-primary rounded-lg hover:bg-green-900 transition-colors font-['Manrope'] px-4 py-2">
+                                <ShoppingCart :size="16" />
+                                Adicionar ao carrinho
+                            </button>
+                            <button v-else-if="!book.is_available && !hasActiveLoan && $page.props.auth.user" type="button" class="flex items-center gap-2 text-sm font-bold text-white bg-gray-300 rounded-lg px-4 py-2">
+                                <ShoppingCart :size="16" />
+                                Indisponível
+                            </button>
                         </div>
                     </div>
                 </div>

@@ -1,16 +1,16 @@
-<script setup>
+<script setup lang="ts">
   import Layout from '@/Layouts/AppLayout.vue'
-  import { Head } from '@inertiajs/vue3'
   import PublisherEditForm from "@/Components/PublisherEditForm.vue";
+  import { Publisher } from '@/types';
 
-  defineProps({
-      publisher: Object,
-  })
+  const props = defineProps<{
+      publisher: Publisher;
+  }>();
 </script>
 
 <template>
-  <Layout>
-      <Head :title="`Atualizar editora - ${publisher.name}`" />
+  <Layout :title="`Atualizar editora - ${publisher.name}`">
       <PublisherEditForm :publisher="publisher" />
   </Layout>
+
 </template>

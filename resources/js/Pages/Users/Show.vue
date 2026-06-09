@@ -1,22 +1,22 @@
-<script setup>
+<script setup lang="ts">
     import Layout from '@/Layouts/AppLayout.vue'
     import TableWrapper from '@/Components/TableWrapper.vue';
     import { computed } from 'vue';
     import { usePage } from '@inertiajs/vue3'
-    import {Head, Link} from '@inertiajs/vue3'
+    import { Link } from '@inertiajs/vue3'
     import { useDateFormat } from '@vueuse/core'
+    import { User, Loan } from '@/types';
 
-
-    const props = defineProps({
-        user: Object,
-        loans: Array,
-    })
+    const props = defineProps<{
+        user: User;
+        loans: Loan[];
+    }>();
 
 </script>
 
 <template>
-    <Layout>
-        <Head :title="props.user.name" />
+    <Layout :title="props.user.name">
+
 
         <div class="max-w-5xl mx-auto p-4 md:p-8">
             <div class="bg-base-100 rounded-3xl shadow-sm border border-gray-100 overflow-hidden">

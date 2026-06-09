@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
   import {Link} from '@inertiajs/vue3'
   import AppLayout from "@/Layouts/AppLayout.vue";
   import TableWrapper from "@/Components/TableWrapper.vue";
@@ -6,11 +6,16 @@
   import { computed } from 'vue';
   import { usePage } from '@inertiajs/vue3';
   import { CirclePlus, User2Icon } from "@lucide/vue";
+  import { PaginatedData, User } from '@/types';
   
-  const props = defineProps({
-      users: Object,
-      filters: Object,
-  })
+  interface Filters {
+      search?: string;
+  }
+
+  const props = defineProps<{
+      users: PaginatedData<User>;
+      filters: Filters;
+  }>();
 
 //   const bookSortOptions = [
 //       { value: 'preco_asc', label: 'Preço: Baixo para Alto' },

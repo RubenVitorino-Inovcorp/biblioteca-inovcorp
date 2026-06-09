@@ -13,8 +13,9 @@ enum LoanStatus: string
     case RETURNED = 'returned';
     case OVERDUE = 'overdue';
 
-    public function label(): string {
-        return match($this){
+    public function label(): string
+    {
+        return match ($this) {
             self::PENDING => 'Pendente de Aprovação',
             self::REJECTED => 'Rejeitado',
             self::ACTIVE => 'Em Uso',
@@ -24,8 +25,9 @@ enum LoanStatus: string
         };
     }
 
-    public function color(): string {
-        return match($this) {
+    public function color(): string
+    {
+        return match ($this) {
             self::PENDING => 'badge-info',
             self::REJECTED => 'badge-error',
             self::ACTIVE => 'badge-secondary',
