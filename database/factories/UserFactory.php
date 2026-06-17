@@ -36,7 +36,7 @@ class UserFactory extends Factory
             'two_factor_secret' => null,
             'two_factor_recovery_codes' => null,
             'remember_token' => Str::random(10),
-            'profile_photo_path' => 'https://api.dicebear.com/9.x/avataaars-neutral/svg?backgroundType=gradientLinear&backgroundColor=006c49,014730&seed='.$this->faker->uuid(),
+            'profile_photo_path' => 'https://api.dicebear.com/9.x/avataaars-neutral/svg?backgroundType=gradientLinear&backgroundColor=006c49,014730&seed='.Str::uuid(),
             'current_team_id' => null,
         ];
     }

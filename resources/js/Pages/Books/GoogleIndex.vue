@@ -25,7 +25,7 @@ const quickAdd = (book: any) => {
         total_stock: 1,      
         publisher_id: book.publisher_name || 'Desconhecida', 
         author_ids: Array.isArray(book.autores) ? book.autores : (book.autores ? book.autores.split(',').map((a: string) => a.trim()).filter(Boolean) : []),                          
-        image_path: book.image_url
+        image_path: book.image_path
     }, {
         onSuccess: () => toast.success('Livro importado e guardado localmente!'),
         onError: () => toast.error('Erro ao importar o livro.')
@@ -58,11 +58,12 @@ const quickAdd = (book: any) => {
             <div v-for="book in books.data" :key="book.id" class="flex flex-col group p-4 rounded-xl">
                 
                 <Link :href="route('livros.google-show', book.google_id)" class="relative aspect-[4/5] overflow-hidden rounded-xl w-full block">
-                    <img 
-                        :src="book.image_url" 
+                    <img v-if="book.image_path !== '/storage/imagens/default.webp'"
+                        :src="book.image_path" 
                         :alt="book.title" 
                         class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" 
                     />
+                    <img v-else src="/storage/imagens/default.webp" alt="Capa" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 </Link>
             
                 <div class="mt-3 flex flex-col flex-grow">

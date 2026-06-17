@@ -104,6 +104,11 @@ class User extends Authenticatable
         ];
     }
 
+    public function logs(): HasMany
+    {
+        return $this->hasMany(ActivityLog::class);
+    }
+
     public function loans(): HasMany
     {
         return $this->hasMany(Loan::class);

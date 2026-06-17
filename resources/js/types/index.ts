@@ -108,3 +108,16 @@ export interface PaginatedData<T> {
     per_page?: number;
     total?: number;
 }
+
+export interface ActivityLog {
+    id: number;
+    created_at: string;
+    ip_address: string;
+    user_agent: string;
+    module: string;
+    object_id: string;
+    action: string;
+    user_id: number | null;
+    user?: User | null;
+}
+

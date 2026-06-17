@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\AuthorController as AdminAuthorController;
 use App\Http\Controllers\Admin\BookController as AdminBookController;
 use App\Http\Controllers\Admin\GoogleBookController;
@@ -58,6 +59,8 @@ Route::middleware([
         Route::post('admin/requisicoes/{loan}/aprovar', [AdminLoanController::class, 'approve'])->name('requisicoes.approve');
         Route::post('admin/requisicoes/{loan}/rejeitar', [AdminLoanController::class, 'reject'])->name('requisicoes.reject');
         Route::post('admin/requisicoes/{loan}/devolver', [AdminLoanController::class, 'returnBook'])->name('requisicoes.devolver');
+
+        Route::get('admin/logs', [ActivityLogController::class, 'index'])->name('admin.logs.index');
     });
 
     // Role: Usuário Regular
