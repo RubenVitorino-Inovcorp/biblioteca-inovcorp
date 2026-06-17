@@ -37,7 +37,7 @@ const booksList = computed(() => {
             <div v-if="booksList.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4 justify-items-center bg-base-200 rounded-box max-h-[22rem] overflow-y-auto">
                 <div v-for="book in booksList" :key="book.google_id" class="card card-side w-full max-w-[22rem] bg-base-100 shadow-sm border border-base-300 p-3 gap-3 transition-colors hover:border-primary">
                     <figure class="w-20 h-28 flex-shrink-0 bg-base-300 rounded-lg overflow-hidden border border-base-300">
-                        <img :src="book.capa || '/img/default-capa.png'" alt="Capa" class="w-full h-full object-cover" />
+                        <img :src="book.capa || '/storage/imagens/default.webp'" alt="Capa" class="w-full h-full object-cover" />
                     </figure>
                     <div class="flex flex-col justify-between overflow-hidden w-full">
                         <div>

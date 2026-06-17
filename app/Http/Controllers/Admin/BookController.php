@@ -117,9 +117,12 @@ class BookController extends Controller
             'isbn' => 'nullable|string|unique:books,isbn',
             'price' => 'required|numeric|min:0',
             'total_stock' => 'required|integer|min:0',
-            'publisher_id' => 'required',
-            'author_ids' => 'required|array',
-            'author_ids.*' => 'required',
+            'publisher_id' => 'required_without:publisher_name',
+            'publisher_name' => 'required_without:publisher_id|string',
+            'author_ids' => 'required_without:author_names|array',
+            'author_names' => 'required_without:author_ids|array',
+            'author_ids.*' => 'required_with:author_ids',
+            'author_names.*' => 'required_with:author_names|string',
             'tag_ids' => 'nullable|array',
             'tag_ids.*' => 'required',
         ];
@@ -144,8 +147,8 @@ class BookController extends Controller
         }
 
         DB::transaction(function () use ($validated, $path, $request) {
-            $publisherId = $this->resolvePublisherId($validated['publisher_id']);
-            $authorIds = $this->resolveAuthorIds($validated['author_ids']);
+            $publisherId = $this->resolvePublisherId($request->input('publisher_id') ?? $request->input('publisher_name'));
+            $authorIds = $this->resolveAuthorIds($request->input('author_ids') ?? $request->input('author_names'));
             $tagIds = $this->resolveTagIds($request->input('tag_ids', []));
 
             $book = Book::create([
